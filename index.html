@@ -1,52 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Tornado Classroom Game</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #eef6fb;
-      text-align: center;
-      padding: 20px;
-      margin: 0;
-    }
+    body { font-family: Arial, sans-serif; background: #eef6fb; text-align: center; padding: 20px; margin: 0; }
     .container { max-width: 800px; margin: auto; }
     h1 { font-size: 2.5em; margin-bottom: 10px; }
     .setup { margin-bottom: 20px; }
     label { margin: 0 10px; }
-    .scoreboard { display: flex; justify-content: center; gap: 50px; margin: 20px 0; }
+    .scoreboard { display: flex; justify-content: center; gap: 50px; margin: 20px 0; position: relative; }
     .team {
-      background: white;
-      padding: 15px 25px;
-      border-radius: 15px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      background: white; padding: 15px 25px; border-radius: 15px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1); min-width: 120px;
     }
     .team h2 { margin: 0; }
     .team p { font-size: 2em; margin: 5px 0 0; }
+    .announcement {
+      position: absolute; top: -60px; width: 100%;
+      font-size: 1.8em; color: #333;
+    }
     #turnDisplay { font-size: 1.2em; margin-bottom: 20px; }
     .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-      gap: 10px;
-      margin-bottom: 20px;
-      padding: 0 20px;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(80px,1fr));
+      gap: 10px; margin-bottom: 20px; padding: 0 20px;
     }
     .grid button {
-      font-size: 1.2em;
-      padding: 20px;
-      border: none;
-      border-radius: 10px;
-      background-color: #add8e6;
-      cursor: pointer;
-      transition: background 0.2s ease;
+      font-size: 1.2em; padding: 20px; border: none;
+      border-radius: 10px; background: #add8e6; cursor: pointer;
+      transition: background .2s ease;
     }
-    .grid button:hover { background-color: #87ceeb; }
-    .grid button:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
-    }
+    .grid button:hover { background: #87ceeb; }
+    .grid button:disabled { background: #ccc; cursor: not-allowed; }
   </style>
 </head>
 <body>
@@ -57,91 +43,161 @@
       <label>Team B: <input id="teamBName" value="Team B"></label>
       <label>Grid size:
         <select id="gridSize">
-          <option>8</option><option>10</option>
-          <option selected>20</option>
+          <option>8</option><option>10</option><option selected>20</option>
           <option>24</option><option>30</option><option>32</option>
         </select>
       </label>
       <button id="startBtn">Start Game</button>
     </div>
+
     <div class="scoreboard">
+      <div class="announcement" id="announcement">&nbsp;</div>
       <div class="team"><h2 id="nameA">Team A</h2><p id="scoreA">0</p></div>
       <div class="team"><h2 id="nameB">Team B</h2><p id="scoreB">0</p></div>
     </div>
+
     <h3 id="turnDisplay">Team A’s turn</h3>
     <div id="grid" class="grid"></div>
     <button id="resetBtn">🔄 Reset Game</button>
   </div>
 
   <script>
-    let rewards = [], teamScores = {A:0,B:0}, currentTeam = 'A', teamNames = {A:'Team A',B:'Team B'};
+    let rewards = [],
+        teamScores = {A:0,B:0},
+        currentTeam = 'A',
+        teamNames = {A:'Team A', B:'Team B'},
+        currentGridSize = 0;
 
-    document.getElementById('startBtn').addEventListener('click', startGame);
-    document.getElementById('resetBtn').addEventListener('click', startGame);
+    const ann = document.getElementById('announcement');
+    const turnDisplay = document.getElementById('turnDisplay');
+    document.getElementById('startBtn').onclick = startGame;
+    document.getElementById('resetBtn').onclick = startGame;
 
     function startGame(){
-      const size = +document.getElementById('gridSize').value;
+      const n = +document.getElementById('gridSize').value;
+      currentGridSize = n;
       teamNames.A = document.getElementById('teamAName').value.trim()||'Team A';
       teamNames.B = document.getElementById('teamBName').value.trim()||'Team B';
       document.getElementById('nameA').textContent = teamNames.A;
       document.getElementById('nameB').textContent = teamNames.B;
       teamScores = {A:0,B:0};
       updateScores();
-      currentTeam='A'; updateTurnDisplay();
-      generateRewards(size);
-      renderGrid(size);
+      currentTeam = 'A';
+      ann.textContent = '';
+      updateTurn();
+      generateRewards(n);
+      renderGrid(n);
     }
 
     function generateRewards(n){
       rewards = [];
-      const pts=Math.floor(n*0.7), lo=Math.floor(n*0.1), st=lo, db=n-(pts+lo+st);
+      const pts = Math.floor(n*0.7),
+            lo  = Math.floor(n*0.1),
+            st  = lo,
+            db  = n - (pts + lo + st);
+
       for(let i=0;i<pts;i++) rewards.push({type:'points',value:(Math.floor(Math.random()*10)+1)*100});
-      for(let i=0;i<lo;i++) rewards.push({type:'lose'});
-      for(let i=0;i<st;i++) rewards.push({type:'steal'});
-      for(let i=0;i<db;i++) rewards.push({type:'double'});
+      for(let i=0;i<lo;i++)  rewards.push({type:'lose'});
+      for(let i=0;i<st;i++)  rewards.push({type:'steal'});
+      for(let i=0;i<db;i++)  rewards.push({type:'double'});
+
       for(let i=rewards.length-1;i>0;i--){
-        const j=Math.floor(Math.random()*(i+1));
-        [rewards[i],rewards[j]]=[rewards[j],rewards[i]];
+        const j = Math.floor(Math.random()*(i+1));
+        [rewards[i],rewards[j]] = [rewards[j],rewards[i]];
       }
     }
 
     function renderGrid(n){
-      const grid=document.getElementById('grid');
-      grid.innerHTML='';
+      const grid = document.getElementById('grid');
+      grid.innerHTML = '';
       for(let i=0;i<n;i++){
-        const btn=document.createElement('button');
-        btn.textContent=i+1;
-        btn.addEventListener('click',()=>handleClick(btn,i),{once:true});
+        const btn = document.createElement('button');
+        btn.textContent = i+1;
+        btn.onclick = () => handleClick(btn, i);
         grid.appendChild(btn);
       }
     }
 
     function handleClick(btn,i){
-      const r=rewards[i];
-      let out='';
-      if(r.type==='points'){ teamScores[currentTeam]+=r.value; out='+'+r.value; }
-      else if(r.type==='lose'){ teamScores[currentTeam]=0; out='☹️'; }
-      else if(r.type==='steal'){
-        const o=currentTeam==='A'?'B':'A';
-        teamScores[currentTeam]+=teamScores[o]; teamScores[o]=0; out='🌪';
+      const reward = rewards[i];
+      const choosingTeam = currentTeam;
+      let display = '';
+
+      if(reward.type==='points'){
+        teamScores[choosingTeam] += reward.value;
+        display = '+' + reward.value;
       }
-      else { teamScores[currentTeam]*=2; out='x2'; }
-      btn.textContent=out;
+      else if(reward.type==='lose'){
+        teamScores[choosingTeam] = 0;
+        display = '☹️';
+      }
+      else if(reward.type==='steal'){
+        const other = choosingTeam==='A'?'B':'A';
+        teamScores[choosingTeam] += teamScores[other];
+        teamScores[other] = 0;
+        display = '🌪';
+      }
+      else if(reward.type==='double'){
+        teamScores[choosingTeam] *= 2;
+        display = 'x2';
+      }
+
+      // announce and play sound
+      ann.textContent = `${teamNames[choosingTeam]} got ${display}`;
+      playSound(reward.type);
+
+      btn.textContent = display;
+      btn.disabled = true;
       updateScores();
-      currentTeam=currentTeam==='A'?'B':'A';
-      updateTurnDisplay();
+
+      // check for final box
+      const done = document.querySelectorAll('.grid button:disabled').length;
+      if(done === currentGridSize){
+        ann.textContent = `${teamNames[choosingTeam]} wins! 🏆`;
+      } else {
+        // switch turn
+        currentTeam = choosingTeam==='A'?'B':'A';
+        updateTurn();
+      }
     }
 
     function updateScores(){
-      document.getElementById('scoreA').textContent=teamScores.A;
-      document.getElementById('scoreB').textContent=teamScores.B;
+      document.getElementById('scoreA').textContent = teamScores.A;
+      document.getElementById('scoreB').textContent = teamScores.B;
     }
-    function updateTurnDisplay(){
-      document.getElementById('turnDisplay').textContent=teamNames[currentTeam]+"'s turn";
+    function updateTurn(){
+      turnDisplay.textContent = `${teamNames[currentTeam]}'s turn`;
     }
 
-    // auto-start so reset works without first click
-    startGame();
+    // sound funcs using Web Audio
+    function playTone(freq,dur){
+      const C = new (window.AudioContext||window.webkitAudioContext)();
+      const osc = C.createOscillator();
+      osc.type = 'sine'; osc.frequency.value = freq;
+      osc.connect(C.destination);
+      osc.start();
+      setTimeout(()=>osc.stop(), dur);
+    }
+    function playWind(){
+      const C = new (window.AudioContext||window.webkitAudioContext)();
+      const bufferSize = C.sampleRate * 0.5;
+      const buffer = C.createBuffer(1, bufferSize, C.sampleRate);
+      const data = buffer.getChannelData(0);
+      for(let i=0;i<bufferSize;i++) data[i] = Math.random()*2 -1;
+      const noise = C.createBufferSource();
+      noise.buffer = buffer;
+      const filter = C.createBiquadFilter();
+      filter.type = 'lowpass'; filter.frequency.value = 800;
+      noise.connect(filter).connect(C.destination);
+      noise.start();
+      setTimeout(()=>noise.stop(), 500);
+    }
+    function playSound(type){
+      if(type==='points') playTone(880,200);
+      else if(type==='double') playTone(1046,300);
+      else if(type==='lose') playTone(220,500);
+      else if(type==='steal') playWind();
+    }
   </script>
 </body>
 </html>
