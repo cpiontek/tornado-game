@@ -1,49 +1,147 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Tornado Classroom Game</title>
-  <link rel="stylesheet" href="style.css"/>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #eef6fb;
+      text-align: center;
+      padding: 20px;
+      margin: 0;
+    }
+    .container { max-width: 800px; margin: auto; }
+    h1 { font-size: 2.5em; margin-bottom: 10px; }
+    .setup { margin-bottom: 20px; }
+    label { margin: 0 10px; }
+    .scoreboard { display: flex; justify-content: center; gap: 50px; margin: 20px 0; }
+    .team {
+      background: white;
+      padding: 15px 25px;
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .team h2 { margin: 0; }
+    .team p { font-size: 2em; margin: 5px 0 0; }
+    #turnDisplay { font-size: 1.2em; margin-bottom: 20px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+      gap: 10px;
+      margin-bottom: 20px;
+      padding: 0 20px;
+    }
+    .grid button {
+      font-size: 1.2em;
+      padding: 20px;
+      border: none;
+      border-radius: 10px;
+      background-color: #add8e6;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    .grid button:hover { background-color: #87ceeb; }
+    .grid button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
     <h1>🌪 Tornado Game</h1>
-    
     <div class="setup">
-      <label>Team A Name: <input id="teamAName" value="Team A"></label>
-      <label>Team B Name: <input id="teamBName" value="Team B"></label>
-      <label>Grid Size (boxes): 
+      <label>Team A: <input id="teamAName" value="Team A"></label>
+      <label>Team B: <input id="teamBName" value="Team B"></label>
+      <label>Grid size:
         <select id="gridSize">
-          <option>8</option>
-          <option>10</option>
+          <option>8</option><option>10</option>
           <option selected>20</option>
-          <option>24</option>
-          <option>30</option>
-          <option>32</option>
+          <option>24</option><option>30</option><option>32</option>
         </select>
       </label>
-      <button onclick="startGame()">Start Game</button>
+      <button id="startBtn">Start Game</button>
     </div>
-
     <div class="scoreboard">
-      <div id="teamA" class="team">
-        <h2 id="nameA">Team A</h2>
-        <p id="scoreA">0</p>
-      </div>
-      <div id="teamB" class="team">
-        <h2 id="nameB">Team B</h2>
-        <p id="scoreB">0</p>
-      </div>
+      <div class="team"><h2 id="nameA">Team A</h2><p id="scoreA">0</p></div>
+      <div class="team"><h2 id="nameB">Team B</h2><p id="scoreB">0</p></div>
     </div>
-
-    <h3 id="turnDisplay">Team A's turn</h3>
-    
+    <h3 id="turnDisplay">Team A’s turn</h3>
     <div id="grid" class="grid"></div>
-
-    <button onclick="resetGame()">🔄 Reset Game</button>
+    <button id="resetBtn">🔄 Reset Game</button>
   </div>
 
-  <script src="script.js"></script>
+  <script>
+    let rewards = [], teamScores = {A:0,B:0}, currentTeam = 'A', teamNames = {A:'Team A',B:'Team B'};
+
+    document.getElementById('startBtn').addEventListener('click', startGame);
+    document.getElementById('resetBtn').addEventListener('click', startGame);
+
+    function startGame(){
+      const size = +document.getElementById('gridSize').value;
+      teamNames.A = document.getElementById('teamAName').value.trim()||'Team A';
+      teamNames.B = document.getElementById('teamBName').value.trim()||'Team B';
+      document.getElementById('nameA').textContent = teamNames.A;
+      document.getElementById('nameB').textContent = teamNames.B;
+      teamScores = {A:0,B:0};
+      updateScores();
+      currentTeam='A'; updateTurnDisplay();
+      generateRewards(size);
+      renderGrid(size);
+    }
+
+    function generateRewards(n){
+      rewards = [];
+      const pts=Math.floor(n*0.7), lo=Math.floor(n*0.1), st=lo, db=n-(pts+lo+st);
+      for(let i=0;i<pts;i++) rewards.push({type:'points',value:(Math.floor(Math.random()*10)+1)*100});
+      for(let i=0;i<lo;i++) rewards.push({type:'lose'});
+      for(let i=0;i<st;i++) rewards.push({type:'steal'});
+      for(let i=0;i<db;i++) rewards.push({type:'double'});
+      for(let i=rewards.length-1;i>0;i--){
+        const j=Math.floor(Math.random()*(i+1));
+        [rewards[i],rewards[j]]=[rewards[j],rewards[i]];
+      }
+    }
+
+    function renderGrid(n){
+      const grid=document.getElementById('grid');
+      grid.innerHTML='';
+      for(let i=0;i<n;i++){
+        const btn=document.createElement('button');
+        btn.textContent=i+1;
+        btn.addEventListener('click',()=>handleClick(btn,i),{once:true});
+        grid.appendChild(btn);
+      }
+    }
+
+    function handleClick(btn,i){
+      const r=rewards[i];
+      let out='';
+      if(r.type==='points'){ teamScores[currentTeam]+=r.value; out='+'+r.value; }
+      else if(r.type==='lose'){ teamScores[currentTeam]=0; out='☹️'; }
+      else if(r.type==='steal'){
+        const o=currentTeam==='A'?'B':'A';
+        teamScores[currentTeam]+=teamScores[o]; teamScores[o]=0; out='🌪';
+      }
+      else { teamScores[currentTeam]*=2; out='x2'; }
+      btn.textContent=out;
+      updateScores();
+      currentTeam=currentTeam==='A'?'B':'A';
+      updateTurnDisplay();
+    }
+
+    function updateScores(){
+      document.getElementById('scoreA').textContent=teamScores.A;
+      document.getElementById('scoreB').textContent=teamScores.B;
+    }
+    function updateTurnDisplay(){
+      document.getElementById('turnDisplay').textContent=teamNames[currentTeam]+"'s turn";
+    }
+
+    // auto-start so reset works without first click
+    startGame();
+  </script>
 </body>
 </html>
