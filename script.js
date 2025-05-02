@@ -4,15 +4,16 @@ let currentTeam = "A";
 let teamNames = { A: "Team A", B: "Team B" };
 
 function startGame() {
-  const gridSize = parseInt(document.getElementById("gridSize").value);
-  teamNames.A = document.getElementById("teamAName").value || "Team A";
-  teamNames.B = document.getElementById("teamBName").value || "Team B";
+  const gridSize = parseInt(document.getElementById("gridSize").value, 10);
+  teamNames.A = document.getElementById("teamAName").value.trim() || "Team A";
+  teamNames.B = document.getElementById("teamBName").value.trim() || "Team B";
 
   document.getElementById("nameA").textContent = teamNames.A;
   document.getElementById("nameB").textContent = teamNames.B;
 
   teamScores = { A: 0, B: 0 };
   updateScores();
+
   currentTeam = "A";
   updateTurnDisplay();
 
@@ -22,28 +23,30 @@ function startGame() {
 
 function generateRewards(size) {
   rewards = [];
-  const distribution = {
-    points: Math.floor(size * 0.7),
-    lose: Math.floor(size * 0.1),
-    steal: Math.floor(size * 0.1),
-    double: size - (Math.floor(size * 0.7) + Math.floor(size * 0.1) * 2),
-  };
+  const countPoints = Math.floor(size * 0.7);
+  const countLose   = Math.floor(size * 0.1);
+  const countSteal  = Math.floor(size * 0.1);
+  const countDouble = size - (countPoints + countLose + countSteal);
 
-  for (let i = 0; i < distribution.points; i++) {
+  // points
+  for (let i = 0; i < countPoints; i++) {
     const value = (Math.floor(Math.random() * 10) + 1) * 100;
     rewards.push({ type: "points", value });
   }
-  for (let i = 0; i < distribution.lose; i++) {
+  // lose all
+  for (let i = 0; i < countLose; i++) {
     rewards.push({ type: "lose" });
   }
-  for (let i = 0; i < distribution.steal; i++) {
+  // steal
+  for (let i = 0; i < countSteal; i++) {
     rewards.push({ type: "steal" });
   }
-  for (let i = 0; i < distribution.double; i++) {
+  // double
+  for (let i = 0; i < countDouble; i++) {
     rewards.push({ type: "double" });
   }
 
-  // shuffle
+  // Fisher–Yates shuffle
   for (let i = rewards.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [rewards[i], rewards[j]] = [rewards[j], rewards[i]];
@@ -56,8 +59,8 @@ function createGrid(size) {
 
   for (let i = 0; i < size; i++) {
     const btn = document.createElement("button");
-    btn.textContent = i + 1;
-    btn.onclick = () => handleBoxClick(btn, i);
+    btn.textContent = (i + 1).toString();
+    btn.addEventListener("click", () => handleBoxClick(btn, i), { once: true });
     grid.appendChild(btn);
   }
 }
@@ -83,7 +86,6 @@ function handleBoxClick(btn, index) {
   }
 
   btn.textContent = display;
-  btn.disabled = true;
   updateScores();
 
   currentTeam = currentTeam === "A" ? "B" : "A";
@@ -99,6 +101,4 @@ function updateTurnDisplay() {
   document.getElementById("turnDisplay").textContent = `${teamNames[currentTeam]}'s turn`;
 }
 
-function resetGame() {
-  startGame();
-}
+function resetGame()
