@@ -30,13 +30,20 @@ function generateRewards(size) {
   };
 
   for (let i = 0; i < distribution.points; i++) {
-    let value = (Math.floor(Math.random() * 10) + 1) * 100;
+    const value = (Math.floor(Math.random() * 10) + 1) * 100;
     rewards.push({ type: "points", value });
   }
-  for (let i = 0; i < distribution.lose; i++) rewards.push({ type: "lose" });
-  for (let i = 0; i < distribution.steal; i++) rewards.push({ type: "steal" });
-  for (let i = 0; i < distribution.double; i++) rewards.push({ type: "double" });
+  for (let i = 0; i < distribution.lose; i++) {
+    rewards.push({ type: "lose" });
+  }
+  for (let i = 0; i < distribution.steal; i++) {
+    rewards.push({ type: "steal" });
+  }
+  for (let i = 0; i < distribution.double; i++) {
+    rewards.push({ type: "double" });
+  }
 
+  // shuffle
   for (let i = rewards.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [rewards[i], rewards[j]] = [rewards[j], rewards[i]];
@@ -57,8 +64,8 @@ function createGrid(size) {
 
 function handleBoxClick(btn, index) {
   const reward = rewards[index];
-
   let display = "";
+
   if (reward.type === "points") {
     teamScores[currentTeam] += reward.value;
     display = `+${reward.value}`;
