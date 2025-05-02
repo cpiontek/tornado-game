@@ -18,11 +18,10 @@
     .team h2 { margin: 0; }
     .team p { font-size: 2em; margin: 5px 0 0; }
     .announcement {
-      position: absolute; top: -50px;
-      font-size: 1.8em; color: #333;
+      position: absolute; top: -50px; font-size: 1.8em; color: #333;
     }
-    .announcement.announce-left  { left: 0;  text-align: left; }
-    .announcement.announce-right { right: 0; text-align: right; }
+    .announce-left  { left: 0;  text-align: left;  }
+    .announce-right { right:0;  text-align: right; }
     #turnDisplay { font-size: 1.2em; margin-bottom: 20px; }
     .grid {
       display: grid; grid-template-columns: repeat(auto-fit, minmax(80px,1fr));
@@ -51,136 +50,84 @@
       </label>
       <button id="startBtn">Start Game</button>
     </div>
-
     <div class="scoreboard">
       <div id="announcement" class="announcement"></div>
       <div class="team"><h2 id="nameA">Team A</h2><p id="scoreA">0</p></div>
       <div class="team"><h2 id="nameB">Team B</h2><p id="scoreB">0</p></div>
     </div>
-
     <h3 id="turnDisplay">Team A’s turn</h3>
     <div id="grid" class="grid"></div>
     <button id="resetBtn">🔄 Reset Game</button>
   </div>
 
   <script>
-    let rewards      = [],
-        teamScores   = { A:0, B:0 },
-        currentTeam  = 'A',
-        teamNames    = { A:'Team A', B:'Team B' },
-        currentSize  = 0;
+    let rewards = [],
+        scores  = {A:0,B:0},
+        turn    = 'A',
+        names   = {A:'Team A', B:'Team B'},
+        total   = 0;
 
-    const ann        = document.getElementById('announcement'),
-          turnDisp   = document.getElementById('turnDisplay'),
-          startBtn   = document.getElementById('startBtn'),
-          resetBtn   = document.getElementById('resetBtn');
+    const annEl   = document.getElementById('announcement'),
+          turnEl  = document.getElementById('turnDisplay'),
+          start   = document.getElementById('startBtn'),
+          reset   = document.getElementById('resetBtn');
 
-    startBtn.onclick = startGame;
-    resetBtn.onclick = startGame;
+    start.onclick = startGame;
+    reset.onclick = startGame;
 
     function startGame(){
       const n = +document.getElementById('gridSize').value;
-      currentSize = n;
-      teamNames.A  = document.getElementById('teamAName').value.trim() || 'Team A';
-      teamNames.B  = document.getElementById('teamBName').value.trim() || 'Team B';
-
-      document.getElementById('nameA').textContent = teamNames.A;
-      document.getElementById('nameB').textContent = teamNames.B;
-
-      teamScores = { A:0, B:0 };
-      updateScores();
-
-      currentTeam = 'A';
-      ann.textContent = '';
-      ann.className = 'announcement';
+      total = n;
+      names.A = document.getElementById('teamAName').value.trim()||'Team A';
+      names.B = document.getElementById('teamBName').value.trim()||'Team B';
+      document.getElementById('nameA').textContent = names.A;
+      document.getElementById('nameB').textContent = names.B;
+      scores = {A:0,B:0}; updateScores();
+      turn = 'A';
+      annEl.textContent = ''; annEl.className = 'announcement';
       updateTurn();
-
-      generateRewards(n);
-      renderGrid(n);
+      buildRewards(n);
+      buildGrid(n);
     }
 
-    function generateRewards(n){
+    function buildRewards(n){
       rewards = [];
-      const pts = Math.floor(n*0.7),
-            lo  = Math.floor(n*0.1),
-            st  = lo,
-            db  = n - (pts + lo + st);
-
-      for(let i=0;i<pts;i++) rewards.push({type:'points', value:(Math.floor(Math.random()*10)+1)*100});
-      for(let i=0;i<lo;i++)  rewards.push({type:'lose'});
-      for(let i=0;i<st;i++)  rewards.push({type:'steal'});
-      for(let i=0;i<db;i++)  rewards.push({type:'double'});
-
-      // shuffle
-      for(let i=rewards.length-1; i>0; i--){
+      const p = Math.floor(n*0.7),
+            l = Math.floor(n*0.1),
+            s = l,
+            d = n - (p + l + s);
+      for(let i=0;i<p;i++) rewards.push({type:'points', value:(Math.floor(Math.random()*10)+1)*100});
+      for(let i=0;i<l;i++) rewards.push({type:'lose'});
+      for(let i=0;i<s;i++) rewards.push({type:'steal'});
+      for(let i=0;i<d;i++) rewards.push({type:'double'});
+      for(let i=rewards.length-1;i>0;i--){
         const j = Math.floor(Math.random()*(i+1));
         [rewards[i], rewards[j]] = [rewards[j], rewards[i]];
       }
     }
 
-    function renderGrid(n){
+    function buildGrid(n){
       const grid = document.getElementById('grid');
       grid.innerHTML = '';
       for(let i=0;i<n;i++){
         const btn = document.createElement('button');
         btn.textContent = i+1;
-        btn.onclick = ()=> handleClick(btn, i);
+        btn.onclick = ()=> pick(btn,i);
         grid.appendChild(btn);
       }
     }
 
-    function handleClick(btn,i){
+    function pick(btn,i){
       const r = rewards[i],
-            team = currentTeam;
+            t = turn;
       let disp = '';
 
-      if(r.type === 'points'){
-        teamScores[team] += r.value;
-        disp = '+' + r.value;
+      if(r.type==='points'){
+        scores[t] += r.value;
+        disp = '+'+r.value;
       }
       else if(r.type==='lose'){
-        teamScores[team] = 0;
+        scores[t] = 0;
         disp = '☹️';
-      }
-      else if(r.type==='steal'){
-        const other = team==='A'?'B':'A';
-        teamScores[team] += teamScores[other];
-        teamScores[other] = 0;
-        disp = '🌪';
-        playWind();
-      }
-      else if(r.type==='double'){
-        teamScores[team] *= 2;
-        disp = 'x2';
-      }
-
-      // announce
-      ann.className = 'announcement ' + (team==='A'?'announce-left':'announce-right');
-      ann.textContent = `${teamNames[team]} got ${disp}`;
-
-      btn.textContent = disp;
-      btn.disabled = true;
-      updateScores();
-
-      // final-box win
-      const doneCount = document.querySelectorAll('.grid button:disabled').length;
-      if(doneCount === currentSize){
-        ann.textContent = `${teamNames[team]} wins! 🏆`;
-      } else {
-        currentTeam = team==='A'?'B':'A';
-        updateTurn();
-      }
-    }
-
-    function updateScores(){
-      document.getElementById('scoreA').textContent = teamScores.A;
-      document.getElementById('scoreB').textContent = teamScores.B;
-    }
-    function updateTurn(){
-      turnDisp.textContent = `${teamNames[currentTeam]}'s turn`;
-    }
-
-    // only wind noise for steal
-    function playWind(){
-      const C = new (window.AudioContext||window.webkitAudioContext)();
-      const bufferSize = C.sampleRate * 0
+        playSad();
+     
