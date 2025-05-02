@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Tornado Classroom Game</title>
   <style>
     body {
@@ -89,90 +89,6 @@
 <body>
   <div class="container">
     <h1>🌪 Tornado Game</h1>
+
     <div class="setup">
-      <label>Team A: <input id="teamAName" value="Team A"></label>
-      <label>Team B: <input id="teamBName" value="Team B"></label>
-      <label>Grid size:
-        <select id="gridSize">
-          <option>8</option><option>10</option><option selected>20</option>
-          <option>24</option><option>30</option><option>32</option>
-        </select>
-      </label>
-      <button id="startBtn">Start Game</button>
-    </div>
-    <div class="scoreboard">
-      <div class="team">
-        <div id="annA" class="announcement"></div>
-        <h2 id="nameA">Team A</h2>
-        <p id="scoreA">0</p>
-      </div>
-      <div class="team">
-        <div id="annB" class="announcement"></div>
-        <h2 id="nameB">Team B</h2>
-        <p id="scoreB">0</p>
-      </div>
-    </div>
-    <h3 id="turnDisplay">Team A’s turn</h3>
-    <div id="grid" class="grid"></div>
-    <button id="resetBtn">🔄 Reset Game</button>
-  </div>
-
-  <script>
-    // state
-    let rewards = [],
-        scores  = {A:0,B:0},
-        picks   = {A:0,B:0},
-        turn    = 'A',
-        names   = {A:'Team A',B:'Team B'},
-        total   = 0;
-
-    // elements
-    const annA  = document.getElementById('annA'),
-          annB  = document.getElementById('annB'),
-          turnE = document.getElementById('turnDisplay'),
-          start = document.getElementById('startBtn'),
-          reset = document.getElementById('resetBtn');
-
-    start.onclick = initGame;
-    reset.onclick = initGame;
-
-    function initGame() {
-      const n = +document.getElementById('gridSize').value;
-      total = n;
-      names.A = document.getElementById('teamAName').value.trim() || 'Team A';
-      names.B = document.getElementById('teamBName').value.trim() || 'Team B';
-      document.getElementById('nameA').textContent = names.A;
-      document.getElementById('nameB').textContent = names.B;
-
-      scores = {A:0,B:0};
-      picks  = {A:0,B:0};
-      annA.textContent = '';
-      annB.textContent = '';
-      updateScores();
-
-      turn = 'A';
-      updateTurn();
-
-      buildRewards(n);
-      buildGrid(n);
-    }
-
-    function buildRewards(n){
-      rewards = [];
-      const pts = Math.floor(n*0.7),
-            lo  = Math.floor(n*0.1),
-            st  = lo,
-            db  = n - (pts+lo+st);
-
-      for(let i=0;i<pts;i++)  rewards.push({type:'points',value:(Math.floor(Math.random()*10)+1)*100});
-      for(let i=0;i<lo;i++)   rewards.push({type:'lose'});
-      for(let i=0;i<st;i++)   rewards.push({type:'steal'});
-      for(let i=0;i<db;i++)   rewards.push({type:'double'});
-
-      // shuffle
-      for(let i=rewards.length-1;i>0;i--){
-        const j = Math.floor(Math.random()*(i+1));
-        [rewards[i], rewards[j]] = [rewards[j], rewards[i]];
-      }
-    }
-
+      <label>Team A: <input
