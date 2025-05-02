@@ -10,18 +10,17 @@
     h1 { font-size: 2.5em; margin-bottom: 10px; }
     .setup { margin-bottom: 20px; }
     label { margin: 0 10px; }
-    .scoreboard { position: relative; display: flex; justify-content: center; gap: 50px; margin: 20px 0; }
+    .scoreboard { display: flex; justify-content: center; gap: 50px; margin: 20px 0; }
     .team {
-      background: white; padding: 15px 25px; border-radius: 15px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1); min-width: 120px;
+      background: white; padding: 10px 20px; border-radius: 15px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1); min-width: 140px;
     }
-    .team h2 { margin: 0; }
-    .team p { font-size: 2em; margin: 5px 0 0; }
     .announcement {
-      position: absolute; top: -50px; font-size: 1.8em; color: #333;
+      font-size: 1.4em; font-weight: bold; color: #333;
+      min-height: 1.6em; margin-bottom: 5px;
     }
-    .announce-left  { left: 0;  text-align: left;  }
-    .announce-right { right:0;  text-align: right; }
+    .team h2 { margin: 5px 0 0; }
+    .team p { font-size: 2em; margin: 5px 0 0; }
     #turnDisplay { font-size: 1.2em; margin-bottom: 20px; }
     .grid {
       display: grid; grid-template-columns: repeat(auto-fit, minmax(80px,1fr));
@@ -51,9 +50,16 @@
       <button id="startBtn">Start Game</button>
     </div>
     <div class="scoreboard">
-      <div id="announcement" class="announcement"></div>
-      <div class="team"><h2 id="nameA">Team A</h2><p id="scoreA">0</p></div>
-      <div class="team"><h2 id="nameB">Team B</h2><p id="scoreB">0</p></div>
+      <div class="team">
+        <div class="announcement" id="annA"></div>
+        <h2 id="nameA">Team A</h2>
+        <p id="scoreA">0</p>
+      </div>
+      <div class="team">
+        <div class="announcement" id="annB"></div>
+        <h2 id="nameB">Team B</h2>
+        <p id="scoreB">0</p>
+      </div>
     </div>
     <h3 id="turnDisplay">Team A’s turn</h3>
     <div id="grid" class="grid"></div>
@@ -61,11 +67,12 @@
   </div>
 
   <script>
-    let rewards = [], scores = {A:0,B:0}, turn = 'A', names = {A:'Team A', B:'Team B'}, total = 0;
-    const ann = document.getElementById('announcement'),
-          turnDisp = document.getElementById('turnDisplay'),
-          start = document.getElementById('startBtn'),
-          reset = document.getElementById('resetBtn');
+    let rewards = [], scores = {A:0,B:0}, turn = 'A', names = {A:'Team A',B:'Team B'}, total=0;
+    const annA = document.getElementById('annA'),
+          annB = document.getElementById('annB'),
+          turnEl = document.getElementById('turnDisplay'),
+          start  = document.getElementById('startBtn'),
+          reset  = document.getElementById('resetBtn');
 
     start.onclick = init;
     reset.onclick = init;
@@ -73,79 +80,71 @@
     function init(){
       const n = +document.getElementById('gridSize').value;
       total = n;
-      names.A = document.getElementById('teamAName').value.trim() || 'Team A';
-      names.B = document.getElementById('teamBName').value.trim() || 'Team B';
+      names.A = document.getElementById('teamAName').value.trim()||'Team A';
+      names.B = document.getElementById('teamBName').value.trim()||'Team B';
       document.getElementById('nameA').textContent = names.A;
       document.getElementById('nameB').textContent = names.B;
-      scores = {A:0,B:0}; updateScore();
-      turn = 'A'; ann.textContent = ''; ann.className = 'announcement'; updateTurn();
-      makeRewards(n); makeGrid(n);
+      scores = {A:0,B:0}; updateScores();
+      turn = 'A'; annA.textContent=annB.textContent=''; updateTurn();
+      buildRewards(n); buildGrid(n);
     }
 
-    function makeRewards(n){
-      rewards = [];
-      const pts = Math.floor(n*0.7),
-            lo  = Math.floor(n*0.1),
-            st  = lo,
-            db  = n - (pts+lo+st);
+    function buildRewards(n){
+      rewards=[];
+      const pts=Math.floor(n*0.7), lo=Math.floor(n*0.1), st=lo, db=n-(pts+lo+st);
       for(let i=0;i<pts;i++) rewards.push({type:'points',value:(Math.floor(Math.random()*10)+1)*100});
-      for(let i=0;i<lo;i++)  rewards.push({type:'lose'});
-      for(let i=0;i<st;i++)  rewards.push({type:'steal'});
-      for(let i=0;i<db;i++)  rewards.push({type:'double'});
+      for(let i=0;i<lo;i++) rewards.push({type:'lose'});
+      for(let i=0;i<st;i++) rewards.push({type:'steal'});
+      for(let i=0;i<db;i++) rewards.push({type:'double'});
       for(let i=rewards.length-1;i>0;i--){
-        const j = Math.floor(Math.random()*(i+1));
+        const j=Math.floor(Math.random()*(i+1));
         [rewards[i],rewards[j]]=[rewards[j],rewards[i]];
       }
     }
 
-    function makeGrid(n){
+    function buildGrid(n){
       const grid = document.getElementById('grid');
-      grid.innerHTML = '';
+      grid.innerHTML='';
       for(let i=0;i<n;i++){
-        const b = document.createElement('button');
-        b.textContent = i+1;
-        b.onclick = ()=> pick(b,i);
+        const b=document.createElement('button');
+        b.textContent=i+1;
+        b.onclick=()=>pick(b,i);
         grid.appendChild(b);
       }
     }
 
     function pick(btn,i){
-      const r = rewards[i], me = turn;
-      let out = '';
-      if(r.type==='points'){
-        scores[me]+=r.value; out = '+'+r.value;
-      }
-      else if(r.type==='lose'){
-        scores[me]=0; out='☹️'; playSad();
-      }
-      else if(r.type==='steal'){
-        const other = me==='A'?'B':'A';
-        scores[me]+=scores[other]; scores[other]=0; out='🌪'; playWind();
-      }
-      else {
-        scores[me]*=2; out='x2';
-      }
-      ann.textContent = `${names[me]} got ${out}`;
-      ann.className = 'announcement ' + (me==='A'?'announce-left':'announce-right');
-      btn.textContent = out; btn.disabled = true; updateScore();
+      const r=rewards[i], me=turn;
+      let out='';
+      if(r.type==='points'){ scores[me]+=r.value; out='+'+r.value; }
+      else if(r.type==='lose'){ scores[me]=0; out='☹️'; playSad(); }
+      else if(r.type==='steal'){ const o=me==='A'?'B':'A'; scores[me]+=scores[o]; scores[o]=0; out='🌪'; playWind(); }
+      else { scores[me]*=2; out='x2'; }
+
+      // announce in correct box
+      if(me==='A') annA.textContent=`${names.A} got ${out}`;
+      else           annB.textContent=`${names.B} got ${out}`;
+
+      btn.textContent=out; btn.disabled=true; updateScores();
 
       const done = document.querySelectorAll('.grid button:disabled').length;
       if(done===total){
-        ann.textContent=`${names[me]} wins! 🏆`;
+        if(turn==='A') annA.textContent=`${names.A} wins! 🏆`;
+        else           annB.textContent=`${names.B} wins! 🏆`;
       } else {
-        turn = me==='A'?'B':'A'; updateTurn();
+        turn = me==='A'?'B':'A';
+        updateTurn();
       }
     }
 
-    function updateScore(){
-      document.getElementById('scoreA').textContent = scores.A;
-      document.getElementById('scoreB').textContent = scores.B;
+    function updateScores(){
+      document.getElementById('scoreA').textContent=scores.A;
+      document.getElementById('scoreB').textContent=scores.B;
     }
     function updateTurn(){
-      turnDisp.textContent = `${names[turn]}'s turn`;
+      turnEl.textContent=`${names[turn]}'s turn`;
     }
 
-    // sounds
     function playWind(){
       const C=new (window.AudioContext||window.webkitAudioContext)(),
             buf=C.createBuffer(1,C.sampleRate*0.5,C.sampleRate),
@@ -166,7 +165,7 @@
       setTimeout(()=>o.stop(),800);
     }
 
-    // initialize once so Reset works
+    // kick off on page load so reset works immediately
     init();
   </script>
 </body>
