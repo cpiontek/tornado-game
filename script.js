@@ -65,4 +65,5 @@ function handleBoxClick(btn, index) {
   let display = "";
   if (reward.type === "points") {
     teamScores[currentTeam] += reward.value;
-    display = `+${reward.value
+    display = `+${reward.value}`;
+
