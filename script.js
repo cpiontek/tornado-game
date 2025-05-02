@@ -2,7 +2,6 @@ let rewards = [];
 let teamScores = { A: 0, B: 0 };
 let currentTeam = "A";
 let teamNames = { A: "Team A", B: "Team B" };
-console.log("✅ script.js is running!");
 
 function startGame() {
   const gridSize = parseInt(document.getElementById("gridSize").value);
@@ -23,7 +22,6 @@ function startGame() {
 
 function generateRewards(size) {
   rewards = [];
-  const types = ["points", "lose", "steal", "double"];
   const distribution = {
     points: Math.floor(size * 0.7),
     lose: Math.floor(size * 0.1),
@@ -31,7 +29,6 @@ function generateRewards(size) {
     double: size - (Math.floor(size * 0.7) + Math.floor(size * 0.1) * 2),
   };
 
-  // Fill rewards
   for (let i = 0; i < distribution.points; i++) {
     let value = (Math.floor(Math.random() * 10) + 1) * 100;
     rewards.push({ type: "points", value });
@@ -40,7 +37,6 @@ function generateRewards(size) {
   for (let i = 0; i < distribution.steal; i++) rewards.push({ type: "steal" });
   for (let i = 0; i < distribution.double; i++) rewards.push({ type: "double" });
 
-  // Shuffle
   for (let i = rewards.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [rewards[i], rewards[j]] = [rewards[j], rewards[i]];
@@ -85,4 +81,17 @@ function handleBoxClick(btn, index) {
 
   currentTeam = currentTeam === "A" ? "B" : "A";
   updateTurnDisplay();
+}
+
+function updateScores() {
+  document.getElementById("scoreA").textContent = teamScores.A;
+  document.getElementById("scoreB").textContent = teamScores.B;
+}
+
+function updateTurnDisplay() {
+  document.getElementById("turnDisplay").textContent = `${teamNames[currentTeam]}'s turn`;
+}
+
+function resetGame() {
+  startGame();
 }
