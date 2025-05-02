@@ -2,6 +2,7 @@ let rewards = [];
 let teamScores = { A: 0, B: 0 };
 let currentTeam = "A";
 let teamNames = { A: "Team A", B: "Team B" };
+console.log("✅ script.js is running!");
 
 function startGame() {
   const gridSize = parseInt(document.getElementById("gridSize").value);
