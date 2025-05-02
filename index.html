@@ -31,10 +31,8 @@
       border-radius: 15px; box-shadow: 0 0 10px rgba(0,0,0,0.1);
       min-width: 150px;
     }
-    /* Team name colors */
     #nameA { color: var(--teamA); }
     #nameB { color: var(--teamB); }
-
     .announcement {
       font-size: 1.3em; min-height: 1.4em; margin-bottom: 5px;
       font-weight: bold; color: #333;
@@ -42,7 +40,6 @@
     .team h2 { margin: 5px 0 0; }
     .team p { font-size: 2em; margin: 5px 0 0; }
     #turnDisplay { font-size: 1.2em; margin-bottom: 20px; }
-
     .grid {
       display: grid; gap: 10px; margin-bottom: 20px; padding: 0 20px;
     }
@@ -57,12 +54,8 @@
       background: #ccc; cursor: not-allowed;
     }
     #resetBtn { margin-top: 10px; padding: 8px 16px; }
-
-    /* Footer credit */
     .footer {
-      font-size: 0.8em;
-      color: #666;
-      margin-top: 30px;
+      font-size: 0.8em; color: #666; margin-top: 30px;
     }
   </style>
 </head>
@@ -104,17 +97,11 @@
   </div>
 
   <script>
-    // State
-    let rewards = [],
-        scores  = {A:0, B:0},
-        picks   = {A:0, B:0},
-        turn    = 'A',
-        names   = {A:'Team A', B:'Team B'},
-        total   = 0;
+    let rewards = [], scores = {A:0,B:0}, picks = {A:0,B:0},
+        turn = 'A', names = {A:'Team A',B:'Team B'}, total = 0;
 
-    // DOM refs
-    const annA  = document.getElementById('annA'),
-          annB  = document.getElementById('annB'),
+    const annA = document.getElementById('annA'),
+          annB = document.getElementById('annB'),
           turnE = document.getElementById('turnDisplay'),
           start = document.getElementById('startBtn'),
           reset = document.getElementById('resetBtn'),
@@ -130,8 +117,8 @@
       document.getElementById('nameA').textContent = names.A;
       document.getElementById('nameB').textContent = names.B;
 
-      scores = {A:0, B:0};
-      picks  = {A:0, B:0};
+      scores = {A:0,B:0};
+      picks  = {A:0,B:0};
       annA.textContent = '';
       annB.textContent = '';
       updateScores();
@@ -144,18 +131,18 @@
     }
 
     function buildRewards(n) {
-      const ptsBase    = Math.floor(n * 0.7),
-            loseBase   = Math.floor(n * 0.1),
+      const ptsBase    = Math.floor(n*0.7),
+            loseBase   = Math.floor(n*0.1),
             stealBase  = loseBase,
-            dblBase    = n - (ptsBase + loseBase + stealBase),
-            minSpec    = n >= 24 ? 3 : 2,
-            loseCount  = Math.max(loseBase,  minSpec),
+            dblBase    = n-(ptsBase+loseBase+stealBase),
+            minSpec    = n>=24?3:2,
+            loseCount  = Math.max(loseBase, minSpec),
             stealCount = Math.max(stealBase, minSpec),
             dblCount   = Math.max(dblBase,   minSpec),
-            ptsCount   = n - (loseCount + stealCount + dblCount);
+            ptsCount   = n - (loseCount+stealCount+dblCount);
 
       rewards = [];
-      for(let i=0;i<ptsCount;i++)  rewards.push({type:'points', value:(Math.floor(Math.random()*10)+1)*100});
+      for(let i=0;i<ptsCount;i++)  rewards.push({type:'points',value:(Math.floor(Math.random()*10)+1)*100});
       for(let i=0;i<loseCount;i++)   rewards.push({type:'lose'});
       for(let i=0;i<stealCount;i++)  rewards.push({type:'steal'});
       for(let i=0;i<dblCount;i++)    rewards.push({type:'double'});
@@ -169,9 +156,8 @@
     function buildGrid(n) {
       grid.innerHTML = '';
       let cols = Math.floor(Math.sqrt(n));
-      if(cols < 2) cols = 2;
+      if(cols<2) cols=2;
       grid.style.gridTemplateColumns = `repeat(${cols},1fr)`;
-
       for(let i=0;i<n;i++){
         const btn = document.createElement('button');
         btn.textContent = i+1;
@@ -180,30 +166,28 @@
       }
     }
 
-    function handlePick(btn,i) {
+    function handlePick(btn,i){
       let r = rewards[i], me = turn;
-      if(picks[me] === 0 && r.type !== 'points'){
-        r = {type:'points', value:(Math.floor(Math.random()*10)+1)*100};
+      if(picks[me]===0 && r.type!=='points'){
+        r={type:'points',value:(Math.floor(Math.random()*10)+1)*100};
       }
       picks[me]++;
 
-      let out = '';
+      let out='';
       if(r.type==='points'){
-        scores[me] += r.value;
-        out = '+'+r.value;
-        btn.style.color = me==='A'? 'var(--teamA)' : 'var(--teamB)';
+        scores[me]+=r.value; out='+'+r.value;
+        btn.style.color = me==='A'?'var(--teamA)':'var(--teamB)';
       }
       else if(r.type==='lose'){
-        scores[me] = 0; out = '☹️'; styleSpecial(btn,me); playSad();
+        scores[me]=0; out='☹️'; styleSpecial(btn,me); playSad();
       }
       else if(r.type==='steal'){
-        const other = me==='A'?'B':'A';
-        scores[me] += scores[other];
-        scores[other] = 0;
-        out = '🌪'; styleSpecial(btn,me); playWind();
+        const o=me==='A'?'B':'A';
+        scores[me]+=scores[o]; scores[o]=0;
+        out='🌪'; styleSpecial(btn,me); playWind();
       }
       else {
-        scores[me] *= 2; out = 'x2'; styleSpecial(btn,me);
+        scores[me]*=2; out='x2'; styleSpecial(btn,me);
       }
 
       if(me==='A'){
@@ -218,16 +202,23 @@
 
       const done = document.querySelectorAll('.grid button:disabled').length;
       if(done === total){
-        if(me==='A') annA.textContent = `${names.A} wins! 🏆`;
-        else         annB.textContent = `${names.B} wins! 🏆`;
+        // FIXED: compare scores to pick the true winner
+        if(scores.A > scores.B){
+          annA.textContent = `${names.A} wins! 🏆`;
+        } else if(scores.B > scores.A){
+          annB.textContent = `${names.B} wins! 🏆`;
+        } else {
+          annA.textContent = 'It’s a tie!';
+          annB.textContent = '';
+        }
       } else {
         turn = me==='A'?'B':'A';
         updateTurn();
       }
     }
 
-    function styleSpecial(btn, team){
-      const clr = team==='A'? 'var(--teamA)' : 'var(--teamB)';
+    function styleSpecial(btn,team){
+      const clr = team==='A'?'var(--teamA)':'var(--teamB)';
       btn.style.background = clr;
       btn.style.color      = '#fff';
       btn.style.fontSize   = '2.5em';
@@ -237,6 +228,7 @@
       document.getElementById('scoreA').textContent = scores.A;
       document.getElementById('scoreB').textContent = scores.B;
     }
+
     function updateTurn(){
       turnE.textContent = `${names[turn]}'s turn`;
     }
@@ -251,6 +243,7 @@
       src.connect(f).connect(C.destination);src.start();
       setTimeout(()=>src.stop(),500);
     }
+
     function playSad(){
       const C=new (window.AudioContext||window.webkitAudioContext)(),
             o=C.createOscillator(),g=C.createGain();
