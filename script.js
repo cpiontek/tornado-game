@@ -66,4 +66,23 @@ function handleBoxClick(btn, index) {
   if (reward.type === "points") {
     teamScores[currentTeam] += reward.value;
     display = `+${reward.value}`;
+  } else if (reward.type === "lose") {
+    teamScores[currentTeam] = 0;
+    display = "☹️";
+  } else if (reward.type === "steal") {
+    const other = currentTeam === "A" ? "B" : "A";
+    teamScores[currentTeam] += teamScores[other];
+    teamScores[other] = 0;
+    display = "🌪";
+  } else if (reward.type === "double") {
+    teamScores[currentTeam] *= 2;
+    display = "x2";
+  }
 
+  btn.textContent = display;
+  btn.disabled = true;
+  updateScores();
+
+  currentTeam = currentTeam === "A" ? "B" : "A";
+  updateTurnDisplay();
+}
