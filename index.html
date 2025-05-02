@@ -5,84 +5,58 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Tornado Classroom Game</title>
   <style>
+    :root {
+      --teamA: #e74c3c;
+      --teamB: #3498db;
+      --btn-bg: #add8e6;
+      --btn-hover: #87ceeb;
+    }
     body {
       font-family: Arial, sans-serif;
       background: #eef6fb;
       text-align: center;
-      margin: 0;
-      padding: 20px;
+      margin: 0; padding: 20px;
     }
     .container {
-      max-width: 800px;
-      margin: 0 auto;
+      max-width: 900px; margin: auto;
     }
     h1 {
-      font-size: 2.5em;
-      margin-bottom: 10px;
+      font-size: 2.5em; margin-bottom: 10px;
     }
     .setup {
       margin-bottom: 20px;
     }
-    .setup label {
-      margin: 0 10px;
-    }
+    .setup label { margin: 0 10px; }
     .scoreboard {
-      display: flex;
-      justify-content: center;
-      gap: 50px;
-      margin: 20px 0;
+      display: flex; justify-content: center; gap: 50px; margin: 20px 0;
     }
     .team {
-      background: white;
-      padding: 10px 20px;
-      border-radius: 15px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      min-width: 150px;
+      background: white; padding: 10px 20px;
+      border-radius: 15px; box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      min-width: 160px;
     }
     .announcement {
-      font-size: 1.3em;
-      min-height: 1.4em;
-      margin-bottom: 5px;
-      font-weight: bold;
-      color: #333;
+      font-size: 1.4em; min-height: 1.5em; margin-bottom: 5px;
+      font-weight: bold; color: #333;
     }
-    .team h2 {
-      margin: 5px 0 0;
-    }
-    .team p {
-      font-size: 2em;
-      margin: 5px 0 0;
-    }
+    .team h2 { margin: 5px 0 0; }
+    .team p { font-size: 2em; margin: 5px 0 0; }
     #turnDisplay {
-      font-size: 1.2em;
-      margin-bottom: 20px;
+      font-size: 1.2em; margin-bottom: 20px;
     }
     .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(80px,1fr));
-      gap: 10px;
-      margin-bottom: 20px;
-      padding: 0 20px;
+      display: grid; gap: 10px; margin-bottom: 20px; padding: 0 20px;
     }
     .grid button {
-      font-size: 1.2em;
-      padding: 20px;
-      border: none;
-      border-radius: 10px;
-      background: #add8e6;
-      cursor: pointer;
-      transition: background .2s ease;
+      font-size: 1.2em; padding: 20px; border: none;
+      border-radius: 10px; background: var(--btn-bg);
+      cursor: pointer; transition: background .2s ease, color .2s ease;
+      display: flex; align-items: center; justify-content: center;
     }
-    .grid button:hover {
-      background: #87ceeb;
-    }
-    .grid button:disabled {
-      background: #ccc;
-      cursor: not-allowed;
-    }
+    .grid button:hover { background: var(--btn-hover); }
+    .grid button:disabled { background: #ccc; cursor: not-allowed; }
     #resetBtn {
-      margin-top: 10px;
-      padding: 8px 16px;
+      margin-top: 10px; padding: 8px 16px;
     }
   </style>
 </head>
@@ -90,16 +64,12 @@
   <div class="container">
     <h1>🌪 Tornado Game</h1>
     <div class="setup">
-      <label>Team A: <input id="teamAName" value="Team A" /></label>
-      <label>Team B: <input id="teamBName" value="Team B" /></label>
+      <label>Team A: <input id="teamAName" value="Team A"/></label>
+      <label>Team B: <input id="teamBName" value="Team B"/></label>
       <label>Grid size:
         <select id="gridSize">
-          <option>8</option>
-          <option>10</option>
-          <option selected>20</option>
-          <option>24</option>
-          <option>30</option>
-          <option>32</option>
+          <option>8</option><option>10</option><option selected>20</option>
+          <option>24</option><option>30</option><option>32</option>
         </select>
       </label>
       <button id="startBtn">Start Game</button>
@@ -125,79 +95,68 @@
 
   <script>
     // State
-    let rewards = [],
-        scores  = {A:0, B:0},
-        picks   = {A:0, B:0},
-        turn    = 'A',
-        names   = {A:'Team A', B:'Team B'},
-        total   = 0;
+    let rewards = [], scores = {A:0,B:0}, picks = {A:0,B:0}, turn = 'A',
+        names = {A:'Team A',B:'Team B'}, total = 0;
 
-    // DOM references
-    const annA  = document.getElementById('annA'),
-          annB  = document.getElementById('annB'),
+    // DOM refs
+    const annA = document.getElementById('annA'),
+          annB = document.getElementById('annB'),
           turnE = document.getElementById('turnDisplay'),
           start = document.getElementById('startBtn'),
-          reset = document.getElementById('resetBtn');
+          reset = document.getElementById('resetBtn'),
+          grid  = document.getElementById('grid');
 
-    // Events
     start.addEventListener('click', initGame);
     reset.addEventListener('click', initGame);
 
     function initGame() {
-      // Read settings
-      const n = +document.getElementById('gridSize').value;
-      total = n;
-      names.A = document.getElementById('teamAName').value.trim() || 'Team A';
-      names.B = document.getElementById('teamBName').value.trim() || 'Team B';
+      // read inputs
+      total = +document.getElementById('gridSize').value;
+      names.A = document.getElementById('teamAName').value.trim()||'Team A';
+      names.B = document.getElementById('teamBName').value.trim()||'Team B';
       document.getElementById('nameA').textContent = names.A;
       document.getElementById('nameB').textContent = names.B;
 
-      // Reset state
-      scores = {A:0, B:0};
-      picks  = {A:0, B:0};
+      // reset
+      scores = {A:0,B:0};
+      picks  = {A:0,B:0};
       annA.textContent = '';
       annB.textContent = '';
       updateScores();
 
-      // First turn
+      // first turn
       turn = 'A';
       updateTurn();
 
-      // Build
-      buildRewards(n);
-      buildGrid(n);
+      // build
+      buildRewards(total);
+      buildGrid(total);
     }
 
     function buildRewards(n) {
       rewards = [];
-      const pts = Math.floor(n * 0.7),
-            lo  = Math.floor(n * 0.1),
+      const pts = Math.floor(n*0.7),
+            lo  = Math.floor(n*0.1),
             st  = lo,
-            db  = n - (pts + lo + st);
-
-      // Points
-      for(let i=0; i<pts; i++){
-        rewards.push({
-          type: 'points',
-          value: (Math.floor(Math.random()*10)+1)*100
-        });
-      }
-      // Specials
-      for(let i=0; i<lo; i++) rewards.push({type:'lose'});
-      for(let i=0; i<st; i++) rewards.push({type:'steal'});
-      for(let i=0; i<db; i++) rewards.push({type:'double'});
-
-      // Shuffle
-      for(let i=rewards.length-1; i>0; i--){
+            db  = n - (pts+lo+st);
+      for(let i=0;i<pts;i++)  rewards.push({type:'points', value:(Math.floor(Math.random()*10)+1)*100});
+      for(let i=0;i<lo;i++)   rewards.push({type:'lose'});
+      for(let i=0;i<st;i++)   rewards.push({type:'steal'});
+      for(let i=0;i<db;i++)   rewards.push({type:'double'});
+      for(let i=rewards.length-1;i>0;i--){
         const j = Math.floor(Math.random()*(i+1));
-        [rewards[i], rewards[j]] = [rewards[j], rewards[i]];
+        [rewards[i],rewards[j]]=[rewards[j],rewards[i]];
       }
     }
 
     function buildGrid(n) {
-      const grid = document.getElementById('grid');
       grid.innerHTML = '';
-      for(let i=0; i<n; i++){
+      // choose roughly square columns
+      let cols = Math.floor(Math.sqrt(n));
+      if(cols<2) cols=2;
+      grid.style.gridTemplateColumns = `repeat(${cols},1fr)`;
+
+      for(let i=0;i<n;i++){
         const btn = document.createElement('button');
         btn.textContent = i+1;
         btn.addEventListener('click', () => handlePick(btn,i));
@@ -206,44 +165,36 @@
     }
 
     function handlePick(btn,i) {
-      // Grab reward
-      let r = rewards[i],
-          me = turn;
-
-      // First-pick override: non-points → fresh points
-      if(picks[me] === 0 && r.type !== 'points'){
-        r = {
-          type: 'points',
-          value: (Math.floor(Math.random()*10)+1)*100
-        };
+      let r = rewards[i], me=turn;
+      // first pick override
+      if(picks[me]===0 && r.type!=='points') {
+        r = {type:'points', value:(Math.floor(Math.random()*10)+1)*100};
       }
       picks[me]++;
 
-      // Apply
-      let out = '';
-      if(r.type === 'points'){
-        scores[me] += r.value;
-        out = '+' + r.value;
+      // apply
+      let out='';
+      if(r.type==='points'){
+        scores[me]+=r.value;
+        out='+'+r.value;
+        // color text
+        btn.style.color = me==='A'? 'var(--teamA)' : 'var(--teamB)';
       }
-      else if(r.type === 'lose'){
-        scores[me] = 0;
-        out = '☹️';
-        playSad();
+      else if(r.type==='lose'){
+        scores[me]=0; out='☹️';
+        styleSpecial(btn, me); playSad();
       }
-      else if(r.type === 'steal'){
-        const other = me==='A'?'B':'A';
-        scores[me] += scores[other];
-        scores[other] = 0;
-        out = '🌪';
-        playWind();
+      else if(r.type==='steal'){
+        const o = me==='A'?'B':'A';
+        scores[me]+=scores[o]; scores[o]=0;
+        out='🌪'; styleSpecial(btn, me); playWind();
       }
       else { // double
-        scores[me] *= 2;
-        out = 'x2';
+        scores[me]*=2; out='x2'; styleSpecial(btn, me);
       }
 
-      // Announce + clear opposite
-      if(me === 'A'){
+      // announce
+      if(me==='A'){
         annA.textContent = `${names.A} got ${out}`;
         annB.textContent = '';
       } else {
@@ -255,48 +206,51 @@
       btn.disabled = true;
       updateScores();
 
-      // Win condition = last box
       const done = document.querySelectorAll('.grid button:disabled').length;
-      if(done === total){
+      if(done===total){
         if(me==='A') annA.textContent = `${names.A} wins! 🏆`;
         else         annB.textContent = `${names.B} wins! 🏆`;
       } else {
-        // Next turn
         turn = me==='A'?'B':'A';
         updateTurn();
       }
     }
 
-    function updateScores() {
+    function styleSpecial(btn, team){
+      const clr = team==='A'? 'var(--teamA)' : 'var(--teamB)';
+      btn.style.background = clr;
+      btn.style.color = '#fff';
+      btn.style.fontSize = '2.5em';
+    }
+
+    function updateScores(){
       document.getElementById('scoreA').textContent = scores.A;
       document.getElementById('scoreB').textContent = scores.B;
     }
-    function updateTurn() {
+    function updateTurn(){
       turnE.textContent = `${names[turn]}'s turn`;
     }
 
-    // Sounds
     function playWind(){
-      const C = new (window.AudioContext||window.webkitAudioContext)(),
-            buf = C.createBuffer(1, C.sampleRate*0.5, C.sampleRate),
-            d = buf.getChannelData(0);
-      for(let i=0; i<d.length; i++) d[i] = Math.random()*2 -1;
-      const src = C.createBufferSource(), f = C.createBiquadFilter();
-      src.buffer = buf; f.type='lowpass'; f.frequency.value = 800;
-      src.connect(f).connect(C.destination); src.start();
-      setTimeout(()=>src.stop(), 500);
+      const C=new (window.AudioContext||window.webkitAudioContext)(),
+            buf=C.createBuffer(1,C.sampleRate*0.5,C.sampleRate),d=buf.getChannelData(0);
+      for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+      const src=C.createBufferSource(),f=C.createBiquadFilter();
+      src.buffer=buf;f.type='lowpass';f.frequency.value=800;
+      src.connect(f).connect(C.destination);src.start();
+      setTimeout(()=>src.stop(),500);
     }
     function playSad(){
-      const C = new (window.AudioContext||window.webkitAudioContext)(),
-            o = C.createOscillator(), g = C.createGain();
-      o.type='triangle'; o.frequency.value = 220;
+      const C=new (window.AudioContext||window.webkitAudioContext)(),
+            o=C.createOscillator(),g=C.createGain();
+      o.type='triangle';o.frequency.value=220;
       o.connect(g).connect(C.destination);
-      o.start(); g.gain.setValueAtTime(1, C.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.001, C.currentTime + 0.8);
-      setTimeout(()=>o.stop(), 800);
+      o.start();g.gain.setValueAtTime(1,C.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001,C.currentTime+0.8);
+      setTimeout(()=>o.stop(),800);
     }
 
-    // Auto-init
+    // kick it off
     initGame();
   </script>
 </body>
