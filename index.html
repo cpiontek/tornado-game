@@ -4,79 +4,31 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Title -->
+  <!-- Title & SEO -->
   <title>Tornado Game: Classroom &amp; Trivia Platform</title>
-
-  <!-- Primary Meta Tags -->
-  <meta name="description" content="A versatile online quiz game ideal for ESL classrooms, study groups, and trivia nights. Host dynamic team quizzes with customizable questions and interactive rewards.">
-  <meta name="keywords" content="
-    ESL game,
-    classroom trivia,
-    online quiz game,
-    quiz platform,
-    educational game,
-    team quiz,
-    interactive quiz,
-    English learning,
-    study group quiz,
-    web quiz,
-    trivia game,
-    quiz maker,
-    classroom game,
-    virtual quiz,
-    language practice,
-    quiz challenges,
-    quiz board,
-    quiz show,
-    ESL activities,
-    quiz generator,
-    interactive learning,
-    browser quiz,
-    team trivia,
-    gamified learning,
-    two-team quiz,
-    random rewards,
-    teaching tool,
-    study game,
-    quiz app,
-    remote learning,
-    blended learning,
-    formative assessment,
-    game-based learning,
-    quiz bowl,
-    pop quiz,
-    review game,
-    vocabulary quiz,
-    grammar game,
-    lesson review
-  " />
-
-  <!-- Open Graph / Facebook -->
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="Tornado Game: Classroom & Trivia Platform" />
-  <meta property="og:description" content="A versatile online quiz game ideal for ESL classrooms, study groups, and trivia nights. Host dynamic team quizzes with customizable questions and interactive rewards." />
-  <meta property="og:url" content="https://playtornado.com/" />
-  <meta property="og:site_name" content="Tornado Game" />
-
-  <!-- Twitter -->
-  <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Tornado Game: Classroom & Trivia Platform" />
-  <meta name="twitter:description" content="A versatile online quiz game ideal for ESL classrooms, study groups, and trivia nights. Host dynamic team quizzes with customizable questions and interactive rewards." />
-
-  <!-- Structured Data JSON-LD -->
+  <meta name="description"
+        content="A versatile online quiz game ideal for ESL classrooms, study groups, and trivia nights. Host dynamic team quizzes with customizable questions, Q&A blocks, and interactive rewards." />
+  <meta name="keywords"
+        content="ESL game, classroom trivia, online quiz, educational game, team quiz, interactive quiz, quiz maker, web quiz, trivia game, Q&A, browser quiz" />
+  <meta property="og:type"        content="website" />
+  <meta property="og:title"       content="Tornado Game: Classroom &amp; Trivia Platform" />
+  <meta property="og:description" content="A versatile online quiz game ideal for ESL classrooms, study groups, and trivia nights. Host dynamic team quizzes with customizable questions and rewards." />
+  <meta property="og:url"         content="https://playtornado.com/" />
+  <meta property="og:site_name"   content="Tornado Game" />
+  <meta name="twitter:card"       content="summary" />
+  <meta name="twitter:title"      content="Tornado Game: Classroom &amp; Trivia Platform" />
+  <meta name="twitter:description"
+        content="A versatile online quiz game ideal for ESL classrooms, study groups, and trivia nights. Host dynamic team quizzes with customizable questions and rewards." />
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "WebApplication",
     "name": "Tornado Game: Classroom & Trivia Platform",
     "url": "https://playtornado.com/",
-    "description": "A versatile online quiz game ideal for ESL classrooms, study groups, and trivia nights, featuring team-based play, customizable questions, and interactive rewards.",
+    "description": "A versatile online quiz game ideal for ESL classrooms, study groups, and trivia nights, featuring Q&A support, team play, and interactive rewards.",
     "applicationCategory": "EducationalGame",
     "operatingSystem": "Web",
-    "creator": {
-      "@type": "Person",
-      "name": "Timothy Piontek"
-    }
+    "creator": { "@type": "Person", "name": "Timothy Piontek" }
   }
   </script>
 
@@ -87,20 +39,20 @@
       --btn-bg: #add8e6;
       --btn-hover: #87ceeb;
     }
-    body { margin:0; padding:20px; font-family:Arial,sans-serif; background:#eef6fb; color:#333; text-align:center; }
+    body { margin:0; padding:20px; font-family:Arial,sans-serif; background:#eef6fb; text-align:center; color:#333; }
     .hidden { display:none; }
 
-    /* SETUP */
-    #setupScreen { max-width:600px; margin:auto; }
+    /* Setup */
+    #setupScreen { max-width:600px; margin:auto; text-align:left; }
     #setupScreen h1 { font-size:2em; margin-bottom:5px; }
-    #setupScreen p { margin-bottom:20px; }
-    #setupForm label { display:block; margin:10px 0; text-align:left; }
-    #setupForm input, #setupForm select, #setupForm textarea { width:100%; padding:8px; font-size:1em; margin-top:4px; box-sizing:border-box; }
+    #setupScreen p { margin-bottom:15px; }
+    #setupForm label { display:block; margin:10px 0; }
+    #setupForm input, #setupForm select, #setupForm textarea { width:100%; padding:8px; font-size:1em; box-sizing:border-box; }
     #setupForm textarea { height:120px; resize:vertical; }
-    #setupForm .radio-group { text-align:left; margin:10px 0; }
-    #setupForm button { margin-top:20px; padding:10px 20px; font-size:1em; cursor:pointer; }
+    #setupForm .radio-group { margin:10px 0; }
+    #setupForm button { margin-top:15px; padding:10px 20px; font-size:1em; cursor:pointer; }
 
-    /* GAME */
+    /* Game */
     #gameScreen { max-width:900px; margin:auto; }
     #gameScreen h1 { font-size:2.5em; margin-bottom:5px; }
     #gameScreen h2 { font-size:1.2em; color:#555; margin-bottom:20px; }
@@ -111,14 +63,17 @@
     .team h2 { margin:5px 0 0; } .team p { font-size:2em; margin:5px 0 0; }
     #turnDisplay { font-size:1.2em; margin-bottom:20px; }
 
-    /* QUESTION & PASS */
-    #questionContainer { margin-bottom:20px; display:flex; justify-content:center; }
-    #question { font-size:1.2em; font-weight:bold; max-width:400px; padding:10px; }
-    #passBtn { margin-left:20px; padding:8px 16px; font-size:1em; cursor:pointer; }
+    /* Question & Controls */
+    #questionContainer { margin-bottom:20px; display:flex; justify-content:center; align-items:center; gap:10px; }
+    #question { font-size:1.2em; font-weight:bold; max-width:400px; text-align:left; }
+    #answer { font-size:1em; font-style:italic; margin-top:5px; }
+    #passBtn, #skipBtn, #revealBtn { padding:8px 16px; font-size:1em; cursor:pointer; }
 
-    /* GRID */
+    /* Grid */
     #grid { display:grid; gap:10px; margin-bottom:20px; padding:0 20px; }
-    #grid button { font-size:1.2em; padding:20px; border:none; border-radius:10px; background:var(--btn-bg); cursor:pointer; transition:background .2s, color .2s; display:flex; align-items:center; justify-content:center; }
+    #grid button { font-size:1.2em; padding:20px; border:none; border-radius:10px;
+                    background:var(--btn-bg); cursor:pointer; transition:background .2s, color .2s;
+                    display:flex; align-items:center; justify-content:center; }
     #grid button:hover { background:var(--btn-hover); }
     #grid button:disabled { background:#ccc; cursor:not-allowed; }
 
@@ -131,12 +86,38 @@
   <!-- SETUP SCREEN -->
   <div id="setupScreen">
     <h1>🌪 Tornado Game Setup</h1>
-    <p>Enter team names, choose grid size (8–40), and optionally paste your questions (one per line, numbering optional).</p>
+    <p>
+      Enter team names, pick a grid size (8–40), and paste your questions.
+      <strong>Enable answers?</strong> Check to use Q&A blocks separated by a blank line:
+    </p>
+    <pre style="background:#f5f5f5;padding:10px;border-radius:5px;font-size:0.9em;">
+Question text?
+Answer text
+
+Next question?
+Next answer
+    </pre>
     <form id="setupForm" onsubmit="return false;">
-      <label>Team A Name:<input id="teamANameInput" value="Team A" required></label>
-      <label>Team B Name:<input id="teamBNameInput" value="Team B" required></label>
-      <label>Grid Size:<select id="gridSizeInput"><option>8</option><option>10</option><option>16</option><option selected>20</option><option>24</option><option>30</option><option>32</option><option>40</option></select></label>
-      <label>Questions (optional):<textarea id="questionsInput" placeholder="What is your name?&#10;Where are you from?"></textarea></label>
+      <label>Team A Name:
+        <input id="teamANameInput" value="Team A" required>
+      </label>
+      <label>Team B Name:
+        <input id="teamBNameInput" value="Team B" required>
+      </label>
+      <label>Grid Size:
+        <select id="gridSizeInput">
+          <option>8</option><option>10</option><option>16</option>
+          <option selected>20</option><option>24</option>
+          <option>30</option><option>32</option><option>40</option>
+        </select>
+      </label>
+      <label>
+        <input type="checkbox" id="enableAnswers"> Enable answers?
+      </label>
+      <label>Questions / Q&A Blocks:
+        <textarea id="questionsInput"
+          placeholder="What is your name?&#10;Timothy Piontek&#10;&#10;Where are you from?&#10;Madrid"></textarea>
+      </label>
       <div class="radio-group">
         Order:
         <label><input type="radio" name="order" value="inorder" checked> In order</label>
@@ -163,9 +144,15 @@
     </div>
 
     <h3 id="turnDisplay">Team A’s turn</h3>
+
     <div id="questionContainer">
-      <div id="question"></div>
-      <button id="passBtn">Pass ❌</button>
+      <div>
+        <div id="question"></div>
+        <div id="answer"></div>
+      </div>
+      <button id="passBtn">Pass</button>
+      <button id="skipBtn">Skip</button>
+      <button id="revealBtn" class="hidden">Reveal Answer</button>
     </div>
 
     <div id="grid"></div>
@@ -174,46 +161,97 @@
   </div>
 
   <script>
-    let rewards=[], scores={A:0,B:0}, picks={A:0,B:0}, turn='A', names={A:'Team A',B:'Team B'}, total=20, questions=[], qIndex=0;
-    const setupScreen=document.getElementById('setupScreen'),
-          gameScreen=document.getElementById('gameScreen'),
-          startBtn=document.getElementById('startGameBtn'),
-          resetBtn=document.getElementById('resetBtn'),
-          passBtn=document.getElementById('passBtn'),
-          gridEl=document.getElementById('grid'),
-          annA=document.getElementById('annA'),
-          annB=document.getElementById('annB'),
-          nameAEl=document.getElementById('nameA'),
-          nameBEl=document.getElementById('nameB'),
-          scoreAEl=document.getElementById('scoreA'),
-          scoreBEl=document.getElementById('scoreB'),
-          turnEl=document.getElementById('turnDisplay'),
-          questionEl=document.getElementById('question');
+    // State
+    let rewards = [], scores = {A:0,B:0}, picks = {A:0,B:0},
+        turn='A', names={A:'Team A',B:'Team B'}, total=20,
+        questions = [], qIndex=0;
 
-    startBtn.onclick=()=>{
-      names.A=document.getElementById('teamANameInput').value.trim()||'Team A';
-      names.B=document.getElementById('teamBNameInput').value.trim()||'Team B';
-      total=parseInt(document.getElementById('gridSizeInput').value,10);
-      let raw=document.getElementById('questionsInput').value.split('\n').map(l=>l.trim()).filter(l=>l.length).map(l=>l.replace(/^\d+\.\s*/,''));
-      if(document.querySelector('input[name="order"]:checked').value==='random'){
-        for(let i=raw.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[raw[i],raw[j]]=[raw[j],raw[i]];}
+    // DOM refs
+    const setupScreen = document.getElementById('setupScreen'),
+          gameScreen  = document.getElementById('gameScreen'),
+          startBtn    = document.getElementById('startGameBtn'),
+          resetBtn    = document.getElementById('resetBtn'),
+          passBtn     = document.getElementById('passBtn'),
+          skipBtn     = document.getElementById('skipBtn'),
+          revealBtn   = document.getElementById('revealBtn'),
+          gridEl      = document.getElementById('grid'),
+          annA        = document.getElementById('annA'),
+          annB        = document.getElementById('annB'),
+          nameAEl     = document.getElementById('nameA'),
+          nameBEl     = document.getElementById('nameB'),
+          scoreAEl    = document.getElementById('scoreA'),
+          scoreBEl    = document.getElementById('scoreB'),
+          turnEl      = document.getElementById('turnDisplay'),
+          questionEl  = document.getElementById('question'),
+          answerEl    = document.getElementById('answer');
+
+    startBtn.onclick = () => {
+      // Read setup
+      names.A = document.getElementById('teamANameInput').value.trim()||'Team A';
+      names.B = document.getElementById('teamBNameInput').value.trim()||'Team B';
+      total   = +document.getElementById('gridSizeInput').value;
+      const rawText = document.getElementById('questionsInput').value;
+      const blocks = rawText.split(/\n\s*\n/).map(b=>b.trim()).filter(b=>b.length);
+      const enableA = document.getElementById('enableAnswers').checked;
+      if(enableA && blocks.length){
+        questions = blocks.map(b=>{
+          const [q,a] = b.split('\n');
+          return { question: q.trim(), answer: a?.trim() || null };
+        });
+      } else {
+        // one-liners
+        questions = rawText
+          .split('\n').map(l=>l.trim()).filter(l=>l)
+          .map(q=>({ question: q.replace(/^\d+\.\s*/,''), answer: null }));
       }
-      questions=raw; qIndex=0;
-      setupScreen.classList.add('hidden'); gameScreen.classList.remove('hidden');
+      if(document.querySelector('input[name="order"]:checked').value==='random'){
+        for(let i=questions.length-1;i>0;i--){
+          const j = Math.floor(Math.random()*(i+1));
+          [questions[i],questions[j]]=[questions[j],questions[i]];
+        }
+      }
+      qIndex = 0;
+
+      // Switch screens
+      setupScreen.classList.add('hidden');
+      gameScreen.classList.remove('hidden');
       initGame();
     };
 
-    resetBtn.onclick=initGame;
-    passBtn.onclick=()=>{
-      turn=turn==='A'?'B':'A'; updateTurn(); showQuestion();
+    passBtn.onclick = () => {
+      // give other team chance (same question index)
+      turn = turn==='A'?'B':'A';
+      updateTurn();
+      showQuestion();
     };
 
+    skipBtn.onclick = () => {
+      // next question, same team
+      qIndex = (qIndex+1) % questions.length;
+      showQuestion();
+    };
+
+    revealBtn.onclick = () => {
+      // show answer
+      const ans = questions[qIndex]?.answer;
+      if(!ans) return;
+      answerEl.textContent = ans;
+      answerEl.style.color = turn==='A'?'var(--teamA)':'var(--teamB)';
+      answerEl.style.textAlign = turn==='A'?'left':'right';
+    };
+
+    resetBtn.onclick = initGame;
+
     function initGame(){
-      scores={A:0,B:0}; picks={A:0,B:0};
+      // Reset
+      scores = {A:0,B:0}; picks={A:0,B:0};
       annA.textContent=''; annB.textContent='';
       nameAEl.textContent=names.A; nameBEl.textContent=names.B;
-      updateScores(); turn='A'; updateTurn();
-      buildRewards(total); buildGrid(total); showQuestion();
+      updateScores();
+      turn='A'; updateTurn();
+      buildRewards(total);
+      buildGrid(total);
+      showQuestion();
     }
 
     function buildRewards(n){
@@ -227,63 +265,112 @@
             dblCount=Math.max(dblBase,minSpec),
             ptsCount=n-(loseCount+stealCount+dblCount);
       rewards=[];
-      for(let i=0;i<ptsCount;i++)rewards.push({type:'points',value:(Math.floor(Math.random()*10)+1)*100});
-      for(let i=0;i<loseCount;i++)rewards.push({type:'lose'});
-      for(let i=0;i<stealCount;i++)rewards.push({type:'steal'});
-      for(let i=0;i<dblCount;i++)rewards.push({type:'double'});
-      for(let i=rewards.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[rewards[i],rewards[j]]=[rewards[j],rewards[i]];}
+      for(let i=0;i<ptsCount;i++) rewards.push({type:'points',value:(Math.floor(Math.random()*10)+1)*100});
+      for(let i=0;i<loseCount;i++) rewards.push({type:'lose'});
+      for(let i=0;i<stealCount;i++) rewards.push({type:'steal'});
+      for(let i=0;i<dblCount;i++) rewards.push({type:'double'});
+      for(let i=rewards.length-1;i>0;i--){
+        const j=Math.floor(Math.random()*(i+1));
+        [rewards[i],rewards[j]]=[rewards[j],rewards[i]];
+      }
     }
 
     function buildGrid(n){
-      gridEl.innerHTML=''; let cols=Math.floor(Math.sqrt(n)); if(cols<2)cols=2;
+      gridEl.innerHTML='';
+      let cols=Math.floor(Math.sqrt(n)); if(cols<2) cols=2;
       gridEl.style.gridTemplateColumns=`repeat(${cols},1fr)`;
       for(let i=0;i<n;i++){
-        let btn=document.createElement('button');
-        btn.textContent=i+1; btn.onclick=()=>handlePick(btn,i);
+        const btn=document.createElement('button');
+        btn.textContent=i+1;
+        btn.onclick=()=>handlePick(btn,i);
         gridEl.appendChild(btn);
       }
     }
 
     function handlePick(btn,i){
-      let r=rewards[i],me=turn;
-      if(picks[me]===0&&r.type!=='points')r={type:'points',value:(Math.floor(Math.random()*10)+1)*100};
+      let r=rewards[i], me=turn;
+      if(picks[me]===0 && r.type!=='points'){
+        r={type:'points',value:(Math.floor(Math.random()*10)+1)*100};
+      }
       picks[me]++;
+
       let out='';
-      if(r.type==='points'){scores[me]+=r.value;out='+'+r.value;btn.style.color=me==='A'?'var(--teamA)':'var(--teamB)';}
-      else if(r.type==='lose'){scores[me]=0;out='☹️';styleSpecial(btn,me);playSad();}
-      else if(r.type==='steal'){let o=me==='A'?'B':'A';scores[me]+=scores[o];scores[o]=0;out='🌪';styleSpecial(btn,me);playWind();}
-      else{scores[me]*=2;out='x2';styleSpecial(btn,me);}
-      if(me==='A'){annA.textContent=`${names.A} got ${out}`;annB.textContent='';}
-      else{annB.textContent=`${names.B} got ${out}`;annA.textContent='';}
-      btn.textContent=out;btn.disabled=true;updateScores();
-      let done=document.querySelectorAll('#grid button:disabled').length;
+      if(r.type==='points'){
+        scores[me]+=r.value; out='+'+r.value;
+        btn.style.color = me==='A'?'var(--teamA)':'var(--teamB)';
+      } else if(r.type==='lose'){
+        scores[me]=0; out='☹️'; styleSpecial(btn,me); playSad();
+      } else if(r.type==='steal'){
+        const o=me==='A'?'B':'A';
+        scores[me]+=scores[o]; scores[o]=0; out='🌪'; styleSpecial(btn,me); playWind();
+      } else {
+        scores[me]*=2; out='x2'; styleSpecial(btn,me);
+      }
+
+      if(me==='A'){
+        annA.textContent=`${names.A} got ${out}`; annB.textContent='';
+      } else {
+        annB.textContent=`${names.B} got ${out}`; annA.textContent='';
+      }
+
+      btn.textContent=out; btn.disabled=true; updateScores();
+
+      const done=document.querySelectorAll('#grid button:disabled').length;
       if(done===total){
-        if(scores.A>scores.B){annA.textContent=`${names.A} wins! 🏆`;annB.textContent='';}
-        else if(scores.B>scores.A){annB.textContent=`${names.B} wins! 🏆`;annA.textContent='';}
-        else{annA.textContent="It's a tie!";annB.textContent='';}
-      } else{turn=me==='A'?'B':'A';updateTurn();showQuestion();}
+        if(scores.A>scores.B){ annA.textContent=`${names.A} wins! 🏆`; annB.textContent=''; }
+        else if(scores.B>scores.A){ annB.textContent=`${names.B} wins! 🏆`; annA.textContent=''; }
+        else { annA.textContent="It's a tie!"; annB.textContent=''; }
+      } else {
+        // next turn
+        turn = me==='A'?'B':'A';
+        updateTurn();
+        showQuestion();
+      }
     }
 
     function showQuestion(){
-      if(!questions.length){questionEl.textContent='';return;}
-      questionEl.textContent=questions[qIndex];
-      questionEl.style.color=turn==='A'?'var(--teamA)':'var(--teamB)';
-      questionEl.style.textAlign=turn==='A'?'left':'right';
-      qIndex=(qIndex+1)%questions.length;
+      const qObj = questions[qIndex] || {question:'',answer:null};
+      questionEl.textContent = qObj.question;
+      questionEl.style.color = turn==='A'?'var(--teamA)':'var(--teamB)';
+      questionEl.style.textAlign = turn==='A'?'left':'right';
+      answerEl.textContent = '';
+      revealBtn.classList.toggle('hidden', !qObj.answer);
     }
 
     function styleSpecial(btn,team){
-      let clr=team==='A'?'var(--teamA)':'var(--teamB)';
-      btn.style.background=clr;btn.style.color='#fff';btn.style.fontSize='2.5em';
+      const clr = team==='A'?'var(--teamA)':'var(--teamB)';
+      btn.style.background = clr;
+      btn.style.color      = '#fff';
+      btn.style.fontSize   = '2.5em';
     }
 
-    function updateScores(){scoreAEl.textContent=scores.A;scoreBEl.textContent=scores.B;}
-    function updateTurn(){turnEl.textContent=`${names[turn]}'s turn`;}
+    function updateScores(){
+      scoreAEl.textContent = scores.A;
+      scoreBEl.textContent = scores.B;
+    }
+    function updateTurn(){
+      turnEl.textContent = `${names[turn]}'s turn`;
+    }
 
-    function playWind(){const C=new(window.AudioContext||window.webkitAudioContext)(),buf=C.createBuffer(1,C.sampleRate*0.5,C.sampleRate),d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;const src=C.createBufferSource(),f=C.createBiquadFilter();src.buffer=buf;f.type='lowpass';f.frequency.value=800;src.connect(f).connect(C.destination);src.start();setTimeout(()=>src.stop(),500);}
-    function playSad(){const C=new(window.AudioContext||window.webkitAudioContext)(),o=C.createOscillator(),g=C.createGain();o.type='triangle';o.frequency.value=220;o.connect(g).connect(C.destination);o.start();g.gain.setValueAtTime(1,C.currentTime);g.gain.exponentialRampToValueAtTime(0.001,C.currentTime+0.8);setTimeout(()=>o.stop(),800);}
-
-    // wait for user to start
+    function playWind(){
+      const C=new(window.AudioContext||window.webkitAudioContext)(),
+            buf=C.createBuffer(1,C.sampleRate*0.5,C.sampleRate),
+            d=buf.getChannelData(0);
+      for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+      const src=C.createBufferSource(),f=C.createBiquadFilter();
+      src.buffer=buf;f.type='lowpass';f.frequency.value=800;
+      src.connect(f).connect(C.destination);src.start();
+      setTimeout(()=>src.stop(),500);
+    }
+    function playSad(){
+      const C=new(window.AudioContext||window.webkitAudioContext)(),
+            o=C.createOscillator(),g=C.createGain();
+      o.type='triangle';o.frequency.value=220;
+      o.connect(g).connect(C.destination);
+      o.start();g.gain.setValueAtTime(1,C.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001,C.currentTime+0.8);
+      setTimeout(()=>o.stop(),800);
+    }
   </script>
 </body>
 </html>
