@@ -7,7 +7,7 @@
   <!-- Title & SEO -->
   <title>Tornado Game: Classroom &amp; Trivia Platform</title>
   <meta name="description"
-        content="A versatile online quiz game ideal for ESL classrooms, study groups, and trivia nights. Host dynamic team quizzes with customizable questions, Q&A blocks, and interactive rewards." />
+        content="A versatile online quiz game ideal for ESL classrooms, study groups, and trivia nights. Host dynamic team quizzes with customizable questions, Q&amp;A blocks, and interactive rewards." />
   <meta name="keywords"
         content="ESL game, classroom trivia, online quiz, educational game, team quiz, interactive quiz, quiz maker, web quiz, trivia game, Q&A, browser quiz" />
   <meta property="og:type"        content="website" />
@@ -32,53 +32,142 @@
   }
   </script>
 
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@400;600;700&display=swap" rel="stylesheet">
+
   <style>
+    /* Base & Typography */
+    html { font-size: 18px; }
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: 'Lexend Deca', sans-serif;
+      line-height: 1.5;
+      background: #eef6fb;
+      color: #333;
+      text-align: center;
+    }
+    h1 { font-size: 2.5rem; margin: .5em 0 .2em; }
+    h2 { font-size: 1.5rem; margin: .2em 0 1em; color: #555; }
+    h3 { font-size: 1.25rem; margin: .5em 0 .5em; }
+    p, label, button, select, input, textarea {
+      font-size: 1rem;
+    }
+
+    /* Utility */
+    .hidden { display: none; }
+    .inline-checkbox {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 1rem 0;
+      font-weight: 500;
+    }
+    .inline-checkbox input { width: 1.2em; height: 1.2em; }
+
     :root {
       --teamA: #e74c3c;
       --teamB: #3498db;
       --btn-bg: #add8e6;
       --btn-hover: #87ceeb;
     }
-    body { margin:0; padding:20px; font-family:Arial,sans-serif; background:#eef6fb; text-align:center; color:#333; }
-    .hidden { display:none; }
 
-    /* Setup */
-    #setupScreen { max-width:600px; margin:auto; text-align:left; }
-    #setupScreen h1 { font-size:2em; margin-bottom:5px; }
-    #setupScreen p { margin-bottom:15px; }
-    #setupForm label { display:block; margin:10px 0; }
-    #setupForm input, #setupForm select, #setupForm textarea { width:100%; padding:8px; font-size:1em; box-sizing:border-box; }
-    #setupForm textarea { height:120px; resize:vertical; }
-    #setupForm .radio-group { margin:10px 0; }
-    #setupForm button { margin-top:15px; padding:10px 20px; font-size:1em; cursor:pointer; }
+    /* SETUP */
+    #setupScreen { max-width: 600px; margin: auto; text-align: left; }
+    #setupScreen p { margin-bottom: 15px; }
+    #setupForm label { display: block; margin: 10px 0; }
+    #setupForm input,
+    #setupForm select,
+    #setupForm textarea {
+      width: 100%;
+      padding: 8px;
+      box-sizing: border-box;
+    }
+    #setupForm textarea { height: 120px; resize: vertical; }
+    #setupForm button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      cursor: pointer;
+      font-weight: 600;
+    }
 
-    /* Game */
-    #gameScreen { max-width:900px; margin:auto; }
-    #gameScreen h1 { font-size:2.5em; margin-bottom:5px; }
-    #gameScreen h2 { font-size:1.2em; color:#555; margin-bottom:20px; }
-    .scoreboard { display:flex; justify-content:center; gap:50px; margin-bottom:20px; }
-    .team { background:white; padding:10px 20px; border-radius:15px; box-shadow:0 0 10px rgba(0,0,0,0.1); min-width:150px; }
-    #nameA { color:var(--teamA); } #nameB { color:var(--teamB); }
-    .announcement { min-height:1.4em; margin-bottom:5px; font-weight:bold; }
-    .team h2 { margin:5px 0 0; } .team p { font-size:2em; margin:5px 0 0; }
-    #turnDisplay { font-size:1.2em; margin-bottom:20px; }
+    /* GAME */
+    #gameScreen { max-width: 900px; margin: auto; }
+    .scoreboard {
+      display: flex;
+      justify-content: center;
+      gap: 50px;
+      margin-bottom: 20px;
+    }
+    .team {
+      background: white;
+      padding: 10px 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      min-width: 150px;
+    }
+    #nameA { color: var(--teamA); }
+    #nameB { color: var(--teamB); }
+    .announcement {
+      min-height: 1.4em;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    .team h2 { margin: 5px 0 0; }
+    .team p { font-size: 2em; margin: 5px 0 0; }
+    #turnDisplay { margin-bottom: 20px; }
 
     /* Question & Controls */
-    #questionContainer { margin-bottom:20px; display:flex; justify-content:center; align-items:center; gap:10px; }
-    #question { font-size:1.2em; font-weight:bold; max-width:400px; text-align:left; }
-    #answer { font-size:1em; font-style:italic; margin-top:5px; }
-    #passBtn, #skipBtn, #revealBtn { padding:8px 16px; font-size:1em; cursor:pointer; }
+    #questionContainer {
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+    #question { font-weight: bold; max-width: 400px; text-align: left; }
+    #answer { font-style: italic; margin-top: 5px; }
+    #passBtn, #skipBtn, #revealBtn {
+      padding: 8px 16px;
+      cursor: pointer;
+      font-weight: 600;
+    }
 
     /* Grid */
-    #grid { display:grid; gap:10px; margin-bottom:20px; padding:0 20px; }
-    #grid button { font-size:1.2em; padding:20px; border:none; border-radius:10px;
-                    background:var(--btn-bg); cursor:pointer; transition:background .2s, color .2s;
-                    display:flex; align-items:center; justify-content:center; }
-    #grid button:hover { background:var(--btn-hover); }
-    #grid button:disabled { background:#ccc; cursor:not-allowed; }
+    #grid {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 20px;
+      padding: 0 20px;
+    }
+    #grid button {
+      font-size: 1.2em;
+      padding: 20px;
+      border: none;
+      border-radius: 10px;
+      background: var(--btn-bg);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .2s, color .2s;
+    }
+    #grid button:hover { background: var(--btn-hover); }
+    #grid button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
 
-    #resetBtn { padding:8px 16px; font-size:1em; cursor:pointer; }
-    .footer { font-size:0.8em; color:#666; margin-top:30px; }
+    #resetBtn {
+      padding: 8px 16px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .footer {
+      font-size: 0.8em;
+      color: #666;
+      margin-top: 30px;
+    }
   </style>
 </head>
 <body>
@@ -88,14 +177,14 @@
     <h1>🌪 Tornado Game Setup</h1>
     <p>
       Enter team names, pick a grid size (8–40), and paste your questions.
-      <strong>Enable answers?</strong> Check to use Q&A blocks separated by a blank line:
+      <strong>Enable answers?</strong> Check to use Q&A blocks separated by blank lines:
     </p>
     <pre style="background:#f5f5f5;padding:10px;border-radius:5px;font-size:0.9em;">
-Question text?
-Answer text
+What is the capital of France?
+Paris
 
-Next question?
-Next answer
+Which planet is known as the Red Planet?
+Mars
     </pre>
     <form id="setupForm" onsubmit="return false;">
       <label>Team A Name:
@@ -111,12 +200,13 @@ Next answer
           <option>30</option><option>32</option><option>40</option>
         </select>
       </label>
-      <label>
-        <input type="checkbox" id="enableAnswers"> Enable answers?
+      <label class="inline-checkbox">
+        <input type="checkbox" id="enableAnswers">
+        Enable answers?
       </label>
       <label>Questions / Q&A Blocks:
         <textarea id="questionsInput"
-          placeholder="What is your name?&#10;Timothy Piontek&#10;&#10;Where are you from?&#10;Madrid"></textarea>
+          placeholder="What is the capital of France?&#10;Paris&#10;&#10;Which planet is known as the Red Planet?&#10;Mars"></textarea>
       </label>
       <div class="radio-group">
         Order:
@@ -162,96 +252,79 @@ Next answer
 
   <script>
     // State
-    let rewards = [], scores = {A:0,B:0}, picks = {A:0,B:0},
+    let rewards=[], scores={A:0,B:0}, picks={A:0,B:0},
         turn='A', names={A:'Team A',B:'Team B'}, total=20,
-        questions = [], qIndex=0;
+        questions=[], qIndex=0;
 
     // DOM refs
-    const setupScreen = document.getElementById('setupScreen'),
-          gameScreen  = document.getElementById('gameScreen'),
-          startBtn    = document.getElementById('startGameBtn'),
-          resetBtn    = document.getElementById('resetBtn'),
-          passBtn     = document.getElementById('passBtn'),
-          skipBtn     = document.getElementById('skipBtn'),
-          revealBtn   = document.getElementById('revealBtn'),
-          gridEl      = document.getElementById('grid'),
-          annA        = document.getElementById('annA'),
-          annB        = document.getElementById('annB'),
-          nameAEl     = document.getElementById('nameA'),
-          nameBEl     = document.getElementById('nameB'),
-          scoreAEl    = document.getElementById('scoreA'),
-          scoreBEl    = document.getElementById('scoreB'),
-          turnEl      = document.getElementById('turnDisplay'),
-          questionEl  = document.getElementById('question'),
-          answerEl    = document.getElementById('answer');
+    const setupScreen=document.getElementById('setupScreen'),
+          gameScreen=document.getElementById('gameScreen'),
+          startBtn=document.getElementById('startGameBtn'),
+          resetBtn=document.getElementById('resetBtn'),
+          passBtn=document.getElementById('passBtn'),
+          skipBtn=document.getElementById('skipBtn'),
+          revealBtn=document.getElementById('revealBtn'),
+          gridEl=document.getElementById('grid'),
+          annA=document.getElementById('annA'),
+          annB=document.getElementById('annB'),
+          nameAEl=document.getElementById('nameA'),
+          nameBEl=document.getElementById('nameB'),
+          scoreAEl=document.getElementById('scoreA'),
+          scoreBEl=document.getElementById('scoreB'),
+          turnEl=document.getElementById('turnDisplay'),
+          questionEl=document.getElementById('question'),
+          answerEl=document.getElementById('answer');
 
     startBtn.onclick = () => {
-      // Read setup
       names.A = document.getElementById('teamANameInput').value.trim()||'Team A';
       names.B = document.getElementById('teamBNameInput').value.trim()||'Team B';
-      total   = +document.getElementById('gridSizeInput').value;
+      total = +document.getElementById('gridSizeInput').value;
       const rawText = document.getElementById('questionsInput').value;
-      const blocks = rawText.split(/\n\s*\n/).map(b=>b.trim()).filter(b=>b.length);
+      const blocks = rawText.split(/\n\s*\n/).map(b=>b.trim()).filter(b=>b);
       const enableA = document.getElementById('enableAnswers').checked;
       if(enableA && blocks.length){
         questions = blocks.map(b=>{
           const [q,a] = b.split('\n');
-          return { question: q.trim(), answer: a?.trim() || null };
+          return { question: q.trim(), answer: a?.trim()||null };
         });
       } else {
-        // one-liners
         questions = rawText
           .split('\n').map(l=>l.trim()).filter(l=>l)
-          .map(q=>({ question: q.replace(/^\d+\.\s*/,''), answer: null }));
+          .map(q=>({ question: q.replace(/^\d+\.\s*/,''), answer:null }));
       }
       if(document.querySelector('input[name="order"]:checked').value==='random'){
         for(let i=questions.length-1;i>0;i--){
-          const j = Math.floor(Math.random()*(i+1));
+          const j=Math.floor(Math.random()*(i+1));
           [questions[i],questions[j]]=[questions[j],questions[i]];
         }
       }
-      qIndex = 0;
-
-      // Switch screens
+      qIndex=0;
       setupScreen.classList.add('hidden');
       gameScreen.classList.remove('hidden');
       initGame();
     };
 
     passBtn.onclick = () => {
-      // give other team chance (same question index)
       turn = turn==='A'?'B':'A';
-      updateTurn();
-      showQuestion();
+      updateTurn(); showQuestion();
     };
-
     skipBtn.onclick = () => {
-      // next question, same team
-      qIndex = (qIndex+1) % questions.length;
+      qIndex=(qIndex+1)%questions.length;
       showQuestion();
     };
-
     revealBtn.onclick = () => {
-      // show answer
-      const ans = questions[qIndex]?.answer;
-      if(!ans) return;
-      answerEl.textContent = ans;
+      answerEl.textContent = questions[qIndex]?.answer||'';
       answerEl.style.color = turn==='A'?'var(--teamA)':'var(--teamB)';
       answerEl.style.textAlign = turn==='A'?'left':'right';
     };
-
     resetBtn.onclick = initGame;
 
     function initGame(){
-      // Reset
-      scores = {A:0,B:0}; picks={A:0,B:0};
+      scores={A:0,B:0}; picks={A:0,B:0};
       annA.textContent=''; annB.textContent='';
       nameAEl.textContent=names.A; nameBEl.textContent=names.B;
-      updateScores();
-      turn='A'; updateTurn();
-      buildRewards(total);
-      buildGrid(total);
-      showQuestion();
+      updateScores(); turn='A'; updateTurn();
+      buildRewards(total); buildGrid(total); showQuestion();
     }
 
     function buildRewards(n){
@@ -293,7 +366,6 @@ Next answer
         r={type:'points',value:(Math.floor(Math.random()*10)+1)*100};
       }
       picks[me]++;
-
       let out='';
       if(r.type==='points'){
         scores[me]+=r.value; out='+'+r.value;
@@ -302,34 +374,34 @@ Next answer
         scores[me]=0; out='☹️'; styleSpecial(btn,me); playSad();
       } else if(r.type==='steal'){
         const o=me==='A'?'B':'A';
-        scores[me]+=scores[o]; scores[o]=0; out='🌪'; styleSpecial(btn,me); playWind();
+        scores[me]+=scores[o]; scores[o]=0;
+        out='🌪'; styleSpecial(btn,me); playWind();
       } else {
         scores[me]*=2; out='x2'; styleSpecial(btn,me);
       }
-
       if(me==='A'){
         annA.textContent=`${names.A} got ${out}`; annB.textContent='';
       } else {
         annB.textContent=`${names.B} got ${out}`; annA.textContent='';
       }
-
       btn.textContent=out; btn.disabled=true; updateScores();
-
       const done=document.querySelectorAll('#grid button:disabled').length;
       if(done===total){
-        if(scores.A>scores.B){ annA.textContent=`${names.A} wins! 🏆`; annB.textContent=''; }
-        else if(scores.B>scores.A){ annB.textContent=`${names.B} wins! 🏆`; annA.textContent=''; }
-        else { annA.textContent="It's a tie!"; annB.textContent=''; }
+        if(scores.A>scores.B){
+          annA.textContent=`${names.A} wins! 🏆`; annB.textContent='';
+        } else if(scores.B>scores.A){
+          annB.textContent=`${names.B} wins! 🏆`; annA.textContent='';
+        } else {
+          annA.textContent="It's a tie!"; annB.textContent='';
+        }
       } else {
-        // next turn
         turn = me==='A'?'B':'A';
-        updateTurn();
-        showQuestion();
+        updateTurn(); showQuestion();
       }
     }
 
     function showQuestion(){
-      const qObj = questions[qIndex] || {question:'',answer:null};
+      const qObj = questions[qIndex]||{question:'',answer:null};
       questionEl.textContent = qObj.question;
       questionEl.style.color = turn==='A'?'var(--teamA)':'var(--teamB)';
       questionEl.style.textAlign = turn==='A'?'left':'right';
@@ -356,18 +428,18 @@ Next answer
       const C=new(window.AudioContext||window.webkitAudioContext)(),
             buf=C.createBuffer(1,C.sampleRate*0.5,C.sampleRate),
             d=buf.getChannelData(0);
-      for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+      for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1;
       const src=C.createBufferSource(),f=C.createBiquadFilter();
-      src.buffer=buf;f.type='lowpass';f.frequency.value=800;
-      src.connect(f).connect(C.destination);src.start();
+      src.buffer=buf; f.type='lowpass'; f.frequency.value=800;
+      src.connect(f).connect(C.destination); src.start();
       setTimeout(()=>src.stop(),500);
     }
     function playSad(){
       const C=new(window.AudioContext||window.webkitAudioContext)(),
             o=C.createOscillator(),g=C.createGain();
-      o.type='triangle';o.frequency.value=220;
+      o.type='triangle'; o.frequency.value=220;
       o.connect(g).connect(C.destination);
-      o.start();g.gain.setValueAtTime(1,C.currentTime);
+      o.start(); g.gain.setValueAtTime(1,C.currentTime);
       g.gain.exponentialRampToValueAtTime(0.001,C.currentTime+0.8);
       setTimeout(()=>o.stop(),800);
     }
