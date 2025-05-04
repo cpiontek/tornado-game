@@ -1,7 +1,7 @@
 console.log('🚀 script.js loaded');
 
 // — API KEY (replace below) —
-const OPENAI_API_KEY = 'YOUR_API_KEY_HERE';
+const OPENAI_API_KEY = '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';
 
 let rewards = [];
 let teamScores = { A: 0, B: 0 };
