@@ -1,1 +1,26 @@
+:root {
+  --teamA: #d44;
+  --teamB: #28a;
+  --bg: #eef7fc;
+  --box: #a8cee2;
+}
+* { box-sizing: border-box; margin:0; padding:0; font-family: Arial, sans-serif; }
+body { background: var(--bg); color: #111; text-align: center; padding: 1em; }
+header { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap:1em; }
+.logo { height:40px; }
+.settings label { margin:0 .5em; font-size: 1.1em; }
+.settings input, .settings select { font-size:1em; padding:.2em .4em; }
+#startBtn { padding:.4em 1em; font-size:1em; }
+main { max-width: 800px; margin:2em auto; }
+.scores { display: flex; justify-content: center; gap:2em; margin-bottom:1em; }
+.score-card { background: white; border-radius:12px; box-shadow:0 2px 6px rgba(0,0,0,.1); width:200px; padding:1em; position: relative; }
+.score-card .announce { position:absolute; top:8px; left:0; right:0; font-size:1.1em; color:#555; }
+.score-card h2 { margin-top:1.5em; font-size:1.4em; }
+.points { font-size:2.2em; margin-top:.2em; }
+#turnDisplay { font-size:1.3em; margin-bottom:1em; }
+.grid { display:grid; gap: .6em; justify-content: center; margin-bottom:1.5em; }
+.grid button { background: var(--box); border:none; border-radius:8px; font-size:1.2em; padding:1em; cursor:pointer; transition:background .2s; }
+.grid button.used { background: #ccc; cursor: default; }
+#resetBtn { padding:.5em 1em; font-size:1em; }
+footer { margin-top:2em; font-size:.8em; color:#666; }
 
