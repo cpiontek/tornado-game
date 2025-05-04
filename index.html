@@ -7,18 +7,11 @@
   <!-- Title & SEO -->
   <title>Tornado Game: Classroom &amp; Trivia Platform</title>
   <meta name="description"
-        content="A versatile online quiz game ideal for ESL classrooms, study groups, and trivia nights. Host dynamic team quizzes with customizable questions, Q&amp;A blocks, and interactive rewards." />
+        content="A versatile online quiz game ideal for ESL classrooms, study groups, and trivia nights. Host dynamic team quizzes with customizable questions, Q&A blocks, and interactive rewards." />
   <meta name="keywords"
         content="ESL game, classroom trivia, online quiz, educational game, team quiz, interactive quiz, quiz maker, web quiz, trivia game, Q&A, browser quiz" />
-  <meta property="og:type"        content="website" />
-  <meta property="og:title"       content="Tornado Game: Classroom &amp; Trivia Platform" />
-  <meta property="og:description" content="A versatile online quiz game ideal for ESL classrooms, study groups, and trivia nights. Host dynamic team quizzes with customizable questions and rewards." />
-  <meta property="og:url"         content="https://playtornado.com/" />
-  <meta property="og:site_name"   content="Tornado Game" />
-  <meta name="twitter:card"       content="summary" />
-  <meta name="twitter:title"      content="Tornado Game: Classroom &amp; Trivia Platform" />
-  <meta name="twitter:description"
-        content="A versatile online quiz game ideal for ESL classrooms, study groups, and trivia nights. Host dynamic team quizzes with customizable questions and rewards." />
+
+  <!-- Schema.org markup -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -54,23 +47,13 @@
       font-size: 1rem;
     }
 
-    /* Utility */
-    .hidden { display: none; }
-    .inline-checkbox {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      margin: 1rem 0;
-      font-weight: 500;
-    }
-    .inline-checkbox input { width: 1.2em; height: 1.2em; }
-
     :root {
       --teamA: #e74c3c;
       --teamB: #3498db;
       --btn-bg: #add8e6;
       --btn-hover: #87ceeb;
     }
+    .hidden { display: none; }
 
     /* SETUP */
     #setupScreen { max-width: 600px; margin: auto; text-align: left; }
@@ -84,6 +67,16 @@
       box-sizing: border-box;
     }
     #setupForm textarea { height: 120px; resize: vertical; }
+
+    /* inline radio group */
+    .inline-radio {
+      display: inline-flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+    .inline-radio span { font-weight: 600; }
+
     #setupForm button {
       margin-top: 15px;
       padding: 10px 20px;
@@ -127,6 +120,7 @@
     }
     #question { font-weight: bold; max-width: 400px; text-align: left; }
     #answer { font-style: italic; margin-top: 5px; }
+
     #passBtn, #skipBtn, #revealBtn {
       padding: 8px 16px;
       cursor: pointer;
@@ -176,16 +170,13 @@
   <div id="setupScreen">
     <h1>🌪 Tornado Game Setup</h1>
     <p>
-      Enter team names, pick a grid size (8–40), and paste your questions.
-      <strong>Enable answers?</strong> Check to use Q&A blocks separated by blank lines:
+      Enter team names, pick a grid size (8–40), and paste your questions below.
+      You may supply either:
+      <ul>
+        <li>One question per line, <strong>or</strong></li>
+        <li>Q&A blocks separated by a blank line (question on first line, answer on second)</li>
+      </ul>
     </p>
-    <pre style="background:#f5f5f5;padding:10px;border-radius:5px;font-size:0.9em;">
-What is the capital of France?
-Paris
-
-Which planet is known as the Red Planet?
-Mars
-    </pre>
     <form id="setupForm" onsubmit="return false;">
       <label>Team A Name:
         <input id="teamANameInput" value="Team A" required>
@@ -200,16 +191,16 @@ Mars
           <option>30</option><option>32</option><option>40</option>
         </select>
       </label>
-      <label class="inline-checkbox">
-        <input type="checkbox" id="enableAnswers">
-        Enable answers?
-      </label>
       <label>Questions / Q&A Blocks:
         <textarea id="questionsInput"
-          placeholder="What is the capital of France?&#10;Paris&#10;&#10;Which planet is known as the Red Planet?&#10;Mars"></textarea>
+          placeholder="What is the capital of France?
+Paris
+
+Which planet is known as the Red Planet?
+Mars"></textarea>
       </label>
-      <div class="radio-group">
-        Order:
+      <div class="inline-radio">
+        <span>Order:</span>
         <label><input type="radio" name="order" value="inorder" checked> In order</label>
         <label><input type="radio" name="order" value="random"> Random</label>
       </div>
@@ -279,18 +270,19 @@ Mars
       names.A = document.getElementById('teamANameInput').value.trim()||'Team A';
       names.B = document.getElementById('teamBNameInput').value.trim()||'Team B';
       total = +document.getElementById('gridSizeInput').value;
-      const rawText = document.getElementById('questionsInput').value;
-      const blocks = rawText.split(/\n\s*\n/).map(b=>b.trim()).filter(b=>b);
-      const enableA = document.getElementById('enableAnswers').checked;
-      if(enableA && blocks.length){
+      const raw = document.getElementById('questionsInput').value;
+      // split blocks on blank line
+      const blocks = raw.split(/\n\s*\n/).map(b=>b.trim()).filter(b=>b);
+      // detect Q&A blocks if any block has 2+ lines
+      if(blocks.some(b=>b.split('\n').length>1)){
         questions = blocks.map(b=>{
           const [q,a] = b.split('\n');
-          return { question: q.trim(), answer: a?.trim()||null };
+          return { question:q.trim(), answer:a?.trim()||null };
         });
       } else {
-        questions = rawText
+        questions = raw
           .split('\n').map(l=>l.trim()).filter(l=>l)
-          .map(q=>({ question: q.replace(/^\d+\.\s*/,''), answer:null }));
+          .map(q=>({ question:q.replace(/^\d+\.\s*/,''), answer:null }));
       }
       if(document.querySelector('input[name="order"]:checked').value==='random'){
         for(let i=questions.length-1;i>0;i--){
@@ -304,14 +296,8 @@ Mars
       initGame();
     };
 
-    passBtn.onclick = () => {
-      turn = turn==='A'?'B':'A';
-      updateTurn(); showQuestion();
-    };
-    skipBtn.onclick = () => {
-      qIndex=(qIndex+1)%questions.length;
-      showQuestion();
-    };
+    passBtn.onclick = () => { turn = turn==='A'?'B':'A'; updateTurn(); showQuestion(); };
+    skipBtn.onclick = () => { qIndex=(qIndex+1)%questions.length; showQuestion(); };
     revealBtn.onclick = () => {
       answerEl.textContent = questions[qIndex]?.answer||'';
       answerEl.style.color = turn==='A'?'var(--teamA)':'var(--teamB)';
@@ -354,8 +340,7 @@ Mars
       gridEl.style.gridTemplateColumns=`repeat(${cols},1fr)`;
       for(let i=0;i<n;i++){
         const btn=document.createElement('button');
-        btn.textContent=i+1;
-        btn.onclick=()=>handlePick(btn,i);
+        btn.textContent=i+1; btn.onclick=()=>handlePick(btn,i);
         gridEl.appendChild(btn);
       }
     }
@@ -401,8 +386,8 @@ Mars
     }
 
     function showQuestion(){
-      const qObj = questions[qIndex]||{question:'',answer:null};
-      questionEl.textContent = qObj.question;
+      const qObj=questions[qIndex]||{question:'',answer:null};
+      questionEl.textContent=qObj.question;
       questionEl.style.color = turn==='A'?'var(--teamA)':'var(--teamB)';
       questionEl.style.textAlign = turn==='A'?'left':'right';
       answerEl.textContent = '';
@@ -415,13 +400,12 @@ Mars
       btn.style.color      = '#fff';
       btn.style.fontSize   = '2.5em';
     }
-
     function updateScores(){
-      scoreAEl.textContent = scores.A;
-      scoreBEl.textContent = scores.B;
+      scoreAEl.textContent=scores.A;
+      scoreBEl.textContent=scores.B;
     }
     function updateTurn(){
-      turnEl.textContent = `${names[turn]}'s turn`;
+      turnEl.textContent=`${names[turn]}'s turn`;
     }
 
     function playWind(){
