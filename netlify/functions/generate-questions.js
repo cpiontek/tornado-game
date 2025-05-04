@@ -1,39 +1,65 @@
 // netlify/functions/generate-questions.js
-const fetch = require('node-fetch');
 
-exports.handler = async (event) => {
+const { Configuration, OpenAIApi } = require("openai");
+
+const config = new Configuration({
+  apiKey: process.env.OPENAI_API_KEY,    // ← your key comes from an env var
+});
+const openai = new OpenAIApi(config);
+
+exports.handler = async function(event, context) {
   try {
-    const { topic, count } = JSON.parse(event.body);
-    if (!topic || !count) {
-      return { statusCode: 400, body: 'Missing topic or count' };
-    }
+    // parse query params
+    const params = event.queryStringParameters || {};
+    const topic = params.topic || "";
+    const count = parseInt(params.count, 10) || 10;
 
-    const resp = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
-      },
-      body: JSON.stringify({
-        model: 'gpt-3.5-turbo',
-        messages: [{
-          role: 'user',
-          content: `Generate ${count} short trivia questions and answers about "${topic}". Return as blocks separated by blank lines: question on one line, answer on next.`
-        }],
-        temperature: 0.7
-      })
+    // build a prompt that asks for exactly `count` Q&A pairs
+    const prompt = `
+Generate ${count} simple trivia questions and answers about "${topic}".
+Return them as a JSON array of objects:
+[
+  { "question": "…", "answer": "…" },
+  { "question": "…", "answer": "…" },
+  …
+]
+No extra text, just valid JSON.
+`;
+
+    // call OpenAI
+    const completion = await openai.createChatCompletion({
+      model: "gpt-3.5-turbo",
+      messages:[ { role: "user", content: prompt.trim() } ],
+      temperature: 0.7,
     });
 
-    if (!resp.ok) {
-      const err = await resp.text();
-      return { statusCode: resp.status, body: err };
+    // extract and parse
+    const reply = completion.data.choices[0].message.content;
+    let items = [];
+    try {
+      items = JSON.parse(reply);
+    } catch(parseErr) {
+      // if OpenAI returned text instead of clean JSON, attempt to locate the JSON substring
+      const jsonMatch = reply.match(/\[[\s\S]*\]/);
+      if (jsonMatch) {
+        items = JSON.parse(jsonMatch[0]);
+      } else {
+        throw parseErr;
+      }
     }
-    const { choices } = await resp.json();
+
+    // respond
     return {
       statusCode: 200,
-      body: choices[0].message.content
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ data: items }),
     };
-  } catch (e) {
-    return { statusCode: 500, body: e.toString() };
+
+  } catch (err) {
+    console.error(err);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: err.message || "Something went wrong" }),
+    };
   }
 };
