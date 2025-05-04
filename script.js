@@ -1,3 +1,4 @@
+console.log("🚀 script.js loaded");
 // -- State --
 let rewards = [];
 let teamScores = {A:0,B:0};
