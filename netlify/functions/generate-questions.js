@@ -3,13 +3,11 @@ const fetch = require('node-fetch');
 
 exports.handler = async (event) => {
   try {
-    // parse topic & count from POST body
     const { topic, count } = JSON.parse(event.body);
     if (!topic || !count) {
       return { statusCode: 400, body: 'Missing topic or count' };
     }
 
-    // call OpenAI
     const resp = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
