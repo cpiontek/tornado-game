@@ -43,9 +43,7 @@
     h1 { font-size: 2.5rem; margin: .5em 0 .2em; }
     h2 { font-size: 1.5rem; margin: .2em 0 1em; color: #555; }
     h3 { font-size: 1.25rem; margin: .5em 0 .5em; }
-    p, label, button, select, input, textarea {
-      font-size: 1rem;
-    }
+    p, label, button, select, input, textarea { font-size: 1rem; }
 
     :root {
       --teamA: #e74c3c;
@@ -170,12 +168,8 @@
   <div id="setupScreen">
     <h1>🌪 Tornado Game Setup</h1>
     <p>
-      Enter team names, pick a grid size (8–40), and paste your questions below.
-      You may supply either:
-      <ul>
-        <li>One question per line, <strong>or</strong></li>
-        <li>Q&A blocks separated by a blank line (question on first line, answer on second)</li>
-      </ul>
+      Configure your game below. Questions are <strong>optional</strong> &ndash;
+      include as many or as few as you like.
     </p>
     <form id="setupForm" onsubmit="return false;">
       <label>Team A Name:
@@ -191,7 +185,10 @@
           <option>30</option><option>32</option><option>40</option>
         </select>
       </label>
-      <label>Questions / Q&A Blocks:
+
+      <label>
+        Questions / Q&amp;A Blocks:<br/>
+        <small>(Either one question per line, or blocks separated by a blank line: question then answer.)</small>
         <textarea id="questionsInput"
           placeholder="What is the capital of France?
 Paris
@@ -199,11 +196,13 @@ Paris
 Which planet is known as the Red Planet?
 Mars"></textarea>
       </label>
+
       <div class="inline-radio">
         <span>Order:</span>
         <label><input type="radio" name="order" value="inorder" checked> In order</label>
         <label><input type="radio" name="order" value="random"> Random</label>
       </div>
+
       <button id="startGameBtn">Start Game</button>
     </form>
   </div>
@@ -273,8 +272,8 @@ Mars"></textarea>
       const raw = document.getElementById('questionsInput').value;
       // split blocks on blank line
       const blocks = raw.split(/\n\s*\n/).map(b=>b.trim()).filter(b=>b);
-      // detect Q&A blocks if any block has 2+ lines
-      if(blocks.some(b=>b.split('\n').length>1)){
+      // detect Q&A blocks
+      if(blocks.some(b => b.split('\n').length>1)){
         questions = blocks.map(b=>{
           const [q,a] = b.split('\n');
           return { question:q.trim(), answer:a?.trim()||null };
@@ -394,18 +393,20 @@ Mars"></textarea>
       revealBtn.classList.toggle('hidden', !qObj.answer);
     }
 
-    function styleSpecial(btn,team){
-      const clr = team==='A'?'var(--teamA)':'var(--teamB)';
-      btn.style.background = clr;
-      btn.style.color      = '#fff';
-      btn.style.fontSize   = '2.5em';
-    }
     function updateScores(){
       scoreAEl.textContent=scores.A;
       scoreBEl.textContent=scores.B;
     }
     function updateTurn(){
       turnEl.textContent=`${names[turn]}'s turn`;
+      turnEl.style.color = turn==='A'?'var(--teamA)':'var(--teamB)';
+    }
+
+    function styleSpecial(btn,team){
+      const clr = team==='A'?'var(--teamA)':'var(--teamB)';
+      btn.style.background = clr;
+      btn.style.color      = '#fff';
+      btn.style.fontSize   = '2.5em';
     }
 
     function playWind(){
