@@ -1,8 +1,7 @@
 // script.js
 let gameData = JSON.parse(localStorage.getItem('playTornadoGameData'));
-
 const grid = document.getElementById('grid');
-const questionEl = document.getElementById('question');
+const questionEl = document.getElementById('question-box');
 const answerBox = document.getElementById('answer-box');
 const revealBtn = document.getElementById('reveal-btn');
 const teamAEl = document.getElementById('team-a-name');
@@ -44,9 +43,7 @@ function loadQuestions() {
       answer: `AI Answer ${i + 1}`
     }));
   }
-
   if (gameData.questionOrder === 'random') shuffle(questions);
-
   while (questions.length < gameData.gridSize) {
     questions.push(...questions);
   }
@@ -93,7 +90,7 @@ function playSound(type) {
 
 function handleClick(i, btn) {
   const reward = rewards[i];
-  let color = currentTeam === 'A' ? 'red' : 'blue';
+  const color = currentTeam === 'A' ? 'red' : 'blue';
 
   if (reward.type === 'points') {
     score[currentTeam] += reward.value;
@@ -105,7 +102,7 @@ function handleClick(i, btn) {
     const other = currentTeam === 'A' ? 'B' : 'A';
     score[currentTeam] += score[other];
     score[other] = 0;
-    btn.textContent = '🌪️';
+    btn.textContent = '🌪';
     playSound('wind');
   } else if (reward.type === 'lose') {
     score[currentTeam] = 0;
@@ -134,7 +131,6 @@ function endGame() {
   if (score.A > score.B) message = `${gameData.teamA} wins! 🎉`;
   else if (score.B > score.A) message = `${gameData.teamB} wins! 🎉`;
   else message = "It's a tie!";
-
   endMessage.textContent = message;
   endMessage.classList.remove('hidden');
   resetBtn.classList.remove('hidden');
@@ -163,6 +159,7 @@ skipBtn.onclick = () => {
 };
 
 revealBtn.onclick = revealAnswer;
+
 resetBtn.onclick = () => window.location.href = '/';
 
 function startGame() {
