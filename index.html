@@ -4,69 +4,177 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Play Tornado</title>
-  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 1rem;
+      font-family: 'Lexend Deca', sans-serif;
+      background: #4e7975;
+      color: white;
+      text-align: center;
+    }
+    #setupScreen, #gameScreen {
+      max-width: 800px;
+      margin: auto;
+    }
+    .hidden { display: none; }
+    input, select, textarea, button {
+      font-size: 1rem;
+      padding: 0.5rem;
+      margin: 0.5rem;
+      border-radius: 6px;
+      border: none;
+    }
+    textarea { width: 80%; height: 100px; }
+    #grid {
+      display: grid;
+      gap: 10px;
+      margin: 1rem auto;
+    }
+    #grid button {
+      font-size: 1.5rem;
+      padding: 1rem;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    #questionBox { margin: 1rem 0; }
+    .score {
+      font-size: 2rem;
+      margin: 1rem;
+    }
+    #turnDisplay {
+      font-weight: bold;
+      margin: 1rem 0;
+    }
+    .btn-control {
+      margin: 0.5rem;
+      padding: 0.5rem 1rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-  <div id="setup-screen">
-    <img src="logo.png" alt="Play Tornado Logo" id="logo" />
-    <div id="form-row">
-      <label>Team A:</label>
-      <input id="team-a" type="text" value="Team A" />
-      <label>Team B:</label>
-      <input id="team-b" type="text" value="Team B" />
-      <label>Grid Size:</label>
-      <select id="grid-size">
-        <option value="20">20</option>
-        <option value="24">24</option>
-        <option value="30">30</option>
+  <div id="setupScreen">
+    <h1><img src="tornado.png" alt="Play Tornado Logo" style="height: 120px;"></h1>
+    <div>
+      Team A: <input id="teamAInput" value="Team A">
+      Team B: <input id="teamBInput" value="Team B">
+      Grid Size:
+      <select id="gridSizeInput">
+        <option>20</option><option>24</option><option>30</option>
       </select>
-      <button id="start-btn">Start Game</button>
+      <button onclick="startGame()">Start Game</button>
     </div>
+    <div>
+      <label>Questions / Q&A Blocks:</label><br>
+      <textarea id="questionsInput" placeholder="Example:
+What is 2+2?
+4
 
-    <div class="source-select">
-      <p>Question source:</p>
-      <button id="ai-btn" class="source-btn">AI</button>
-      <button id="manual-btn" class="source-btn">Paste my own / No questions</button>
+Capital of France?
+Paris"></textarea>
     </div>
-
-    <label for="questions">Questions / Q&amp;A Blocks:</label>
-    <textarea id="questions" placeholder="Example format:
-Who is the hero of The Odyssey?
-Odysseus
-
-What city is Fenway Park in?
-Boston"></textarea>
-
-    <label for="topic">Topic for AI:</label>
-    <input id="topic" type="text" placeholder="e.g., The Beatles" />
-    <footer>Created by Timothy Piontek</footer>
   </div>
 
-  <div id="game-screen" class="hidden">
-    <div id="scoreboard">
-      <div><h2 id="team-a-name">Team A</h2><p id="team-a-score">0</p></div>
-      <div><h2 id="team-b-name">Team B</h2><p id="team-b-score">0</p></div>
+  <div id="gameScreen" class="hidden">
+    <div id="turnDisplay"></div>
+    <div id="questionBox">
+      <div id="question"></div>
+      <div id="answer"></div>
     </div>
-
-    <div id="turn-display"></div>
-
-    <div id="qa-container">
-      <div>
-        <p id="question-box"></p>
-        <p id="answer-box" class="hidden"></p>
-      </div>
-      <div>
-        <button id="pass-btn">Pass</button>
-        <button id="skip-btn">Skip</button>
-        <button id="reveal-btn" class="hidden">Reveal Answer</button>
-      </div>
+    <div>
+      <button class="btn-control" id="passBtn">Pass</button>
+      <button class="btn-control" id="skipBtn">Skip</button>
+      <button class="btn-control" id="revealBtn">Reveal Answer</button>
     </div>
-
+    <div class="score">
+      <span id="scoreA">0</span> - <span id="scoreB">0</span>
+    </div>
     <div id="grid"></div>
-    <p id="endgame-message" class="hidden"></p>
-    <button id="reset-btn">Reset Game</button>
+    <button onclick="location.reload()">Reset</button>
   </div>
 
-  <script src="script.js"></script>
+  <script>
+    let questions = [];
+    let currentTeam = 'A';
+    let scores = { A: 0, B: 0 };
+    let currentQuestionIndex = 0;
+    let gridSize = 20;
+
+    function startGame() {
+      document.getElementById('setupScreen').classList.add('hidden');
+      document.getElementById('gameScreen').classList.remove('hidden');
+
+      gridSize = parseInt(document.getElementById('gridSizeInput').value);
+      const teamAName = document.getElementById('teamAInput').value;
+      const teamBName = document.getElementById('teamBInput').value;
+
+      let raw = document.getElementById('questionsInput').value.trim();
+      let blocks = raw.split(/\n\s*\n/);
+      questions = blocks.map(b => {
+        const [q, a] = b.trim().split('\n');
+        return { q: q || '', a: a || '' };
+      });
+
+      while (questions.length < gridSize) {
+        questions.push(...questions);
+      }
+      questions = questions.slice(0, gridSize);
+
+      buildGrid();
+      showQuestion();
+    }
+
+    function buildGrid() {
+      const grid = document.getElementById('grid');
+      grid.innerHTML = '';
+      const cols = Math.ceil(Math.sqrt(gridSize));
+      grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+      for (let i = 0; i < gridSize; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = i + 1;
+        btn.onclick = () => handleClick(btn, i);
+        grid.appendChild(btn);
+      }
+    }
+
+    function handleClick(btn, i) {
+      btn.disabled = true;
+      document.getElementById('answer').textContent = questions[i].a;
+      scores[currentTeam] += 100;
+      updateScores();
+      currentTeam = currentTeam === 'A' ? 'B' : 'A';
+      showQuestion();
+    }
+
+    function showQuestion() {
+      const q = questions[currentQuestionIndex % questions.length].q;
+      document.getElementById('question').textContent = `Question: ${q}`;
+      document.getElementById('answer').textContent = '';
+      document.getElementById('turnDisplay').textContent = `Team ${currentTeam}'s turn`;
+    }
+
+    function updateScores() {
+      document.getElementById('scoreA').textContent = scores.A;
+      document.getElementById('scoreB').textContent = scores.B;
+    }
+
+    document.getElementById('passBtn').onclick = () => {
+      currentTeam = currentTeam === 'A' ? 'B' : 'A';
+      showQuestion();
+    };
+
+    document.getElementById('skipBtn').onclick = () => {
+      currentQuestionIndex++;
+      currentTeam = currentTeam === 'A' ? 'B' : 'A';
+      showQuestion();
+    };
+
+    document.getElementById('revealBtn').onclick = () => {
+      document.getElementById('answer').textContent = questions[currentQuestionIndex % questions.length].a;
+    };
+  </script>
 </body>
 </html>
