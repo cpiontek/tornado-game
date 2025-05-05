@@ -1,4 +1,4 @@
-// script.js — Enhanced with random point effects and sounds
+// script.js — Full working version with random effects and sounds
 let gameData = JSON.parse(localStorage.getItem('playTornadoGameData'));
 
 const gridContainer = document.getElementById('grid');
