@@ -37,6 +37,14 @@
       font-weight: bold;
     }
 
+    #question-box, #answer-box {
+      font-size: 1.2em;
+      margin-top: 20px;
+      max-width: 80%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
     .grid {
       display: grid;
       gap: 10px;
@@ -56,14 +64,6 @@
       min-height: 100px;
     }
 
-    #question-box, #answer-box {
-      font-size: 1.2em;
-      margin-top: 30px;
-      max-width: 80%;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
     .controls {
       margin-top: 20px;
       display: flex;
@@ -72,7 +72,7 @@
       flex-wrap: wrap;
     }
 
-    .controls button {
+    .controls button, #reset-button {
       font-size: 1em;
       padding: 12px 20px;
       background-color: #6c3ebf;
@@ -82,9 +82,10 @@
       cursor: pointer;
     }
 
-    .announcement {
+    .celebration {
+      font-size: 2em;
+      margin-top: 30px;
       font-weight: bold;
-      min-height: 1.2em;
     }
 
     .footer {
@@ -111,8 +112,6 @@
 
   <div id="turn-indicator">Current Turn: Team A</div>
 
-  <div id="grid" class="grid"></div>
-
   <div id="question-box"></div>
   <div id="answer-box" style="display: none;"></div>
 
@@ -121,6 +120,12 @@
     <button id="pass-btn">✅ Pass</button>
     <button id="skip-btn">⏭️ Skip</button>
   </div>
+
+  <div id="grid" class="grid"></div>
+
+  <button id="reset-button">🔄 Reset Game</button>
+
+  <div id="celebration-message" class="celebration"></div>
 
   <div class="footer">Created by Timothy Piontek</div>
 
