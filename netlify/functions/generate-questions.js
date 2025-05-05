@@ -1,45 +1,38 @@
-// netlify/functions/generate-questions.js
-
 const { Configuration, OpenAIApi } = require("openai");
 
 const config = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,    // ← your key comes from an env var
+  apiKey: process.env.OPENAI_API_KEY,
 });
 const openai = new OpenAIApi(config);
 
 exports.handler = async function(event, context) {
   try {
-    // parse query params
     const params = event.queryStringParameters || {};
     const topic = params.topic || "";
     const count = parseInt(params.count, 10) || 10;
 
-    // build a prompt that asks for exactly `count` Q&A pairs
     const prompt = `
 Generate ${count} simple trivia questions and answers about "${topic}".
-Return them as a JSON array of objects:
+Return them as a JSON array of objects like:
 [
   { "question": "…", "answer": "…" },
-  { "question": "…", "answer": "…" },
-  …
+  { "question": "…", "answer": "…" }
 ]
-No extra text, just valid JSON.
+No extra commentary, just valid JSON.
 `;
 
-    // call OpenAI
     const completion = await openai.createChatCompletion({
       model: "gpt-3.5-turbo",
-      messages:[ { role: "user", content: prompt.trim() } ],
+      messages: [{ role: "user", content: prompt.trim() }],
       temperature: 0.7,
     });
 
-    // extract and parse
     const reply = completion.data.choices[0].message.content;
     let items = [];
+
     try {
       items = JSON.parse(reply);
-    } catch(parseErr) {
-      // if OpenAI returned text instead of clean JSON, attempt to locate the JSON substring
+    } catch (parseErr) {
       const jsonMatch = reply.match(/\[[\s\S]*\]/);
       if (jsonMatch) {
         items = JSON.parse(jsonMatch[0]);
@@ -48,13 +41,11 @@ No extra text, just valid JSON.
       }
     }
 
-    // respond
     return {
       statusCode: 200,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ data: items }),
     };
-
   } catch (err) {
     console.error(err);
     return {
