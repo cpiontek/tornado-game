@@ -14,53 +14,70 @@
       margin: 0;
       padding: 20px;
     }
-    h1 {
-      font-family: 'Baloo 2', cursive;
-      font-size: 3em;
-      margin-bottom: 20px;
+    .logo {
+      height: 100px;
+      margin-bottom: 10px;
     }
     .scoreboard {
       display: flex;
       justify-content: center;
       gap: 60px;
       margin-bottom: 20px;
-    }
-    .scoreboard div {
       font-size: 1.5em;
     }
-    #team-a-score {
-      color: red;
-    }
-    #team-b-score {
-      color: #4fc3f7;
-    }
+    #team-a-score { color: red; }
+    #team-b-score { color: #4fc3f7; }
+
     .grid {
       display: grid;
       gap: 10px;
       justify-content: center;
-      margin-top: 30px;
+      margin-top: 20px;
     }
     .grid-button {
+      font-size: 2em;
       padding: 20px;
-      font-size: 1.5em;
-      background-color: white;
-      color: black;
       border: none;
       border-radius: 10px;
+      background-color: white;
+      color: black;
       cursor: pointer;
+      min-width: 100px;
+      min-height: 100px;
     }
+
     #question-box, #answer-box {
       font-size: 1.2em;
       margin-top: 30px;
-      max-width: 90%;
+      max-width: 80%;
       margin-left: auto;
       margin-right: auto;
     }
+
+    .controls {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .controls button {
+      font-size: 1em;
+      padding: 12px 20px;
+      background-color: #6c3ebf;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
     .score-popup {
       position: absolute;
       font-size: 2em;
       animation: rise 1s ease-out;
     }
+
     @keyframes rise {
       0% { transform: translateY(0); opacity: 1; }
       100% { transform: translateY(-50px); opacity: 0; }
@@ -68,7 +85,7 @@
   </style>
 </head>
 <body>
-  <h1>Tornado Game</h1>
+  <img src="tornado-logo.png" alt="Logo" class="logo">
 
   <div class="scoreboard">
     <div>
@@ -85,7 +102,12 @@
 
   <div id="question-box"></div>
   <div id="answer-box" style="display: none;"></div>
-  <button id="reveal-btn" style="display:none;">Reveal Answer</button>
+
+  <div class="controls">
+    <button id="reveal-btn" style="display: none;">Reveal Answer</button>
+    <button id="skip-btn">⏭️ Skip</button>
+    <button id="pass-btn">✅ Pass</button>
+  </div>
 
   <script src="script.js"></script>
 </body>
