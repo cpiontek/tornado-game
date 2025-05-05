@@ -1,11 +1,4 @@
 <script>
-  // ─── AI QUESTION FETCHING (Calls Netlify Function) ────────────────
-  async function fetchAIQuestions(topic, count) {
-    const res = await fetch(`/.netlify/functions/generate-questions?topic=${encodeURIComponent(topic)}&count=${count}`);
-    const data = await res.json();
-    return data.data.map(q => `${q.question}\n${q.answer}`).join('\n\n');
-  }
-
   // ─── GAME STATE & DOM ─────────────────────────────────────────
   let rewards=[], scores={A:0,B:0}, picks={A:0,B:0},
       turn='A', names={A:'Team A',B:'Team B'}, total=20,
@@ -31,26 +24,23 @@
         sourceRadios  = document.querySelectorAll('input[name="source"]'),
         aiLabel       = document.getElementById('aiTopicLabel');
 
-  // toggle AI topic input
   sourceRadios.forEach(r => r.onchange = () => {
     aiLabel.classList.toggle('hidden', r.value!=='ai' || !r.checked);
   });
 
   startBtn.onclick = async () => {
-    // basic settings
     names.A = document.getElementById('teamANameInput').value;
     names.B = document.getElementById('teamBNameInput').value;
     total   = +document.getElementById('gridSizeInput').value;
 
-    // fetch or parse questions
     const source = document.querySelector('input[name="source"]:checked').value;
     if (source==='ai') {
       const topic = document.getElementById('aiTopicInput').value.trim() || 'General Knowledge';
       const raw   = await fetchAIQuestions(topic, total);
       document.getElementById('questionsInput').value = raw;
     }
-    parseQuestions();
 
+    parseQuestions();
     setupScreen.classList.add('hidden');
     gameScreen .classList.remove('hidden');
     initGame();
@@ -66,8 +56,15 @@
     answerEl.style.textAlign = turn==='A'? 'left' : 'right';
   };
 
+  async function fetchAIQuestions(topic, count) {
+    const url = `/.netlify/functions/generate-questions?topic=${encodeURIComponent(topic)}&count=${count}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    return data.data.map(q => `${q.question}\n${q.answer}`).join('\n\n');
+  }
+
   function parseQuestions(){
-    const raw    = document.getElementById('questionsInput').value;
+    const raw = document.getElementById('questionsInput').value;
     const blocks = raw.split(/\n\s*\n/).map(b=>b.trim()).filter(b=>b);
     if (blocks.some(b=>b.split('\n').length>1)){
       questions = blocks.map(b=>{
@@ -87,7 +84,6 @@
     qIndex=0;
   }
 
-  // ─── INIT & LAYOUT ────────────────────────────────────────────
   function initGame(){
     scores={A:0,B:0}; picks={A:0,B:0};
     annA.textContent=''; annB.textContent='';
