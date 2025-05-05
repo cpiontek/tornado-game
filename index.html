@@ -10,8 +10,8 @@
       font-family: 'Quicksand', sans-serif;
       background-color: #4a7d7b;
       color: white;
-      margin: 0;
       padding: 20px;
+      margin: 0;
     }
     .header {
       display: flex;
@@ -22,28 +22,44 @@
     .logo {
       height: 100px;
     }
-    .team-grid-container {
+    .form-row {
       display: flex;
       align-items: flex-end;
-      gap: 20px;
+      justify-content: center;
+      gap: 16px;
       flex-wrap: wrap;
+      margin-bottom: 30px;
+    }
+    .form-column {
+      display: flex;
+      flex-direction: column;
     }
     label {
       font-weight: bold;
-      display: block;
-      margin-top: 10px;
+      margin-bottom: 4px;
     }
-    input[type="text"], select, textarea {
+    input[type="text"], select {
       font-family: 'Quicksand', sans-serif;
       font-size: 1em;
-      width: 100%;
-      padding: 10px;
+      padding: 8px;
       border-radius: 6px;
       border: none;
     }
-    .form-column {
-      flex: 1;
-      min-width: 250px;
+    #team-a, #team-b {
+      width: 180px;
+    }
+    #grid-size {
+      width: 80px;
+    }
+    .start-button {
+      height: 140px;
+      width: 160px;
+      font-size: 1.4em;
+      background-color: #6c3ebf;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
     }
     .option-buttons {
       display: flex;
@@ -59,16 +75,15 @@
       cursor: pointer;
       font-weight: bold;
     }
-    .start-button {
-      height: 200px;
-      width: 160px;
-      font-size: 1.4em;
-      background-color: #6c3ebf;
-      color: white;
+    textarea, input[type="text"]#topic {
+      width: 100%;
+      max-width: 600px;
+      font-family: 'Quicksand', sans-serif;
+      font-size: 1em;
+      padding: 10px;
+      border-radius: 6px;
       border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      margin-top: 32px;
+      margin-top: 6px;
     }
     .footer {
       margin-top: 40px;
@@ -83,26 +98,27 @@
     <img src="tornado-logo.png" alt="Play Tornado Logo" class="logo">
   </div>
 
-  <div class="team-grid-container">
+  <div class="form-row">
     <div class="form-column">
-      <label for="team-a">Team A Name:</label>
+      <label for="team-a">Team A:</label>
       <input type="text" id="team-a" placeholder="Team A" maxlength="20">
-
-      <label for="team-b">Team B Name:</label>
+    </div>
+    <div class="form-column">
+      <label for="team-b">Team B:</label>
       <input type="text" id="team-b" placeholder="Team B" maxlength="20">
-
+    </div>
+    <div class="form-column">
       <label for="grid-size">Grid Size:</label>
       <select id="grid-size">
-        <option value="20">20 (4x5)</option>
-        <option value="25">25 (5x5)</option>
-        <option value="30">30 (5x6)</option>
+        <option value="20">20</option>
+        <option value="25">25</option>
+        <option value="30">30</option>
       </select>
     </div>
-
     <button type="button" class="start-button" id="startBtn">Start Game</button>
   </div>
 
-  <div class="form-column" style="max-width: 600px; margin-top: 30px;">
+  <div style="max-width: 600px; margin: 0 auto;">
     <label>Question source:</label>
     <div class="option-buttons">
       <button type="button" id="ai">AI</button>
