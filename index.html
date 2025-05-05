@@ -3,152 +3,430 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Play Tornado</title>
+
+  <!-- Title & SEO -->
+  <title>Tornado Game: Classroom &amp; Trivia Platform</title>
+  <meta name="description"
+        content="A versatile online quiz game ideal for ESL classrooms, study groups, and trivia nights. Host dynamic team quizzes with customizable questions, Q&A blocks, and interactive rewards." />
+  <meta name="keywords"
+        content="ESL game, classroom trivia, online quiz, educational game, team quiz, interactive quiz, quiz maker, web quiz, trivia game, Q&A, browser quiz" />
+
+  <!-- Schema.org markup -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Tornado Game: Classroom & Trivia Platform",
+    "url": "https://playtornado.com/",
+    "description": "A versatile online quiz game ideal for ESL classrooms, study groups, and trivia nights, featuring Q&A support, team play, and interactive rewards.",
+    "applicationCategory": "EducationalGame",
+    "operatingSystem": "Web",
+    "creator": { "@type": "Person", "name": "Timothy Piontek" }
+  }
+  </script>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@400;600;700&display=swap" rel="stylesheet">
+
   <style>
-    body { font-family: sans-serif; text-align: center; background: #f0f8ff; margin: 0; padding: 20px; }
-    h1 { font-size: 2em; }
-    #setup, #game { max-width: 600px; margin: auto; }
+    /* Base & Typography */
+    html { font-size: 18px; }
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: 'Lexend Deca', sans-serif;
+      line-height: 1.5;
+      background: #eef6fb;
+      color: #333;
+      text-align: center;
+    }
+    h1 { font-size: 2.5rem; margin: .5em 0 .2em; }
+    h2 { font-size: 1.5rem; margin: .2em 0 1em; color: #555; }
+    h3 { font-size: 1.25rem; margin: .5em 0 .5em; }
+    p, label, button, select, input, textarea { font-size: 1rem; }
+
+    :root {
+      --teamA: #e74c3c;
+      --teamB: #3498db;
+      --btn-bg: #add8e6;
+      --btn-hover: #87ceeb;
+    }
     .hidden { display: none; }
-    textarea, input { width: 100%; margin-top: 5px; margin-bottom: 15px; padding: 8px; }
-    button { padding: 10px 15px; font-weight: bold; margin: 5px; }
-    #grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 10px; margin-top: 20px; }
-    #grid button { padding: 20px; font-size: 1.2em; background: #add8e6; border: none; border-radius: 8px; }
-    #grid button:disabled { background: #ccc; }
-    .scoreboard { display: flex; justify-content: space-around; margin-top: 20px; }
+
+    /* SETUP */
+    #setupScreen { max-width: 600px; margin: auto; text-align: left; }
+    #setupScreen p { margin-bottom: 15px; }
+    #setupForm label { display: block; margin: 10px 0; }
+    #setupForm input,
+    #setupForm select,
+    #setupForm textarea {
+      width: 100%;
+      padding: 8px;
+      box-sizing: border-box;
+    }
+    #setupForm textarea { height: 120px; resize: vertical; }
+
+    /* inline radio group */
+    .inline-radio {
+      display: inline-flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+    .inline-radio span { font-weight: 600; }
+
+    #setupForm button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    /* GAME */
+    #gameScreen { max-width: 900px; margin: auto; }
+    .scoreboard {
+      display: flex;
+      justify-content: center;
+      gap: 50px;
+      margin-bottom: 20px;
+    }
+    .team {
+      background: white;
+      padding: 10px 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      min-width: 150px;
+    }
+    #nameA { color: var(--teamA); }
+    #nameB { color: var(--teamB); }
+    .announcement {
+      min-height: 1.4em;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    .team h2 { margin: 5px 0 0; }
+    .team p { font-size: 2em; margin: 5px 0 0; }
+    #turnDisplay { margin-bottom: 20px; }
+
+    /* Question & Controls */
+    #questionContainer {
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+    #question { font-weight: bold; max-width: 400px; text-align: left; }
+    #answer { font-style: italic; margin-top: 5px; }
+
+    #passBtn, #skipBtn, #revealBtn {
+      padding: 8px 16px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    /* Grid */
+    #grid {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 20px;
+      padding: 0 20px;
+    }
+    #grid button {
+      font-size: 1.2em;
+      padding: 20px;
+      border: none;
+      border-radius: 10px;
+      background: var(--btn-bg);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .2s, color .2s;
+    }
+    #grid button:hover { background: var(--btn-hover); }
+    #grid button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    #resetBtn {
+      padding: 8px 16px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .footer {
+      font-size: 0.8em;
+      color: #666;
+      margin-top: 30px;
+    }
   </style>
 </head>
 <body>
-  <div id="setup">
-    <h1>🌪 Play Tornado</h1>
-    <label>Team A Name: <input id="teamA" value="Team A"></label>
-    <label>Team B Name: <input id="teamB" value="Team B"></label>
-    <label>Grid Size:
-      <select id="gridSize">
-        <option>8</option><option>10</option><option selected>20</option><option>30</option>
-      </select>
-    </label>
-    <label>
-      Topic for AI-generated questions:
-      <input id="topic" placeholder="e.g. Space, Animals, History" />
-    </label>
-    <button id="start">Start Game</button>
+
+  <!-- SETUP SCREEN -->
+  <div id="setupScreen">
+    <h1>🌪 Tornado Game Setup</h1>
+    <p>
+      Configure your game below. Questions are <strong>optional</strong> &ndash;
+      include as many or as few as you like.
+    </p>
+    <form id="setupForm" onsubmit="return false;">
+      <label>Team A Name:
+        <input id="teamANameInput" value="Team A" required>
+      </label>
+      <label>Team B Name:
+        <input id="teamBNameInput" value="Team B" required>
+      </label>
+      <label>Grid Size:
+        <select id="gridSizeInput">
+          <option>8</option><option>10</option><option>16</option>
+          <option selected>20</option><option>24</option>
+          <option>30</option><option>32</option><option>40</option>
+        </select>
+      </label>
+
+      <label>
+        Questions / Q&amp;A Blocks:<br/>
+        <small>(Either one question per line, or blocks separated by a blank line: question then answer.)</small>
+        <textarea id="questionsInput"
+          placeholder="What is the capital of France?
+Paris
+
+Which planet is known as the Red Planet?
+Mars"></textarea>
+      </label>
+
+      <div class="inline-radio">
+        <span>Order:</span>
+        <label><input type="radio" name="order" value="inorder" checked> In order</label>
+        <label><input type="radio" name="order" value="random"> Random</label>
+      </div>
+
+      <button id="startGameBtn">Start Game</button>
+    </form>
   </div>
 
-  <div id="game" class="hidden">
-    <h2 id="turn"></h2>
+  <!-- GAME SCREEN -->
+  <div id="gameScreen" class="hidden">
+    <h1>🌪 Tornado Game</h1>
+    <h2>Classroom &amp; Trivia Platform</h2>
+
     <div class="scoreboard">
-      <div><strong id="nameA">Team A</strong><div id="scoreA">0</div></div>
-      <div><strong id="nameB">Team B</strong><div id="scoreB">0</div></div>
+      <div class="team">
+        <div id="annA" class="announcement"></div>
+        <h2 id="nameA">Team A</h2><p id="scoreA">0</p>
+      </div>
+      <div class="team">
+        <div id="annB" class="announcement"></div>
+        <h2 id="nameB">Team B</h2><p id="scoreB">0</p>
+      </div>
     </div>
-    <div id="questionBox">
-      <p id="question"></p>
-      <p><em id="answer"></em></p>
+
+    <h3 id="turnDisplay">Team A’s turn</h3>
+
+    <div id="questionContainer">
+      <div>
+        <div id="question"></div>
+        <div id="answer"></div>
+      </div>
+      <button id="passBtn">Pass</button>
+      <button id="skipBtn">Skip</button>
       <button id="revealBtn" class="hidden">Reveal Answer</button>
     </div>
+
     <div id="grid"></div>
-    <button id="reset">Reset</button>
+    <button id="resetBtn">🔄 Reset Game</button>
+    <div class="footer">Created by Timothy Piontek</div>
   </div>
 
   <script>
-    let turn = 'A', scores = { A: 0, B: 0 }, questions = [], qIndex = 0, rewards = [];
+    // State
+    let rewards=[], scores={A:0,B:0}, picks={A:0,B:0},
+        turn='A', names={A:'Team A',B:'Team B'}, total=20,
+        questions=[], qIndex=0;
 
-    const $ = id => document.getElementById(id);
-    const teamAInput = $('teamA'), teamBInput = $('teamB'), topicInput = $('topic');
+    // DOM refs
+    const setupScreen=document.getElementById('setupScreen'),
+          gameScreen=document.getElementById('gameScreen'),
+          startBtn=document.getElementById('startGameBtn'),
+          resetBtn=document.getElementById('resetBtn'),
+          passBtn=document.getElementById('passBtn'),
+          skipBtn=document.getElementById('skipBtn'),
+          revealBtn=document.getElementById('revealBtn'),
+          gridEl=document.getElementById('grid'),
+          annA=document.getElementById('annA'),
+          annB=document.getElementById('annB'),
+          nameAEl=document.getElementById('nameA'),
+          nameBEl=document.getElementById('nameB'),
+          scoreAEl=document.getElementById('scoreA'),
+          scoreBEl=document.getElementById('scoreB'),
+          turnEl=document.getElementById('turnDisplay'),
+          questionEl=document.getElementById('question'),
+          answerEl=document.getElementById('answer');
 
-    $('start').onclick = async () => {
-      $('setup').classList.add('hidden');
-      $('game').classList.remove('hidden');
-      $('nameA').textContent = teamAInput.value;
-      $('nameB').textContent = teamBInput.value;
-      scores = { A: 0, B: 0 };
-      updateScores();
-      const count = parseInt($('gridSize').value);
-      await loadQuestions(topicInput.value || "general", count);
-      generateRewards(count);
-      buildGrid(count);
-      showQuestion();
-      updateTurn();
-    };
-
-    $('reset').onclick = () => location.reload();
-
-    $('revealBtn').onclick = () => {
-      $('answer').textContent = questions[qIndex]?.answer || '';
-    };
-
-    function updateScores() {
-      $('scoreA').textContent = scores.A;
-      $('scoreB').textContent = scores.B;
-    }
-
-    function updateTurn() {
-      $('turn').textContent = (turn === 'A' ? teamAInput.value : teamBInput.value) + "'s turn";
-      $('answer').textContent = '';
-      $('revealBtn').classList.toggle('hidden', !questions[qIndex]?.answer);
-    }
-
-    function showQuestion() {
-      $('question').textContent = questions[qIndex]?.question || '';
-    }
-
-    function buildGrid(n) {
-      const grid = $('grid');
-      grid.innerHTML = '';
-      for (let i = 0; i < n; i++) {
-        const btn = document.createElement('button');
-        btn.textContent = i + 1;
-        btn.onclick = () => {
-          handleReward(i, btn);
-        };
-        grid.appendChild(btn);
-      }
-    }
-
-    function handleReward(i, btn) {
-      const reward = rewards[i];
-      let out = '';
-
-      if (reward.type === 'points') {
-        scores[turn] += reward.value;
-        out = '+' + reward.value;
-      } else if (reward.type === 'lose') {
-        scores[turn] = 0;
-        out = '☹️';
-      } else if (reward.type === 'steal') {
-        const other = turn === 'A' ? 'B' : 'A';
-        scores[turn] += scores[other];
-        scores[other] = 0;
-        out = '🌪';
+    startBtn.onclick = () => {
+      names.A = document.getElementById('teamANameInput').value.trim()||'Team A';
+      names.B = document.getElementById('teamBNameInput').value.trim()||'Team B';
+      total = +document.getElementById('gridSizeInput').value;
+      const raw = document.getElementById('questionsInput').value;
+      // split blocks on blank line
+      const blocks = raw.split(/\n\s*\n/).map(b=>b.trim()).filter(b=>b);
+      // detect Q&A blocks
+      if(blocks.some(b => b.split('\n').length>1)){
+        questions = blocks.map(b=>{
+          const [q,a] = b.split('\n');
+          return { question:q.trim(), answer:a?.trim()||null };
+        });
       } else {
-        scores[turn] *= 2;
-        out = 'x2';
+        questions = raw
+          .split('\n').map(l=>l.trim()).filter(l=>l)
+          .map(q=>({ question:q.replace(/^\d+\.\s*/,''), answer:null }));
       }
+      if(document.querySelector('input[name="order"]:checked').value==='random'){
+        for(let i=questions.length-1;i>0;i--){
+          const j=Math.floor(Math.random()*(i+1));
+          [questions[i],questions[j]]=[questions[j],questions[i]];
+        }
+      }
+      qIndex=0;
+      setupScreen.classList.add('hidden');
+      gameScreen.classList.remove('hidden');
+      initGame();
+    };
 
-      btn.textContent = out;
-      btn.disabled = true;
-      updateScores();
+    passBtn.onclick = () => { turn = turn==='A'?'B':'A'; updateTurn(); showQuestion(); };
+    skipBtn.onclick = () => { qIndex=(qIndex+1)%questions.length; showQuestion(); };
+    revealBtn.onclick = () => {
+      answerEl.textContent = questions[qIndex]?.answer||'';
+      answerEl.style.color = turn==='A'?'var(--teamA)':'var(--teamB)';
+      answerEl.style.textAlign = turn==='A'?'left':'right';
+    };
+    resetBtn.onclick = initGame;
 
-      qIndex = (qIndex + 1) % questions.length;
-      turn = turn === 'A' ? 'B' : 'A';
-      showQuestion();
-      updateTurn();
+    function initGame(){
+      scores={A:0,B:0}; picks={A:0,B:0};
+      annA.textContent=''; annB.textContent='';
+      nameAEl.textContent=names.A; nameBEl.textContent=names.B;
+      updateScores(); turn='A'; updateTurn();
+      buildRewards(total); buildGrid(total); showQuestion();
     }
 
-    function generateRewards(n) {
-      rewards = Array(n).fill(null).map(() => {
-        const rand = Math.random();
-        if (rand < 0.6) return { type: 'points', value: (Math.floor(Math.random() * 10) + 1) * 100 };
-        if (rand < 0.75) return { type: 'lose' };
-        if (rand < 0.9) return { type: 'steal' };
-        return { type: 'double' };
-      });
+    function buildRewards(n){
+      const ptsBase=Math.floor(n*0.7),
+            loseBase=Math.floor(n*0.1),
+            stealBase=loseBase,
+            dblBase=n-(ptsBase+loseBase+stealBase),
+            minSpec=n>=24?3:2,
+            loseCount=Math.max(loseBase,minSpec),
+            stealCount=Math.max(stealBase,minSpec),
+            dblCount=Math.max(dblBase,minSpec),
+            ptsCount=n-(loseCount+stealCount+dblCount);
+      rewards=[];
+      for(let i=0;i<ptsCount;i++) rewards.push({type:'points',value:(Math.floor(Math.random()*10)+1)*100});
+      for(let i=0;i<loseCount;i++) rewards.push({type:'lose'});
+      for(let i=0;i<stealCount;i++) rewards.push({type:'steal'});
+      for(let i=0;i<dblCount;i++) rewards.push({type:'double'});
+      for(let i=rewards.length-1;i>0;i--){
+        const j=Math.floor(Math.random()*(i+1));
+        [rewards[i],rewards[j]]=[rewards[j],rewards[i]];
+      }
     }
 
-    async function loadQuestions(topic, count) {
-      const url = `/.netlify/functions/generate-questions?topic=${encodeURIComponent(topic)}&count=${count}`;
-      const res = await fetch(url);
-      const data = await res.json();
-      questions = data.data || [];
+    function buildGrid(n){
+      gridEl.innerHTML='';
+      let cols=Math.floor(Math.sqrt(n)); if(cols<2) cols=2;
+      gridEl.style.gridTemplateColumns=`repeat(${cols},1fr)`;
+      for(let i=0;i<n;i++){
+        const btn=document.createElement('button');
+        btn.textContent=i+1; btn.onclick=()=>handlePick(btn,i);
+        gridEl.appendChild(btn);
+      }
+    }
+
+    function handlePick(btn,i){
+      let r=rewards[i], me=turn;
+      if(picks[me]===0 && r.type!=='points'){
+        r={type:'points',value:(Math.floor(Math.random()*10)+1)*100};
+      }
+      picks[me]++;
+      let out='';
+      if(r.type==='points'){
+        scores[me]+=r.value; out='+'+r.value;
+        btn.style.color = me==='A'?'var(--teamA)':'var(--teamB)';
+      } else if(r.type==='lose'){
+        scores[me]=0; out='☹️'; styleSpecial(btn,me); playSad();
+      } else if(r.type==='steal'){
+        const o=me==='A'?'B':'A';
+        scores[me]+=scores[o]; scores[o]=0;
+        out='🌪'; styleSpecial(btn,me); playWind();
+      } else {
+        scores[me]*=2; out='x2'; styleSpecial(btn,me);
+      }
+      if(me==='A'){
+        annA.textContent=`${names.A} got ${out}`; annB.textContent='';
+      } else {
+        annB.textContent=`${names.B} got ${out}`; annA.textContent='';
+      }
+      btn.textContent=out; btn.disabled=true; updateScores();
+      const done=document.querySelectorAll('#grid button:disabled').length;
+      if(done===total){
+        if(scores.A>scores.B){
+          annA.textContent=`${names.A} wins! 🏆`; annB.textContent='';
+        } else if(scores.B>scores.A){
+          annB.textContent=`${names.B} wins! 🏆`; annA.textContent='';
+        } else {
+          annA.textContent="It's a tie!"; annB.textContent='';
+        }
+      } else {
+        turn = me==='A'?'B':'A';
+        updateTurn(); showQuestion();
+      }
+    }
+
+    function showQuestion(){
+      const qObj=questions[qIndex]||{question:'',answer:null};
+      questionEl.textContent=qObj.question;
+      questionEl.style.color = turn==='A'?'var(--teamA)':'var(--teamB)';
+      questionEl.style.textAlign = turn==='A'?'left':'right';
+      answerEl.textContent = '';
+      revealBtn.classList.toggle('hidden', !qObj.answer);
+    }
+
+    function updateScores(){
+      scoreAEl.textContent=scores.A;
+      scoreBEl.textContent=scores.B;
+    }
+    function updateTurn(){
+      turnEl.textContent=`${names[turn]}'s turn`;
+      turnEl.style.color = turn==='A'?'var(--teamA)':'var(--teamB)';
+    }
+
+    function styleSpecial(btn,team){
+      const clr = team==='A'?'var(--teamA)':'var(--teamB)';
+      btn.style.background = clr;
+      btn.style.color      = '#fff';
+      btn.style.fontSize   = '2.5em';
+    }
+
+    function playWind(){
+      const C=new(window.AudioContext||window.webkitAudioContext)(),
+            buf=C.createBuffer(1,C.sampleRate*0.5,C.sampleRate),
+            d=buf.getChannelData(0);
+      for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1;
+      const src=C.createBufferSource(),f=C.createBiquadFilter();
+      src.buffer=buf; f.type='lowpass'; f.frequency.value=800;
+      src.connect(f).connect(C.destination); src.start();
+      setTimeout(()=>src.stop(),500);
+    }
+    function playSad(){
+      const C=new(window.AudioContext||window.webkitAudioContext)(),
+            o=C.createOscillator(),g=C.createGain();
+      o.type='triangle'; o.frequency.value=220;
+      o.connect(g).connect(C.destination);
+      o.start(); g.gain.setValueAtTime(1,C.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001,C.currentTime+0.8);
+      setTimeout(()=>o.stop(),800);
     }
   </script>
 </body>
