@@ -20,8 +20,8 @@
       margin: 20px 0 10px;
     }
     .logo {
-      width: 200px;
-      margin: 10px auto;
+      width: 160px;
+      margin: 10px auto 0;
       display: block;
     }
     .scores {
@@ -60,8 +60,8 @@
       margin: 20px auto;
     }
     .grid-button {
-      width: 70px;
-      height: 70px;
+      width: 80px;
+      height: 80px;
       font-size: 1.4em;
       font-weight: bold;
       border: none;
@@ -87,15 +87,16 @@
       font-weight: bold;
       border-radius: 6px;
       border: none;
-      background-color: #f2c94c;
-      color: #000;
+      background-color: #7e57c2;
+      color: #fff;
       cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <img src="cba91cf0-092d-4cb4-8072-7f897331469a.png" alt="Play Tornado Logo" class="logo">
-  <h1>Tornado Game</h1>
+  <img src="tornado-logo.png" alt="Play Tornado Logo" class="logo" onerror="this.style.display='none'; document.getElementById('fallback-title').style.display='block';">
+  <h1 id="fallback-title" style="display:none">Tornado Game</h1>
+
   <div class="scores">
     <div>
       <div class="team-name team-a" id="team-a-name">Team A</div>
@@ -113,6 +114,77 @@
   <div id="answer-box"></div>
   <button id="reveal-btn" onclick="document.getElementById('answer-box').style.display='block'">Reveal Answer</button>
 
-  <script src="script.js"></script>
+  <script>
+    let gameData = JSON.parse(localStorage.getItem('playTornadoGameData'));
+    const gridContainer = document.getElementById('grid');
+    const questionBox = document.getElementById('question-box');
+    const answerBox = document.getElementById('answer-box');
+    const teamAScore = document.getElementById('team-a-score');
+    const teamBScore = document.getElementById('team-b-score');
+    let currentQuestionIndex = -1;
+    let questions = [];
+
+    function parseManualQuestions(raw) {
+      return raw.split('\n\n').map(qb => {
+        const [q, a] = qb.split('\n').map(s => s.trim());
+        return { q, a };
+      });
+    }
+
+    function generateGrid(num) {
+      gridContainer.innerHTML = '';
+      const cols = Math.ceil(Math.sqrt(num));
+      gridContainer.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+
+      for (let i = 0; i < num; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = i + 1;
+        btn.className = 'grid-button';
+        btn.onclick = () => handleGridClick(i);
+        gridContainer.appendChild(btn);
+      }
+    }
+
+    function handleGridClick(index) {
+      currentQuestionIndex = index;
+      const button = document.querySelectorAll('.grid-button')[index];
+      button.disabled = true;
+
+      if (gameData.useQuestions && questions[index]) {
+        questionBox.textContent = questions[index].q;
+        answerBox.textContent = questions[index].a;
+        answerBox.style.display = 'block';
+      } else {
+        questionBox.textContent = `Pick a challenge! (Box ${index + 1})`;
+        answerBox.textContent = '';
+        answerBox.style.display = 'none';
+      }
+      questionBox.style.display = 'block';
+      document.getElementById('reveal-btn').style.display = 'none';
+    }
+
+    function initGame() {
+      if (gameData.useQuestions) {
+        if (gameData.questionSource === 'manual') {
+          questions = parseManualQuestions(gameData.questions);
+        } else {
+          questions = Array(gameData.gridSize).fill().map((_, i) => ({
+            q: `AI Question ${i + 1}`,
+            a: `AI Answer ${i + 1}`
+          }));
+        }
+        if (gameData.questionOrder === 'random') {
+          questions = questions.sort(() => Math.random() - 0.5);
+        }
+      }
+
+      document.getElementById('team-a-name').textContent = gameData.teamA;
+      document.getElementById('team-b-name').textContent = gameData.teamB;
+
+      generateGrid(gameData.gridSize);
+    }
+
+    initGame();
+  </script>
 </body>
 </html>
