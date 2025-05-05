@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Play Tornado Game</title>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700&family=Quicksand&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
   <style>
     body {
       font-family: 'Quicksand', sans-serif;
@@ -63,6 +62,17 @@
       margin-top: 10px;
       display: none;
     }
+    #reveal-btn {
+      margin-top: 10px;
+      display: none;
+      padding: 10px 20px;
+      font-size: 1em;
+      background-color: #7e57c2;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
     .score-popup {
       position: absolute;
       font-size: 1.2em;
@@ -79,11 +89,11 @@
 
   <div class="scoreboard">
     <div>
-      <div>Team A</div>
+      <div id="team-a-name">Team A</div>
       <div id="team-a-score" class="team-a-score">0</div>
     </div>
     <div>
-      <div>Team B</div>
+      <div id="team-b-name">Team B</div>
       <div id="team-b-score" class="team-b-score">0</div>
     </div>
   </div>
@@ -92,7 +102,7 @@
 
   <div id="question-box"></div>
   <div id="answer-box"></div>
-  <button id="reveal-btn" style="margin-top: 10px; display: none;">Reveal Answer</button>
+  <button id="reveal-btn">Reveal Answer</button>
 
   <script src="script.js"></script>
 </body>
