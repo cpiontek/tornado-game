@@ -1,79 +1,93 @@
-// ─── DOM REFS ─────────────────────────────────────────────────────────────
-const teamANameInput = document.getElementById("teamANameInput");
-const teamBNameInput = document.getElementById("teamBNameInput");
-const gridSizeInput  = document.getElementById("gridSizeInput");
-const sourceRadios   = document.querySelectorAll('input[name="source"]');
-const aiTopicInput   = document.getElementById("aiTopicInput");
-const questionsInput = document.getElementById("questionsInput");
-const orderRadios    = document.querySelectorAll('input[name="order"]');
-const startBtn       = document.getElementById("startGameBtn");
-const resetBtn       = document.getElementById("resetBtn");
-const passBtn        = document.getElementById("passBtn");
-const skipBtn        = document.getElementById("skipBtn");
-const revealBtn      = document.getElementById("revealBtn");
-const setupScreen    = document.getElementById("setupScreen");
-const gameScreen     = document.getElementById("gameScreen");
-const gridEl         = document.getElementById("grid");
-const annA           = document.getElementById("annA");
-const annB           = document.getElementById("annB");
-const nameAEl        = document.getElementById("nameA");
-const nameBEl        = document.getElementById("nameB");
-const scoreAEl       = document.getElementById("scoreA");
-const scoreBEl       = document.getElementById("scoreB");
-const turnEl         = document.getElementById("turnDisplay");
-const questionEl     = document.getElementById("question");
-const answerEl       = document.getElementById("answer");
-const aiLabel        = document.getElementById("aiTopicLabel");
+// script.js
 
-// ─── TOGGLE AI‐TOPIC INPUT ─────────────────────────────────────────────────
+// ─── GAME STATE & DOM ─────────────────────────────────────────
+let questions = [], qIndex = 0;
+let scores = { A: 0, B: 0 }, picks = { A: 0, B: 0 };
+let turn = 'A';
+let names = { A: 'Team A', B: 'Team B' };
+let total = 20;
+
+const setupScreen   = document.getElementById('setupScreen'),
+      gameScreen    = document.getElementById('gameScreen'),
+      startBtn      = document.getElementById('startGameBtn'),
+      resetBtn      = document.getElementById('resetBtn'),
+      passBtn       = document.getElementById('passBtn'),
+      skipBtn       = document.getElementById('skipBtn'),
+      revealBtn     = document.getElementById('revealBtn'),
+      gridEl        = document.getElementById('grid'),
+      annA          = document.getElementById('annA'),
+      annB          = document.getElementById('annB'),
+      nameAEl       = document.getElementById('nameA'),
+      nameBEl       = document.getElementById('nameB'),
+      scoreAEl      = document.getElementById('scoreA'),
+      scoreBEl      = document.getElementById('scoreB'),
+      turnEl        = document.getElementById('turnDisplay'),
+      questionEl    = document.getElementById('question'),
+      answerEl      = document.getElementById('answer'),
+      sourceRadios  = document.querySelectorAll('input[name="source"]'),
+      aiLabel       = document.getElementById('aiTopicLabel');
+
+// toggle AI topic input visibility
 sourceRadios.forEach(radio => {
-  radio.addEventListener("change", () => {
-    aiLabel.style.display =
-      radio.checked && radio.value === "ai" ? "block" : "none";
+  radio.addEventListener('change', () => {
+    aiLabel.classList.toggle('hidden', radio.value !== 'ai' || !radio.checked);
   });
 });
 
-// ─── SERVERLESS AI CALL ────────────────────────────────────────────────────
+// ─── START BUTTON ──────────────────────────────────────────────
+startBtn.addEventListener('click', async () => {
+  // 1) collect settings
+  names.A = document.getElementById('teamANameInput').value.trim() || 'Team A';
+  names.B = document.getElementById('teamBNameInput').value.trim() || 'Team B';
+  total   = parseInt(document.getElementById('gridSizeInput').value, 10) || 20;
+
+  // 2) if AI mode, try to fetch new blocks
+  const source = document.querySelector('input[name="source"]:checked').value;
+  if (source === 'ai') {
+    const topic = document.getElementById('aiTopicInput').value.trim() || 'General Knowledge';
+    try {
+      const raw = await fetchAIQuestions(topic, total);
+      document.getElementById('questionsInput').value = raw;
+    } catch (err) {
+      alert('AI is temporarily unavailable—please try again later.');
+      console.error('AI error:', err);
+    }
+  }
+
+  // 3) parse whatever is in the textarea now
+  parseQuestions();
+
+  // 4) switch screens & initialize
+  setupScreen.classList.add('hidden');
+  gameScreen.classList.remove('hidden');
+  initGame();
+});
+
+// ─── FETCH AI QUESTIONS ────────────────────────────────────────
 async function fetchAIQuestions(topic, count) {
-  const url = `/.netlify/functions/generate-questions?topic=${encodeURIComponent(
-    topic
-  )}&count=${count}`;
+  const url = `/.netlify/functions/generate-questions?topic=${encodeURIComponent(topic)}&count=${count}`;
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`AI API returned ${res.status}`);
-  const { data } = await res.json(); // { data: [ {question,answer}, … ] }
-  // convert back into our textarea Q&A blocks format:
-  return data.map(item => `${item.question}\n${item.answer}`).join("\n\n");
+  if (!res.ok) {
+    throw new Error(`Function returned HTTP ${res.status}`);
+  }
+  const payload = await res.json();
+  // payload.data is an array of {question,answer}
+  // convert back into "block" text (Q then A, blank line)
+  return payload.data
+    .map(q => `${q.question}\n${q.answer}`)
+    .join('\n\n');
 }
 
-// ─── STATE ─────────────────────────────────────────────────────────────────
-let rewards = [],
-    scores  = { A: 0, B: 0 },
-    picks   = { A: 0, B: 0 },
-    turn    = "A",
-    names   = { A: "Team A", B: "Team B" },
-    total   = 20,
-    questions = [],
-    qIndex  = 0;
-
-// ─── PARSE QUESTIONS ────────────────────────────────────────────────────────
+// ─── PARSE QUESTIONS ───────────────────────────────────────────
 function parseQuestions() {
-  const raw = questionsInput.value.trim();
-  const blocks = raw.split(/\n\s*\n/).map(b => b.trim()).filter(Boolean);
-  if (blocks.some(b => b.split("\n").length > 1)) {
-    // Q&A blocks
-    questions = blocks.map(b => {
-      const [q,a] = b.split("\n");
-      return { question: q.trim(), answer: a.trim() };
-    });
-  } else {
-    // single‐line Qs
-    questions = raw.split("\n").filter(Boolean).map(q => ({
-      question: q.trim(),
-      answer: null
-    }));
-  }
-  // randomize if needed
-  if (document.querySelector('input[name="order"]:checked').value === "random") {
+  const raw = document.getElementById('questionsInput').value.trim();
+  const blocks = raw.split(/\n\s*\n/).map(b => b.trim()).filter(b => b);
+  questions = blocks.map(b => {
+    const [q, a] = b.split('\n');
+    return { question: q.trim(), answer: (a||'').trim() };
+  });
+  // randomize?
+  if (document.querySelector('input[name="order"]:checked').value === 'random') {
     for (let i = questions.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [questions[i], questions[j]] = [questions[j], questions[i]];
@@ -82,188 +96,132 @@ function parseQuestions() {
   qIndex = 0;
 }
 
-// ─── START GAME BUTTON ─────────────────────────────────────────────────────
-startBtn.onclick = async () => {
-  // capture names & grid size
-  names.A = teamANameInput.value.trim() || "Team A";
-  names.B = teamBNameInput.value.trim() || "Team B";
-  total   = +gridSizeInput.value;
-
-  // if AI source, fetch from function
-  if (document.querySelector('input[name="source"]:checked').value === "ai") {
-    try {
-      questionsInput.value = "⏳ Generating questions via AI…";
-      const aiText = await fetchAIQuestions(
-        aiTopicInput.value.trim() || "General Knowledge",
-        total
-      );
-      questionsInput.value = aiText;
-    } catch (err) {
-      console.error(err);
-      alert("AI failed to generate questions. Try again later.");
-      return;
-    }
-  }
-
-  parseQuestions();
-  setupScreen.classList.add("hidden");
-  gameScreen.classList.remove("hidden");
-  initGame();
-};
-
-// ─── HOOK UP OTHER CONTROLS ─────────────────────────────────────────────────
-resetBtn.onclick = initGame;
-passBtn.onclick  = () => { turn = turn==="A"?"B":"A"; updateTurn(); showQuestion(); };
-skipBtn.onclick  = () => { qIndex = (qIndex+1) % questions.length; showQuestion(); };
-revealBtn.onclick= () => {
-  const ans = questions[qIndex].answer || "";
-  answerEl.textContent    = ans;
-  answerEl.style.color    = turn==="A" ? "var(--teamA)" : "var(--teamB)";
-  answerEl.style.textAlign= turn==="A" ? "left"        : "right";
-};
-
-// ─── GAME INITIALIZATION ───────────────────────────────────────────────────
+// ─── INIT & GRID BUILD ────────────────────────────────────────
 function initGame() {
-  scores = { A:0, B:0 };
-  picks  = { A:0, B:0 };
-  annA.textContent = "";
-  annB.textContent = "";
+  scores = { A: 0, B: 0 };
+  picks  = { A: 0, B: 0 };
+  annA.textContent = annB.textContent = '';
   nameAEl.textContent = names.A;
   nameBEl.textContent = names.B;
-  updateScores();
-  turn = "A";
-  updateTurn();
+  turn = 'A'; updateTurn(); updateScores();
   buildRewards(total);
   buildGrid(total);
   showQuestion();
 }
 
-// ─── BUILD REWARDS ARRAY ───────────────────────────────────────────────────
-function buildRewards(n) {
-  const ptsBase   = Math.floor(n*0.7),
-        loseBase  = Math.floor(n*0.1),
-        stealBase = loseBase,
-        dblBase   = n - (ptsBase + loseBase + stealBase),
-        minSpec   = n>=24 ? 3 : 2,
-        loseCount   = Math.max(loseBase, minSpec),
-        stealCount  = Math.max(stealBase, minSpec),
-        dblCount    = Math.max(dblBase,   minSpec),
-        ptsCount    = n - (loseCount + stealCount + dblCount);
-
-  rewards = [];
-  for(let i=0;i<ptsCount;i++)    rewards.push({ type:"points", value: (Math.floor(Math.random()*10)+1)*100 });
-  for(let i=0;i<loseCount;i++)   rewards.push({ type:"lose" });
-  for(let i=0;i<stealCount;i++)  rewards.push({ type:"steal" });
-  for(let i=0;i<dblCount;i++)    rewards.push({ type:"double" });
-
-  // shuffle
-  for(let i=rewards.length-1;i>0;i--){
-    const j = Math.floor(Math.random()*(i+1));
-    [rewards[i],rewards[j]] = [rewards[j],rewards[i]];
-  }
-}
-
-// ─── BUILD THE GRID ────────────────────────────────────────────────────────
 function buildGrid(n) {
-  gridEl.innerHTML = "";
+  gridEl.innerHTML = '';
   let cols = Math.floor(Math.sqrt(n));
   if (cols < 2) cols = 2;
   gridEl.style.gridTemplateColumns = `repeat(${cols},1fr)`;
-  for(let i=0;i<n;i++){
-    const btn = document.createElement("button");
-    btn.textContent = i+1;
-    btn.onclick = () => handlePick(btn,i);
+  for (let i = 0; i < n; i++) {
+    const btn = document.createElement('button');
+    btn.textContent = i + 1;
+    btn.addEventListener('click', () => handlePick(btn, i));
     gridEl.appendChild(btn);
   }
 }
 
-// ─── HANDLE A GRID PICK ───────────────────────────────────────────────────
-function handlePick(btn,i) {
-  let r = rewards[i], me = turn;
-  // first‐pick guarantee
-  if (picks[me]===0 && r.type!=="points") {
-    r = { type:"points", value: (Math.floor(Math.random()*10)+1)*100 };
-  }
-  picks[me]++;
+// ─── HANDLE A PICK ─────────────────────────────────────────────
+function handlePick(btn, i) {
+  const r = rewards[i];
+  const me = turn;
+  let out = '';
 
-  let out="";
-  if (r.type==="points") {
-    scores[me]+=r.value; out="+"+r.value;
-    btn.style.color = me==="A"?"var(--teamA)":"var(--teamB)";
-  } else if (r.type==="lose") {
-    scores[me]=0; out="☹️"; styleSpecial(btn,me); playSad();
-  } else if (r.type==="steal") {
-    const o = me==="A"?"B":"A";
-    scores[me]+=scores[o]; scores[o]=0;
-    out="🌪"; styleSpecial(btn,me); playWind();
-  } else {
-    scores[me]*=2; out="x2"; styleSpecial(btn,me);
+  if (r.type === 'points') {
+    scores[me] += r.value;
+    out = `+${r.value}`;
+  } else if (r.type === 'lose') {
+    scores[me] = 0;
+    out = '☹️';
+  } else if (r.type === 'steal') {
+    const other = me === 'A' ? 'B' : 'A';
+    scores[me] += scores[other];
+    scores[other] = 0;
+    out = '🌪';
+  } else if (r.type === 'double') {
+    scores[me] *= 2;
+    out = '×2';
   }
-
-  // announcement
-  if (me==="A") { annA.textContent=`${names.A} got ${out}`; annB.textContent=""; }
-  else          { annB.textContent=`${names.B} got ${out}`; annA.textContent=""; }
 
   btn.textContent = out;
-  btn.disabled    = true;
+  btn.disabled   = true;
   updateScores();
 
-  // end‐of‐game?
-  const done = document.querySelectorAll("#grid button:disabled").length;
-  if (done === total) {
-    if      (scores.A > scores.B) annA.textContent=`${names.A} wins! 🏆`;
-    else if (scores.B > scores.A) annB.textContent=`${names.B} wins! 🏆`;
-    else                          annA.textContent="It's a tie!";
+  // announcement
+  if (me === 'A') {
+    annA.textContent = `${names.A} got ${out}`;
+    annB.textContent = '';
   } else {
-    turn = me==="A"?"B":"A";
+    annB.textContent = `${names.B} got ${out}`;
+    annA.textContent = '';
+  }
+
+  // next turn or end?
+  const done = gridEl.querySelectorAll('button:disabled').length;
+  if (done === total) {
+    if (scores.A > scores.B)      annA.textContent = `${names.A} wins! 🏆`;
+    else if (scores.B > scores.A) annB.textContent = `${names.B} wins! 🏆`;
+    else                           annA.textContent = `It's a tie!`;
+  } else {
+    turn = me === 'A' ? 'B' : 'A';
     updateTurn();
     showQuestion();
   }
 }
 
-// ─── SHOW CURRENT QUESTION ─────────────────────────────────────────────────
+// ─── QUESTION DISPLAY ──────────────────────────────────────────
 function showQuestion() {
-  const qObj = questions[qIndex] || { question:"", answer:null };
-  questionEl.textContent   = qObj.question;
-  questionEl.style.color   = turn==="A" ? "var(--teamA)": "var(--teamB)";
-  questionEl.style.textAlign = turn==="A" ? "left" : "right";
-  answerEl.textContent     = "";
-  revealBtn.classList.toggle("hidden", !qObj.answer);
+  const qObj = questions[qIndex] || { question: '', answer: '' };
+  questionEl.textContent = qObj.question;
+  questionEl.style.textAlign = turn === 'A' ? 'left' : 'right';
+  questionEl.style.color = turn === 'A' ? 'var(--teamA)' : 'var(--teamB)';
+  answerEl.textContent = '';
+  revealBtn.classList.toggle('hidden', !qObj.answer);
 }
 
-// ─── UPDATE SCORES & TURN DISPLAY ──────────────────────────────────────────
-function updateScores(){
+passBtn.addEventListener('click', () => {
+  turn = turn === 'A' ? 'B' : 'A';
+  updateTurn();
+  showQuestion();
+});
+skipBtn.addEventListener('click', () => {
+  qIndex = (qIndex + 1) % questions.length;
+  showQuestion();
+});
+revealBtn.addEventListener('click', () => {
+  answerEl.textContent = questions[qIndex].answer;
+  answerEl.style.textAlign = turn === 'A' ? 'left' : 'right';
+  answerEl.style.color = turn === 'A' ? 'var(--teamA)' : 'var(--teamB)';
+});
+
+// ─── UTILS ─────────────────────────────────────────────────────
+function updateScores() {
   scoreAEl.textContent = scores.A;
   scoreBEl.textContent = scores.B;
 }
-function updateTurn(){
+function updateTurn() {
   turnEl.textContent = `${names[turn]}'s turn`;
-  turnEl.style.color = turn==="A"? "var(--teamA)": "var(--teamB)";
+  turnEl.style.color = turn === 'A' ? 'var(--teamA)' : 'var(--teamB)';
 }
 
-// ─── SPECIAL BUTTON STYLING & SOUNDS ───────────────────────────────────────
-function styleSpecial(btn,team){
-  const c = team==="A"? "var(--teamA)": "var(--teamB)";
-  btn.style.background = c;
-  btn.style.color      = "#fff";
-  btn.style.fontSize   = "2.5em";
+// ─── REWARDS SHUFFLE ───────────────────────────────────────────
+let rewards = [];
+function buildRewards(n) {
+  rewards = [];
+  // simple equal mix: mostly points, a few other types…
+  for (let i = 0; i < n; i++) {
+    if (i < n * 0.7) rewards.push({ type: 'points', value: (Math.floor(Math.random() * 5) + 1) * 100 });
+    else if (i < n * 0.8) rewards.push({ type: 'lose' });
+    else if (i < n * 0.9) rewards.push({ type: 'steal' });
+    else rewards.push({ type: 'double' });
+  }
+  // shuffle
+  for (let i = rewards.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [rewards[i], rewards[j]] = [rewards[j], rewards[i]];
+  }
 }
-function playWind(){
-  const C=new(window.AudioContext||window.webkitAudioContext)(),
-        buf=C.createBuffer(1,C.sampleRate*0.5,C.sampleRate),
-        d=buf.getChannelData(0);
-  for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1;
-  const src=C.createBufferSource(),f=C.createBiquadFilter();
-  src.buffer=buf; f.type='lowpass'; f.frequency.value=800;
-  src.connect(f).connect(C.destination);
-  src.start(); setTimeout(()=>src.stop(),500);
-}
-function playSad(){
-  const C=new(window.AudioContext||window.webkitAudioContext)(),
-        o=C.createOscillator(),g=C.createGain();
-  o.type='triangle'; o.frequency.value=220;
-  o.connect(g).connect(C.destination);
-  o.start(); g.gain.setValueAtTime(1,C.currentTime);
-  g.gain.exponentialRampToValueAtTime(0.001,C.currentTime+0.8);
-  setTimeout(()=>o.stop(),800);
-}
+
+// ─── RESET BUTTON ──────────────────────────────────────────────
+resetBtn.addEventListener('click', initGame);
