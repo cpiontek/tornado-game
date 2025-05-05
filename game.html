@@ -2,132 +2,89 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Play Tornado</title>
-  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700&family=Quicksand&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Quicksand', sans-serif;
-      background-color: #4a7d7b;
-      color: white;
-      margin: 0;
-      padding: 20px;
-      text-align: center;
-    }
-
-    .logo {
-      height: 100px;
-      margin-bottom: 10px;
-    }
-
-    .scoreboard {
-      display: flex;
-      justify-content: center;
-      gap: 60px;
-      margin-bottom: 10px;
-      font-size: 1.4em;
-    }
-
-    #team-a-score { color: red; }
-    #team-b-score { color: #4fc3f7; }
-
-    #turn-indicator {
-      font-size: 1.2em;
-      margin-bottom: 20px;
-      font-weight: bold;
-    }
-
-    #question-box, #answer-box {
-      font-size: 1.2em;
-      margin-top: 20px;
-      max-width: 80%;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    .grid {
-      display: grid;
-      gap: 10px;
-      justify-content: center;
-      margin-top: 20px;
-    }
-
-    .grid-button {
-      font-size: 2em;
-      padding: 20px;
-      border: none;
-      border-radius: 10px;
-      background-color: white;
-      color: black;
-      cursor: pointer;
-      min-width: 100px;
-      min-height: 100px;
-    }
-
-    .controls {
-      margin-top: 20px;
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-
-    .controls button, #reset-button {
-      font-size: 1em;
-      padding: 12px 20px;
-      background-color: #6c3ebf;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    .celebration {
-      font-size: 2em;
-      margin-top: 30px;
-      font-weight: bold;
-    }
-
-    .footer {
-      margin-top: 40px;
-      font-size: 0.9em;
-      color: #ccc;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tornado Game</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
-  <img src="tornado-logo.png" alt="Logo" class="logo">
-
-  <div class="scoreboard">
-    <div>
-      <div id="team-a-name">Team A</div>
-      <div id="team-a-score">0</div>
+  <div id="setup-screen">
+    <img src="tornado-logo.png" alt="Play Tornado Logo" id="logo">
+    <div class="form-row">
+      <div class="form-group">
+        <label for="team-a">Team A:</label>
+        <input type="text" id="team-a" placeholder="Team A" />
+      </div>
+      <div class="form-group">
+        <label for="team-b">Team B:</label>
+        <input type="text" id="team-b" placeholder="Team B" />
+      </div>
+      <div class="form-group">
+        <label for="grid-size">Grid Size:</label>
+        <select id="grid-size">
+          <option value="20">20 (4x5)</option>
+          <option value="25">25 (5x5)</option>
+          <option value="30">30 (5x6)</option>
+        </select>
+      </div>
+      <button id="start-btn">Start Game</button>
     </div>
-    <div>
-      <div id="team-b-name">Team B</div>
-      <div id="team-b-score">0</div>
+
+    <div class="form-section">
+      <label>Question source:</label>
+      <div class="button-row">
+        <button id="ai-source" class="source-btn">AI</button>
+        <button id="manual-source" class="source-btn selected">Paste my own / No questions</button>
+      </div>
     </div>
+
+    <div class="form-section">
+      <label for="question-blocks">Questions / Q&A Blocks:</label>
+      <textarea id="question-blocks" placeholder="Example format:
+Who is the hero of The Odyssey?
+Odysseus
+
+What city is Fenway Park in?
+Boston"></textarea>
+    </div>
+
+    <div class="form-section">
+      <label for="ai-topic">Topic for AI:</label>
+      <input type="text" id="ai-topic" placeholder="e.g., The Beatles">
+    </div>
+
+    <footer>Created by Timothy Piontek</footer>
   </div>
 
-  <div id="turn-indicator">Current Turn: Team A</div>
+  <div id="game-screen" class="hidden">
+    <div id="scoreboard">
+      <div class="team">
+        <h2 id="team-a-name">Team A</h2>
+        <p id="team-a-score" class="score red">0</p>
+      </div>
+      <div class="team">
+        <h2 id="team-b-name">Team B</h2>
+        <p id="team-b-score" class="score blue">0</p>
+      </div>
+    </div>
 
-  <div id="question-box"></div>
-  <div id="answer-box" style="display: none;"></div>
+    <div id="turn-indicator">Team A's Turn</div>
 
-  <div class="controls">
-    <button id="reveal-btn" style="display: none;">Reveal Answer</button>
-    <button id="pass-btn">✅ Pass</button>
-    <button id="skip-btn">⏭️ Skip</button>
+    <div id="question-container">
+      <div>
+        <div id="question-box">Question appears here</div>
+        <div id="button-row">
+          <button id="pass-btn">Pass</button>
+          <button id="skip-btn">Skip</button>
+          <button id="reveal-btn" class="hidden">Reveal Answer</button>
+        </div>
+      </div>
+      <div id="answer-box">Answer appears here</div>
+    </div>
+
+    <div id="grid"></div>
   </div>
-
-  <div id="grid" class="grid"></div>
-
-  <button id="reset-button">🔄 Reset Game</button>
-
-  <div id="celebration-message" class="celebration"></div>
-
-  <div class="footer">Created by Timothy Piontek</div>
 
   <script src="script.js"></script>
 </body>
