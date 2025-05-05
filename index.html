@@ -16,8 +16,9 @@
     }
 
     .logo {
-      height: 100px;
-      margin-bottom: 20px;
+      height: 140px;
+      margin-bottom: 10px;
+      margin-top: -10px;
     }
 
     .form-row {
@@ -78,6 +79,13 @@
       border-radius: 8px;
       cursor: pointer;
       font-weight: bold;
+      opacity: 0.7;
+      transition: 0.2s;
+    }
+
+    .option-buttons button.active {
+      opacity: 1;
+      background-color: #9575cd;
     }
 
     textarea, input[type="text"]#topic {
@@ -148,16 +156,19 @@ Boston"></textarea>
   <script>
     let questionSource = 'manual';
 
-    document.getElementById('ai').addEventListener('click', () => {
+    const aiBtn = document.getElementById('ai');
+    const manualBtn = document.getElementById('manual');
+
+    aiBtn.addEventListener('click', () => {
       questionSource = 'ai';
-      document.getElementById('ai').classList.add('active');
-      document.getElementById('manual').classList.remove('active');
+      aiBtn.classList.add('active');
+      manualBtn.classList.remove('active');
     });
 
-    document.getElementById('manual').addEventListener('click', () => {
+    manualBtn.addEventListener('click', () => {
       questionSource = 'manual';
-      document.getElementById('manual').classList.add('active');
-      document.getElementById('ai').classList.remove('active');
+      manualBtn.classList.add('active');
+      aiBtn.classList.remove('active');
     });
 
     document.getElementById('startBtn').addEventListener('click', () => {
