@@ -1,212 +1,155 @@
-<script>
-  // ─── GAME STATE & DOM ─────────────────────────────────────────
-  let rewards=[], scores={A:0,B:0}, picks={A:0,B:0},
-      turn='A', names={A:'Team A',B:'Team B'}, total=20,
-      questions=[], qIndex=0;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Play Tornado</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; background: #f0f8ff; margin: 0; padding: 20px; }
+    h1 { font-size: 2em; }
+    #setup, #game { max-width: 600px; margin: auto; }
+    .hidden { display: none; }
+    textarea, input { width: 100%; margin-top: 5px; margin-bottom: 15px; padding: 8px; }
+    button { padding: 10px 15px; font-weight: bold; margin: 5px; }
+    #grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 10px; margin-top: 20px; }
+    #grid button { padding: 20px; font-size: 1.2em; background: #add8e6; border: none; border-radius: 8px; }
+    #grid button:disabled { background: #ccc; }
+    .scoreboard { display: flex; justify-content: space-around; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <div id="setup">
+    <h1>🌪 Play Tornado</h1>
+    <label>Team A Name: <input id="teamA" value="Team A"></label>
+    <label>Team B Name: <input id="teamB" value="Team B"></label>
+    <label>Grid Size:
+      <select id="gridSize">
+        <option>8</option><option>10</option><option selected>20</option><option>30</option>
+      </select>
+    </label>
+    <label>
+      Topic for AI-generated questions:
+      <input id="topic" placeholder="e.g. Space, Animals, History" />
+    </label>
+    <button id="start">Start Game</button>
+  </div>
 
-  const setupScreen   = document.getElementById('setupScreen'),
-        gameScreen    = document.getElementById('gameScreen'),
-        startBtn      = document.getElementById('startGameBtn'),
-        resetBtn      = document.getElementById('resetBtn'),
-        passBtn       = document.getElementById('passBtn'),
-        skipBtn       = document.getElementById('skipBtn'),
-        revealBtn     = document.getElementById('revealBtn'),
-        gridEl        = document.getElementById('grid'),
-        annA          = document.getElementById('annA'),
-        annB          = document.getElementById('annB'),
-        nameAEl       = document.getElementById('nameA'),
-        nameBEl       = document.getElementById('nameB'),
-        scoreAEl      = document.getElementById('scoreA'),
-        scoreBEl      = document.getElementById('scoreB'),
-        turnEl        = document.getElementById('turnDisplay'),
-        questionEl    = document.getElementById('question'),
-        answerEl      = document.getElementById('answer'),
-        sourceRadios  = document.querySelectorAll('input[name="source"]'),
-        aiLabel       = document.getElementById('aiTopicLabel');
+  <div id="game" class="hidden">
+    <h2 id="turn"></h2>
+    <div class="scoreboard">
+      <div><strong id="nameA">Team A</strong><div id="scoreA">0</div></div>
+      <div><strong id="nameB">Team B</strong><div id="scoreB">0</div></div>
+    </div>
+    <div id="questionBox">
+      <p id="question"></p>
+      <p><em id="answer"></em></p>
+      <button id="revealBtn" class="hidden">Reveal Answer</button>
+    </div>
+    <div id="grid"></div>
+    <button id="reset">Reset</button>
+  </div>
 
-  sourceRadios.forEach(r => r.onchange = () => {
-    aiLabel.classList.toggle('hidden', r.value!=='ai' || !r.checked);
-  });
+  <script>
+    let turn = 'A', scores = { A: 0, B: 0 }, questions = [], qIndex = 0, rewards = [];
 
-  startBtn.onclick = async () => {
-    names.A = document.getElementById('teamANameInput').value;
-    names.B = document.getElementById('teamBNameInput').value;
-    total   = +document.getElementById('gridSizeInput').value;
+    const $ = id => document.getElementById(id);
+    const teamAInput = $('teamA'), teamBInput = $('teamB'), topicInput = $('topic');
 
-    const source = document.querySelector('input[name="source"]:checked').value;
-    if (source==='ai') {
-      const topic = document.getElementById('aiTopicInput').value.trim() || 'General Knowledge';
-      const raw   = await fetchAIQuestions(topic, total);
-      document.getElementById('questionsInput').value = raw;
+    $('start').onclick = async () => {
+      $('setup').classList.add('hidden');
+      $('game').classList.remove('hidden');
+      $('nameA').textContent = teamAInput.value;
+      $('nameB').textContent = teamBInput.value;
+      scores = { A: 0, B: 0 };
+      updateScores();
+      const count = parseInt($('gridSize').value);
+      await loadQuestions(topicInput.value || "general", count);
+      generateRewards(count);
+      buildGrid(count);
+      showQuestion();
+      updateTurn();
+    };
+
+    $('reset').onclick = () => location.reload();
+
+    $('revealBtn').onclick = () => {
+      $('answer').textContent = questions[qIndex]?.answer || '';
+    };
+
+    function updateScores() {
+      $('scoreA').textContent = scores.A;
+      $('scoreB').textContent = scores.B;
     }
 
-    parseQuestions();
-    setupScreen.classList.add('hidden');
-    gameScreen .classList.remove('hidden');
-    initGame();
-  };
-
-  resetBtn.onclick = initGame;
-  passBtn.onclick  = () => { turn = turn==='A'?'B':'A'; updateTurn(); showQuestion(); };
-  skipBtn.onclick  = () => { qIndex=(qIndex+1)%questions.length; showQuestion(); };
-  revealBtn.onclick= () => {
-    const ans = questions[qIndex].answer || '';
-    answerEl.textContent = ans;
-    answerEl.style.color = turn==='A'? 'var(--teamA)' : 'var(--teamB)';
-    answerEl.style.textAlign = turn==='A'? 'left' : 'right';
-  };
-
-  async function fetchAIQuestions(topic, count) {
-    const url = `/.netlify/functions/generate-questions?topic=${encodeURIComponent(topic)}&count=${count}`;
-    const res = await fetch(url);
-    const data = await res.json();
-    return data.data.map(q => `${q.question}\n${q.answer}`).join('\n\n');
-  }
-
-  function parseQuestions(){
-    const raw = document.getElementById('questionsInput').value;
-    const blocks = raw.split(/\n\s*\n/).map(b=>b.trim()).filter(b=>b);
-    if (blocks.some(b=>b.split('\n').length>1)){
-      questions = blocks.map(b=>{
-        const [q,a] = b.split('\n');
-        return { question:q.trim(), answer:a?.trim()||null };
-      });
-    } else {
-      questions = raw.split('\n').map(l=>l.trim()).filter(l=>l)
-                       .map(q=>({ question:q.replace(/^\d+\.\s*/,''), answer:null }));
+    function updateTurn() {
+      $('turn').textContent = (turn === 'A' ? teamAInput.value : teamBInput.value) + "'s turn";
+      $('answer').textContent = '';
+      $('revealBtn').classList.toggle('hidden', !questions[qIndex]?.answer);
     }
-    if (document.querySelector('input[name="order"]:checked').value==='random') {
-      for (let i=questions.length-1; i>0; i--){
-        const j=Math.floor(Math.random()*(i+1));
-        [questions[i],questions[j]]=[questions[j],questions[i]];
+
+    function showQuestion() {
+      $('question').textContent = questions[qIndex]?.question || '';
+    }
+
+    function buildGrid(n) {
+      const grid = $('grid');
+      grid.innerHTML = '';
+      for (let i = 0; i < n; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = i + 1;
+        btn.onclick = () => {
+          handleReward(i, btn);
+        };
+        grid.appendChild(btn);
       }
     }
-    qIndex=0;
-  }
 
-  function initGame(){
-    scores={A:0,B:0}; picks={A:0,B:0};
-    annA.textContent=''; annB.textContent='';
-    nameAEl.textContent=names.A; nameBEl.textContent=names.B;
-    updateScores(); turn='A'; updateTurn();
-    buildRewards(total); buildGrid(total); showQuestion();
-  }
+    function handleReward(i, btn) {
+      const reward = rewards[i];
+      let out = '';
 
-  function buildRewards(n){
-    const ptsBase=Math.floor(n*0.7),
-          loseBase=Math.floor(n*0.1),
-          stealBase=loseBase,
-          dblBase=n-(ptsBase+loseBase+stealBase),
-          minSpec=n>=24?3:2,
-          loseCount=Math.max(loseBase,minSpec),
-          stealCount=Math.max(stealBase,minSpec),
-          dblCount=Math.max(dblBase,minSpec),
-          ptsCount=n-(loseCount+stealCount+dblCount);
-    rewards=[];
-    for(let i=0;i<ptsCount;i++) rewards.push({type:'points',value:(Math.floor(Math.random()*10)+1)*100});
-    for(let i=0;i<loseCount;i++) rewards.push({type:'lose'});
-    for(let i=0;i<stealCount;i++) rewards.push({type:'steal'});
-    for(let i=0;i<dblCount;i++) rewards.push({type:'double'});
-    for(let i=rewards.length-1;i>0;i--){
-      const j=Math.floor(Math.random()*(i+1));
-      [rewards[i],rewards[j]]=[rewards[j],rewards[i]];
-    }
-  }
+      if (reward.type === 'points') {
+        scores[turn] += reward.value;
+        out = '+' + reward.value;
+      } else if (reward.type === 'lose') {
+        scores[turn] = 0;
+        out = '☹️';
+      } else if (reward.type === 'steal') {
+        const other = turn === 'A' ? 'B' : 'A';
+        scores[turn] += scores[other];
+        scores[other] = 0;
+        out = '🌪';
+      } else {
+        scores[turn] *= 2;
+        out = 'x2';
+      }
 
-  function buildGrid(n){
-    gridEl.innerHTML='';
-    let cols=Math.floor(Math.sqrt(n));
-    if (cols<2) cols=2;
-    gridEl.style.gridTemplateColumns = `repeat(${cols},1fr)`;
-    for(let i=0;i<n;i++){
-      const btn=document.createElement('button');
-      btn.textContent = i+1;
-      btn.onclick     = ()=>handlePick(btn,i);
-      gridEl.appendChild(btn);
-    }
-  }
+      btn.textContent = out;
+      btn.disabled = true;
+      updateScores();
 
-  function handlePick(btn,i){
-    let r=rewards[i], me=turn;
-    if (picks[me]===0 && r.type!=='points') {
-      r={type:'points',value:(Math.floor(Math.random()*10)+1)*100};
-    }
-    picks[me]++;
-    let out='';
-    if(r.type==='points'){
-      scores[me]+=r.value; out='+'+r.value;
-      btn.style.color = me==='A'?'var(--teamA)':'var(--teamB)';
-    } else if(r.type==='lose'){
-      scores[me]=0; out='☹️'; styleSpecial(btn,me); playSad();
-    } else if(r.type==='steal'){
-      const o=me==='A'?'B':'A';
-      scores[me]+=scores[o]; scores[o]=0;
-      out='🌪'; styleSpecial(btn,me); playWind();
-    } else {
-      scores[me]*=2; out='x2'; styleSpecial(btn,me);
+      qIndex = (qIndex + 1) % questions.length;
+      turn = turn === 'A' ? 'B' : 'A';
+      showQuestion();
+      updateTurn();
     }
 
-    if(me==='A'){ annA.textContent=`${names.A} got ${out}`; annB.textContent=''; }
-    else        { annB.textContent=`${names.B} got ${out}`; annA.textContent=''; }
-
-    btn.textContent=out; btn.disabled=true;
-    updateScores();
-
-    const done = document.querySelectorAll('#grid button:disabled').length;
-    if(done===total){
-      if(scores.A>scores.B)      { annA.textContent=`${names.A} wins! 🏆`; annB.textContent=''; }
-      else if(scores.B>scores.A) { annB.textContent=`${names.B} wins! 🏆`; annA.textContent=''; }
-      else                       { annA.textContent="It's a tie!"; annB.textContent=''; }
-    } else {
-      turn = me==='A'?'B':'A';
-      updateTurn(); showQuestion();
+    function generateRewards(n) {
+      rewards = Array(n).fill(null).map(() => {
+        const rand = Math.random();
+        if (rand < 0.6) return { type: 'points', value: (Math.floor(Math.random() * 10) + 1) * 100 };
+        if (rand < 0.75) return { type: 'lose' };
+        if (rand < 0.9) return { type: 'steal' };
+        return { type: 'double' };
+      });
     }
-  }
 
-  function showQuestion(){
-    const qObj = questions[qIndex]||{question:'',answer:null};
-    questionEl.textContent = qObj.question;
-    questionEl.style.color   = turn==='A'? 'var(--teamA)' : 'var(--teamB)';
-    questionEl.style.textAlign = turn==='A'? 'left' : 'right';
-    answerEl.textContent = '';
-    revealBtn.classList.toggle('hidden', !qObj.answer);
-  }
-
-  function updateScores(){
-    scoreAEl.textContent = scores.A;
-    scoreBEl.textContent = scores.B;
-  }
-
-  function updateTurn(){
-    turnEl.textContent = `${names[turn]}'s turn`;
-    turnEl.style.color = turn==='A'? 'var(--teamA)' : 'var(--teamB)';
-  }
-
-  function styleSpecial(btn,team){
-    const clr = team==='A'? 'var(--teamA)' : 'var(--teamB)';
-    btn.style.background = clr;
-    btn.style.color      = '#fff';
-    btn.style.fontSize   = '2.5em';
-  }
-
-  function playWind(){
-    const C=new(window.AudioContext||window.webkitAudioContext)(),
-          buf=C.createBuffer(1,C.sampleRate*0.5,C.sampleRate),
-          d=buf.getChannelData(0);
-    for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1;
-    const src=C.createBufferSource(),f=C.createBiquadFilter();
-    src.buffer=buf; f.type='lowpass'; f.frequency.value=800;
-    src.connect(f).connect(C.destination); src.start();
-    setTimeout(()=>src.stop(),500);
-  }
-
-  function playSad(){
-    const C=new(window.AudioContext||window.webkitAudioContext)(),
-          o=C.createOscillator(),g=C.createGain();
-    o.type='triangle'; o.frequency.value=220;
-    o.connect(g).connect(C.destination);
-    o.start(); g.gain.setValueAtTime(1,C.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001,C.currentTime+0.8);
-    setTimeout(()=>o.stop(),800);
-  }
-</script>
+    async function loadQuestions(topic, count) {
+      const url = `/.netlify/functions/generate-questions?topic=${encodeURIComponent(topic)}&count=${count}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      questions = data.data || [];
+    }
+  </script>
+</body>
+</html>
