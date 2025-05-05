@@ -1,190 +1,89 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tornado Game</title>
-  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700&family=Quicksand&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Quicksand', sans-serif;
-      text-align: center;
-      background: linear-gradient(135deg, #2f6b68, #154c61);
-      margin: 0;
-      padding: 20px;
-      color: #fff;
-    }
-    h1 {
-      font-family: 'Baloo 2', cursive;
-      font-size: 3em;
-      margin: 20px 0 10px;
-    }
-    .logo {
-      width: 160px;
-      margin: 10px auto 0;
-      display: block;
-    }
-    .scores {
-      display: flex;
-      justify-content: center;
-      gap: 40px;
-      margin: 20px 0;
-    }
-    .team-name {
-      font-family: 'Baloo 2', cursive;
-      font-size: 1.5em;
-      font-weight: bold;
-    }
-    .score {
-      font-size: 2.5em;
-    }
-    .team-a {
-      color: red;
-    }
-    .team-b {
-      color: #4ec3ff;
-    }
-    .score-popup {
-      position: absolute;
-      animation: pop 1s ease-out forwards;
-      font-size: 1.5em;
-    }
-    @keyframes pop {
-      0% { opacity: 1; transform: translateY(0); }
-      100% { opacity: 0; transform: translateY(-30px); }
-    }
-    #grid {
-      display: grid;
-      gap: 10px;
-      justify-content: center;
-      margin: 20px auto;
-    }
-    .grid-button {
-      width: 80px;
-      height: 80px;
-      font-size: 1.4em;
-      font-weight: bold;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    #question-box, #answer-box {
-      margin: 20px auto;
-      max-width: 600px;
-      background: white;
-      color: #000;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.2);
-      display: none;
-      font-size: 1.2em;
-    }
-    #reveal-btn {
-      display: none;
-      margin-top: 10px;
-      padding: 12px 24px;
-      font-size: 1.1em;
-      font-weight: bold;
-      border-radius: 6px;
-      border: none;
-      background-color: #7e57c2;
-      color: #fff;
-      cursor: pointer;
-    }
-  </style>
-</head>
-<body>
-  <img src="tornado-logo.png" alt="Play Tornado Logo" class="logo" onerror="this.style.display='none'; document.getElementById('fallback-title').style.display='block';">
-  <h1 id="fallback-title" style="display:none">Tornado Game</h1>
+// script.js
+let gameData = JSON.parse(localStorage.getItem('playTornadoGameData'));
 
-  <div class="scores">
-    <div>
-      <div class="team-name team-a" id="team-a-name">Team A</div>
-      <div class="score team-a" id="team-a-score">0</div>
-    </div>
-    <div>
-      <div class="team-name team-b" id="team-b-name">Team B</div>
-      <div class="score team-b" id="team-b-score">0</div>
-    </div>
-  </div>
+const gridContainer = document.getElementById('grid');
+const questionBox = document.getElementById('question-box');
+const revealButton = document.getElementById('reveal-btn');
+const answerBox = document.getElementById('answer-box');
+const teamAScore = document.getElementById('team-a-score');
+const teamBScore = document.getElementById('team-b-score');
 
-  <div id="grid"></div>
+let currentQuestionIndex = -1;
+let revealedAnswers = new Set();
+let questions = [];
 
-  <div id="question-box"></div>
-  <div id="answer-box"></div>
-  <button id="reveal-btn" onclick="document.getElementById('answer-box').style.display='block'">Reveal Answer</button>
+function parseManualQuestions(raw) {
+  return raw.split('\n\n').map(qb => {
+    const [q, a] = qb.split('\n').map(s => s.trim());
+    return { q, a };
+  });
+}
 
-  <script>
-    let gameData = JSON.parse(localStorage.getItem('playTornadoGameData'));
-    const gridContainer = document.getElementById('grid');
-    const questionBox = document.getElementById('question-box');
-    const answerBox = document.getElementById('answer-box');
-    const teamAScore = document.getElementById('team-a-score');
-    const teamBScore = document.getElementById('team-b-score');
-    let currentQuestionIndex = -1;
-    let questions = [];
+function generateGrid(num) {
+  gridContainer.innerHTML = '';
+  const cols = Math.ceil(Math.sqrt(num));
+  gridContainer.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
 
-    function parseManualQuestions(raw) {
-      return raw.split('\n\n').map(qb => {
-        const [q, a] = qb.split('\n').map(s => s.trim());
-        return { q, a };
-      });
+  for (let i = 0; i < num; i++) {
+    const btn = document.createElement('button');
+    btn.textContent = i + 1;
+    btn.className = 'grid-button';
+    btn.onclick = () => handleGridClick(i);
+    gridContainer.appendChild(btn);
+  }
+}
+
+function handleGridClick(index) {
+  currentQuestionIndex = index;
+  const button = document.querySelectorAll('.grid-button')[index];
+  button.disabled = true;
+
+  if (gameData.useQuestions && questions[index]) {
+    questionBox.textContent = questions[index].q;
+    answerBox.textContent = questions[index].a;
+    answerBox.style.display = 'block';
+  } else {
+    questionBox.textContent = `Pick a challenge! (Box ${index + 1})`;
+    answerBox.textContent = '';
+    answerBox.style.display = 'none';
+  }
+  questionBox.style.display = 'block';
+  revealButton.style.display = 'none';
+}
+
+function addPoints(team, points) {
+  const el = team === 'A' ? teamAScore : teamBScore;
+  let score = parseInt(el.textContent);
+  score += points;
+  el.textContent = score;
+
+  const pop = document.createElement('div');
+  pop.textContent = `+${points}`;
+  pop.className = 'score-popup ' + (team === 'A' ? 'team-a' : 'team-b');
+  el.appendChild(pop);
+
+  setTimeout(() => pop.remove(), 1000);
+}
+
+function initGame() {
+  if (gameData.useQuestions) {
+    if (gameData.questionSource === 'manual') {
+      questions = parseManualQuestions(gameData.questions);
+    } else {
+      questions = Array(gameData.gridSize).fill().map((_, i) => ({
+        q: `AI Question ${i + 1}`,
+        a: `AI Answer ${i + 1}`
+      }));
     }
-
-    function generateGrid(num) {
-      gridContainer.innerHTML = '';
-      const cols = Math.ceil(Math.sqrt(num));
-      gridContainer.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-
-      for (let i = 0; i < num; i++) {
-        const btn = document.createElement('button');
-        btn.textContent = i + 1;
-        btn.className = 'grid-button';
-        btn.onclick = () => handleGridClick(i);
-        gridContainer.appendChild(btn);
-      }
+    if (gameData.questionOrder === 'random') {
+      questions = questions.sort(() => Math.random() - 0.5);
     }
+  }
 
-    function handleGridClick(index) {
-      currentQuestionIndex = index;
-      const button = document.querySelectorAll('.grid-button')[index];
-      button.disabled = true;
+  document.getElementById('team-a-name').textContent = gameData.teamA;
+  document.getElementById('team-b-name').textContent = gameData.teamB;
 
-      if (gameData.useQuestions && questions[index]) {
-        questionBox.textContent = questions[index].q;
-        answerBox.textContent = questions[index].a;
-        answerBox.style.display = 'block';
-      } else {
-        questionBox.textContent = `Pick a challenge! (Box ${index + 1})`;
-        answerBox.textContent = '';
-        answerBox.style.display = 'none';
-      }
-      questionBox.style.display = 'block';
-      document.getElementById('reveal-btn').style.display = 'none';
-    }
+  generateGrid(gameData.gridSize);
+}
 
-    function initGame() {
-      if (gameData.useQuestions) {
-        if (gameData.questionSource === 'manual') {
-          questions = parseManualQuestions(gameData.questions);
-        } else {
-          questions = Array(gameData.gridSize).fill().map((_, i) => ({
-            q: `AI Question ${i + 1}`,
-            a: `AI Answer ${i + 1}`
-          }));
-        }
-        if (gameData.questionOrder === 'random') {
-          questions = questions.sort(() => Math.random() - 0.5);
-        }
-      }
-
-      document.getElementById('team-a-name').textContent = gameData.teamA;
-      document.getElementById('team-b-name').textContent = gameData.teamB;
-
-      generateGrid(gameData.gridSize);
-    }
-
-    initGame();
-  </script>
-</body>
-</html>
+initGame();
