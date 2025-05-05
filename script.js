@@ -1,177 +1,107 @@
-// script.js
 let gameData = JSON.parse(localStorage.getItem('playTornadoGameData'));
-const grid = document.getElementById('grid');
-const questionEl = document.getElementById('question-box');
-const answerBox = document.getElementById('answer-box');
-const revealBtn = document.getElementById('reveal-btn');
-const teamAEl = document.getElementById('team-a-name');
-const teamBEl = document.getElementById('team-b-name');
-const teamAScore = document.getElementById('team-a-score');
-const teamBScore = document.getElementById('team-b-score');
-const turnDisplay = document.getElementById('turnDisplay');
-const passBtn = document.getElementById('pass-btn');
-const skipBtn = document.getElementById('skip-btn');
-const resetBtn = document.getElementById('reset-btn');
-const endMessage = document.getElementById('endgame-message');
 
-let currentTeam = 'A';
-let score = { A: 0, B: 0 };
+let teamNames = {
+  A: gameData?.teamA || 'Team A',
+  B: gameData?.teamB || 'Team B'
+};
+
+let gridSize = parseInt(gameData?.gridSize) || 20;
 let questions = [];
-let rewards = [];
-let questionIndex = 0;
+let currentIndex = 0;
+let currentTeam = 'A';
+let scores = { A: 0, B: 0 };
 
-function shuffle(arr) {
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-}
+const scoreAEl = document.getElementById('scoreA');
+const scoreBEl = document.getElementById('scoreB');
+const teamANameEl = document.getElementById('team-a-name');
+const teamBNameEl = document.getElementById('team-b-name');
+const turnDisplay = document.getElementById('turnDisplay');
+const questionEl = document.getElementById('question');
+const answerEl = document.getElementById('answer');
+const grid = document.getElementById('grid');
+const endMsg = document.getElementById('endgame-message');
 
-function parseQuestions(raw) {
-  return raw.split('\n\n').map(pair => {
-    const [q, a] = pair.split('\n');
-    return { question: q.trim(), answer: a?.trim() || '' };
-  });
-}
+function initialize() {
+  teamANameEl.textContent = teamNames.A;
+  teamBNameEl.textContent = teamNames.B;
 
-function loadQuestions() {
   if (gameData.questionSource === 'manual') {
-    questions = parseQuestions(gameData.questions);
+    let raw = gameData.questions.trim();
+    let blocks = raw.split(/\n\s*\n/);
+    questions = blocks.map(b => {
+      const [q, a] = b.trim().split('\n');
+      return { q: q || '', a: a || '' };
+    });
   } else {
-    questions = Array.from({ length: gameData.gridSize }, (_, i) => ({
-      question: `AI Question ${i + 1}`,
-      answer: `AI Answer ${i + 1}`
+    questions = Array.from({ length: gridSize }, (_, i) => ({
+      q: `AI Question ${i + 1}`,
+      a: `AI Answer ${i + 1}`
     }));
   }
-  if (gameData.questionOrder === 'random') shuffle(questions);
-  while (questions.length < gameData.gridSize) {
+
+  while (questions.length < gridSize) {
     questions.push(...questions);
   }
-  questions = questions.slice(0, gameData.gridSize);
+  questions = questions.slice(0, gridSize);
+
+  drawGrid();
+  updateUI();
 }
 
-function generateRewards(size) {
-  const specials = ['lose', 'steal', 'double'];
-  const base = Array.from({ length: size }, () => ({
-    type: 'points',
-    value: (Math.floor(Math.random() * 10) + 1) * 100
-  }));
-  for (let i = 0; i < specials.length; i++) {
-    base[i] = { type: specials[i] };
-  }
-  shuffle(base);
-  return base;
-}
-
-function updateScores() {
-  teamAScore.textContent = score.A;
-  teamBScore.textContent = score.B;
-}
-
-function showQuestion() {
-  const q = questions[questionIndex];
-  questionEl.textContent = q.question;
-  answerBox.textContent = '';
-  answerBox.classList.add('hidden');
-  revealBtn.classList.toggle('hidden', !q.answer);
-  turnDisplay.textContent = `${currentTeam === 'A' ? gameData.teamA : gameData.teamB}'s turn`;
-}
-
-function revealAnswer() {
-  const q = questions[questionIndex];
-  answerBox.textContent = q.answer;
-  answerBox.classList.remove('hidden');
-}
-
-function playSound(type) {
-  const audio = new Audio(type === 'wind' ? './wind.mp3' : './sad.mp3');
-  audio.play();
-}
-
-function handleClick(i, btn) {
-  const reward = rewards[i];
-  const color = currentTeam === 'A' ? 'red' : 'blue';
-
-  if (reward.type === 'points') {
-    score[currentTeam] += reward.value;
-    btn.textContent = `+${reward.value}`;
-  } else if (reward.type === 'double') {
-    score[currentTeam] *= 2;
-    btn.textContent = 'x2';
-  } else if (reward.type === 'steal') {
-    const other = currentTeam === 'A' ? 'B' : 'A';
-    score[currentTeam] += score[other];
-    score[other] = 0;
-    btn.textContent = '🌪';
-    playSound('wind');
-  } else if (reward.type === 'lose') {
-    score[currentTeam] = 0;
-    btn.textContent = '❌';
-    playSound('sad');
-  }
-
-  btn.disabled = true;
-  btn.style.border = `3px solid ${color}`;
-  btn.style.color = color;
-  updateScores();
-  revealAnswer();
-
-  const allDone = [...grid.children].every(b => b.disabled);
-  if (allDone) {
-    endGame();
-  } else {
-    currentTeam = currentTeam === 'A' ? 'B' : 'A';
-    questionIndex = (questionIndex + 1) % questions.length;
-    showQuestion();
-  }
-}
-
-function endGame() {
-  let message = '';
-  if (score.A > score.B) message = `${gameData.teamA} wins! 🎉`;
-  else if (score.B > score.A) message = `${gameData.teamB} wins! 🎉`;
-  else message = "It's a tie!";
-  endMessage.textContent = message;
-  endMessage.classList.remove('hidden');
-  resetBtn.classList.remove('hidden');
-}
-
-function setupGrid() {
+function drawGrid() {
   grid.innerHTML = '';
-  grid.style.gridTemplateColumns = `repeat(${Math.ceil(Math.sqrt(gameData.gridSize))}, 1fr)`;
-  for (let i = 0; i < gameData.gridSize; i++) {
-    const btn = document.createElement('button');
+  let cols = Math.ceil(Math.sqrt(gridSize));
+  grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+  for (let i = 0; i < gridSize; i++) {
+    let btn = document.createElement('button');
     btn.textContent = i + 1;
-    btn.onclick = () => handleClick(i, btn);
+    btn.onclick = () => handlePick(btn, i);
     grid.appendChild(btn);
   }
 }
 
-passBtn.onclick = () => {
-  currentTeam = currentTeam === 'A' ? 'B' : 'A';
-  showQuestion();
-};
-
-skipBtn.onclick = () => {
-  questionIndex = (questionIndex + 1) % questions.length;
-  currentTeam = currentTeam === 'A' ? 'B' : 'A';
-  showQuestion();
-};
-
-revealBtn.onclick = revealAnswer;
-
-resetBtn.onclick = () => window.location.href = '/';
-
-function startGame() {
-  document.getElementById('gameScreen').classList.remove('hidden');
-  teamAEl.textContent = gameData.teamA;
-  teamBEl.textContent = gameData.teamB;
-  score = { A: 0, B: 0 };
-  updateScores();
-  loadQuestions();
-  rewards = generateRewards(gameData.gridSize);
-  setupGrid();
-  showQuestion();
+function updateUI() {
+  scoreAEl.textContent = scores.A;
+  scoreBEl.textContent = scores.B;
+  turnDisplay.textContent = `${teamNames[currentTeam]}'s Turn`;
+  const currentQ = questions[currentIndex];
+  questionEl.textContent = currentQ.q;
+  answerEl.textContent = '';
+  endMsg.classList.add('hidden');
 }
 
-startGame();
+function handlePick(btn, index) {
+  btn.disabled = true;
+  const value = 100;
+  scores[currentTeam] += value;
+  answerEl.textContent = questions[index].a;
+  updateUI();
+  nextTurn();
+}
+
+function nextTurn() {
+  currentTeam = currentTeam === 'A' ? 'B' : 'A';
+  currentIndex = (currentIndex + 1) % questions.length;
+  updateUI();
+}
+
+document.getElementById('passBtn').onclick = () => {
+  currentTeam = currentTeam === 'A' ? 'B' : 'A';
+  updateUI();
+};
+
+document.getElementById('skipBtn').onclick = () => {
+  currentIndex = (currentIndex + 1) % questions.length;
+  currentTeam = currentTeam === 'A' ? 'B' : 'A';
+  updateUI();
+};
+
+document.getElementById('revealBtn').onclick = () => {
+  answerEl.textContent = questions[currentIndex].a;
+};
+
+document.getElementById('resetBtn').onclick = () => {
+  location.href = 'index.html';
+};
+
+initialize();
