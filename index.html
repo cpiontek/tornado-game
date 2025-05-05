@@ -11,24 +11,29 @@
       margin: 0;
       padding: 0;
       background: #4a7d7b;
-      text-align: center;
       color: #fff;
-    }
-    header {
       display: flex;
-      justify-content: center;
+      flex-direction: row;
+    }
+    .logo-column {
+      flex: 0 0 20%;
+      display: flex;
       align-items: center;
-      gap: 20px;
-      padding-top: 20px;
-      flex-wrap: wrap;
+      justify-content: center;
+      padding: 20px;
     }
     .logo {
-      width: 100px;
+      width: 300px;
+    }
+    .form-column {
+      flex: 1;
+      text-align: center;
+      padding: 20px;
     }
     h1 {
       font-family: 'Baloo 2', cursive;
       font-size: 3em;
-      margin: 0;
+      margin: 0 0 20px;
     }
     .footer {
       margin-top: 40px;
@@ -52,7 +57,7 @@
       max-width: 90%;
     }
     #gridSize {
-      width: 80px;
+      width: 120px;
       text-align: center;
     }
     textarea {
@@ -96,51 +101,53 @@
   </style>
 </head>
 <body>
-  <header>
+  <div class="logo-column">
     <img src="tornado-logo.png" alt="Play Tornado Logo" class="logo" />
-    <h1>Play Tornado</h1>
-  </header>
-
-  <div class="start-section">
-    <label for="teamA">Team A Name:</label>
-    <input id="teamA" type="text" maxlength="20" placeholder="Team A" />
-
-    <label for="teamB">Team B Name:</label>
-    <input id="teamB" type="text" maxlength="20" placeholder="Team B" />
-
-    <label for="gridSize">Grid Size:</label>
-    <select id="gridSize">
-      <option value="9">9 (3x3)</option>
-      <option value="12">12 (3x4)</option>
-      <option value="16">16 (4x4)</option>
-      <option value="20" selected>20 (4x5)</option>
-      <option value="25">25 (5x5)</option>
-      <option value="30">30 (5x6)</option>
-    </select>
-
-    <label>Question source:</label>
-    <div class="toggle-group" id="sourceGroup">
-      <button id="aiBtn" onclick="selectSource('ai')">AI</button>
-      <button id="manualBtn" onclick="selectSource('manual')">Paste my own / No questions</button>
-    </div>
-
-    <label for="questions">Questions / Q&A Blocks:</label>
-    <textarea id="questions" rows="6" placeholder="Example format:\nWhat is 2+2?\n4\n\nWho wrote Hamlet?\nShakespeare"></textarea>
-
-    <label for="topic">Topic for AI:</label>
-    <input id="topic" type="text" placeholder="e.g., The Odyssey" />
-
-    <label>Order:</label>
-    <div class="toggle-group" id="orderGroup">
-      <button id="sequentialBtn" onclick="setOrder('sequential')">Sequential</button>
-      <button id="randomBtn" onclick="setOrder('random')">Random</button>
-    </div>
-
-    <button onclick="startGame()">Start Game</button>
   </div>
+  <div class="form-column">
+    <h1>Play Tornado</h1>
 
-  <div class="footer">
-    Created by Timothy Piontek
+    <div class="start-section">
+      <label for="teamA">Team A Name:</label>
+      <input id="teamA" type="text" maxlength="20" placeholder="Team A" />
+
+      <label for="teamB">Team B Name:</label>
+      <input id="teamB" type="text" maxlength="20" placeholder="Team B" />
+
+      <label for="gridSize">Grid Size:</label>
+      <select id="gridSize">
+        <option value="9">9 (3x3)</option>
+        <option value="12">12 (3x4)</option>
+        <option value="16">16 (4x4)</option>
+        <option value="20" selected>20 (4x5)</option>
+        <option value="25">25 (5x5)</option>
+        <option value="30">30 (5x6)</option>
+      </select>
+
+      <label>Question source:</label>
+      <div class="toggle-group" id="sourceGroup">
+        <button id="aiBtn" onclick="selectSource('ai')">AI</button>
+        <button id="manualBtn" onclick="selectSource('manual')">Paste my own / No questions</button>
+      </div>
+
+      <label for="questions">Questions / Q&A Blocks:</label>
+      <textarea id="questions" rows="6" placeholder="Who is the hero of The Odyssey?\nOdysseus\n\nWhat city is Fenway Park in?\nBoston"></textarea>
+
+      <label for="topic">Topic for AI:</label>
+      <input id="topic" type="text" placeholder="e.g., The Odyssey" />
+
+      <label>Order:</label>
+      <div class="toggle-group" id="orderGroup">
+        <button id="sequentialBtn" onclick="setOrder('sequential')">Sequential</button>
+        <button id="randomBtn" onclick="setOrder('random')">Random</button>
+      </div>
+
+      <button onclick="startGame()">Start Game</button>
+    </div>
+
+    <div class="footer">
+      Created by Timothy Piontek
+    </div>
   </div>
 
   <script>
