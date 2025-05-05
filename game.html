@@ -4,16 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tornado Game</title>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700&family=Quicksand&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: sans-serif;
+      font-family: 'Quicksand', sans-serif;
       text-align: center;
-      background: #f4f4f4;
+      background: linear-gradient(135deg, #2f6b68, #154c61);
       margin: 0;
       padding: 20px;
+      color: #fff;
     }
     h1 {
-      margin-bottom: 10px;
+      font-family: 'Baloo 2', cursive;
+      font-size: 3em;
+      margin: 20px 0 10px;
+    }
+    .logo {
+      width: 200px;
+      margin: 10px auto;
+      display: block;
     }
     .scores {
       display: flex;
@@ -22,16 +31,18 @@
       margin: 20px 0;
     }
     .team-name {
+      font-family: 'Baloo 2', cursive;
+      font-size: 1.5em;
       font-weight: bold;
     }
     .score {
-      font-size: 2em;
+      font-size: 2.5em;
     }
     .team-a {
       color: red;
     }
     .team-b {
-      color: blue;
+      color: #4ec3ff;
     }
     .score-popup {
       position: absolute;
@@ -49,28 +60,41 @@
       margin: 20px auto;
     }
     .grid-button {
-      width: 60px;
-      height: 60px;
-      font-size: 1.2em;
+      width: 70px;
+      height: 70px;
+      font-size: 1.4em;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
       cursor: pointer;
     }
     #question-box, #answer-box {
       margin: 20px auto;
       max-width: 600px;
       background: white;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      color: #000;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
       display: none;
+      font-size: 1.2em;
     }
     #reveal-btn {
       display: none;
       margin-top: 10px;
-      padding: 10px 20px;
+      padding: 12px 24px;
+      font-size: 1.1em;
+      font-weight: bold;
+      border-radius: 6px;
+      border: none;
+      background-color: #f2c94c;
+      color: #000;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
+  <img src="cba91cf0-092d-4cb4-8072-7f897331469a.png" alt="Play Tornado Logo" class="logo">
   <h1>Tornado Game</h1>
   <div class="scores">
     <div>
