@@ -5,20 +5,20 @@ const config = new Configuration({
 });
 const openai = new OpenAIApi(config);
 
-exports.handler = async function(event, context) {
+exports.handler = async function(event) {
   try {
     const params = event.queryStringParameters || {};
-    const topic = params.topic || "";
-    const count = parseInt(params.count, 10) || 10;
+    const topic = params.topic || "General Knowledge";
+    const count = parseInt(params.count) || 10;
 
     const prompt = `
-Generate ${count} simple trivia questions and answers about "${topic}".
-Return them as a JSON array of objects like:
+Generate ${count} short trivia questions and answers about "${topic}".
+Return as a JSON array of objects like:
 [
   { "question": "…", "answer": "…" },
   { "question": "…", "answer": "…" }
 ]
-No extra commentary, just valid JSON.
+Only return valid JSON — no commentary.
 `;
 
     const completion = await openai.createChatCompletion({
@@ -27,30 +27,19 @@ No extra commentary, just valid JSON.
       temperature: 0.7,
     });
 
-    const reply = completion.data.choices[0].message.content;
-    let items = [];
-
-    try {
-      items = JSON.parse(reply);
-    } catch (parseErr) {
-      const jsonMatch = reply.match(/\[[\s\S]*\]/);
-      if (jsonMatch) {
-        items = JSON.parse(jsonMatch[0]);
-      } else {
-        throw parseErr;
-      }
-    }
+    const content = completion.data.choices[0].message.content;
+    const match = content.match(/\[[\s\S]+\]/);
+    const json = match ? JSON.parse(match[0]) : [];
 
     return {
       statusCode: 200,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ data: items }),
+      body: JSON.stringify({ data: json }),
     };
   } catch (err) {
     console.error(err);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: err.message || "Something went wrong" }),
+      body: JSON.stringify({ error: err.message || "Something went wrong." }),
     };
   }
 };
