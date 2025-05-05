@@ -1,0 +1,121 @@
+/* Base & Typography */
+html { font-size: 18px; }
+body {
+  margin: 0;
+  padding: 20px;
+  font-family: 'Lexend Deca', sans-serif;
+  background: #eef6fb;
+  color: #333;
+  text-align: center;
+}
+h1 { font-size: 2.5rem; margin: .5em 0 .2em; }
+h2 { font-size: 1.5rem; margin: .2em 0 1em; color: #555; }
+h3 { font-size: 1.25rem; margin: .5em 0 .5em; }
+p, label, button, select, input, textarea { font-size: 1rem; }
+
+:root {
+  --teamA: #e74c3c;
+  --teamB: #3498db;
+  --btn-bg: #add8e6;
+  --btn-hover: #87ceeb;
+}
+.hidden { display: none; }
+
+/* SETUP */
+#setupScreen { max-width: 600px; margin: auto; text-align: left; }
+#setupScreen p { margin-bottom: 15px; }
+#setupForm label { display: block; margin: 10px 0; }
+#setupForm input, #setupForm select, #setupForm textarea {
+  width: 100%; padding: 8px; box-sizing: border-box;
+}
+#setupForm textarea { height: 120px; resize: vertical; }
+
+/* inline radio group */
+.inline-radio {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+.inline-radio span { font-weight: 600; }
+
+#setupForm button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* GAME */
+#gameScreen { max-width: 900px; margin: auto; }
+.scoreboard {
+  display: flex;
+  justify-content: center;
+  gap: 50px;
+  margin-bottom: 20px;
+}
+.team {
+  background: white;
+  padding: 10px 20px;
+  border-radius: 15px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  min-width: 150px;
+}
+.announcement {
+  min-height: 1.4em;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+#nameA { color: var(--teamA); }
+#nameB { color: var(--teamB); }
+.team h2 { margin: 5px 0 0; }
+.team p { font-size: 2em; margin: 5px 0 0; }
+#turnDisplay { margin-bottom: 20px; }
+
+/* Question & Controls */
+#questionContainer {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+#question { font-weight: bold; max-width: 400px; text-align: left; }
+#answer { font-style: italic; margin-top: 5px; }
+
+#passBtn, #skipBtn, #revealBtn, #resetBtn {
+  padding: 8px 16px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* Grid */
+#grid {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding: 0 20px;
+}
+#grid button {
+  font-size: 1.2em;
+  padding: 20px;
+  border: none;
+  border-radius: 10px;
+  background: var(--btn-bg);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .2s, color .2s;
+}
+#grid button:hover { background: var(--btn-hover); }
+#grid button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.footer {
+  font-size: 0.8em;
+  color: #666;
+  margin-top: 30px;
+}
