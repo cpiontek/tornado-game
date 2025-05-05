@@ -2,102 +2,163 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Play Tornado: Classroom &amp; Trivia Platform</title>
-  <meta name="description"
-        content="A versatile online quiz game ideal for ESL classrooms, study groups, and trivia nights. Host dynamic team quizzes with customizable questions, Q&A blocks, and interactive rewards." />
-  <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@400;600;700&display=swap"
-        rel="stylesheet">
-  <!-- your custom styles -->
-  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Play Tornado</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f5f5f5;
+      text-align: center;
+    }
+    h1 {
+      margin-top: 20px;
+    }
+    .footer {
+      margin-top: 40px;
+      font-size: 0.9em;
+      color: #888;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 20px;
+    }
+    input, textarea, select {
+      margin-top: 5px;
+      width: 80%;
+      padding: 5px;
+      font-size: 1em;
+    }
+    button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 1em;
+      cursor: pointer;
+    }
+    .toggle-group {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .toggle-group button {
+      font-size: 1em;
+      padding: 8px 16px;
+    }
+    .toggle-group button.active {
+      background-color: #333;
+      color: #fff;
+      font-weight: bold;
+      border-radius: 6px;
+    }
+    .start-section {
+      margin: 20px;
+    }
+    .team-score {
+      font-size: 2em;
+    }
+    .team-a {
+      color: red;
+    }
+    .team-b {
+      color: blue;
+    }
+  </style>
 </head>
 <body>
+  <h1>Play Tornado</h1>
 
-  <!-- SETUP SCREEN -->
-  <div id="setupScreen">
-    <h1>🌪 Play Tornado Setup</h1>
-    <p>Configure your game below. Questions are <strong>optional</strong> – include as many or as few as you like.</p>
-    <form id="setupForm" onsubmit="return false;">
-      <label>Team A Name:
-        <input id="teamANameInput" value="Team A" required>
-      </label>
-      <label>Team B Name:
-        <input id="teamBNameInput" value="Team B" required>
-      </label>
-      <label>Grid Size:
-        <select id="gridSizeInput">
-          <option>8</option><option>10</option><option>16</option>
-          <option selected>20</option><option>24</option>
-          <option>30</option><option>32</option><option>40</option>
-        </select>
-      </label>
+  <div class="start-section">
+    <label for="teamA">Team A Name:</label>
+    <input id="teamA" type="text" placeholder="Team A" />
 
-      <label>Question source:</label>
-      <div class="inline-radio">
-        <label><input type="radio" name="source" value="own" checked> Paste my own</label>
-        <label><input type="radio" name="source" value="ai"> Generate via AI</label>
-      </div>
+    <label for="teamB">Team B Name:</label>
+    <input id="teamB" type="text" placeholder="Team B" />
 
-      <label id="aiTopicLabel" class="hidden">Topic for AI:
-        <input id="aiTopicInput" placeholder="e.g. Solar System">
-      </label>
+    <label for="gridSize">Grid Size:</label>
+    <select id="gridSize">
+      <option value="9">9 Questions (3x3)</option>
+      <option value="12">12 Questions (3x4)</option>
+      <option value="16">16 Questions (4x4)</option>
+      <option value="20" selected>20 Questions (4x5)</option>
+      <option value="25">25 Questions (5x5)</option>
+      <option value="30">30 Questions (5x6)</option>
+    </select>
 
-      <label>Questions / Q&amp;A Blocks:<br>
-        <small>(One question per line, or blocks separated by a blank line: question then answer.)</small>
-        <textarea id="questionsInput"
-          placeholder="What is the capital of France?
-Paris
-
-Which planet is known as the Red Planet?
-Mars"></textarea>
-      </label>
-
-      <div class="inline-radio">
-        <span>Order:</span>
-        <label><input type="radio" name="order" value="inorder" checked> In order</label>
-        <label><input type="radio" name="order" value="random"> Random</label>
-      </div>
-
-      <button id="startGameBtn">Start Game</button>
-    </form>
-  </div>
-
-  <!-- GAME SCREEN -->
-  <div id="gameScreen" class="hidden">
-    <h1>🌪 Play Tornado</h1>
-    <h2>Classroom &amp; Trivia Platform</h2>
-
-    <div class="scoreboard">
-      <div class="team">
-        <div id="annA" class="announcement"></div>
-        <h2 id="nameA">Team A</h2>
-        <p id="scoreA">0</p>
-      </div>
-      <div class="team">
-        <div id="annB" class="announcement"></div>
-        <h2 id="nameB">Team B</h2>
-        <p id="scoreB">0</p>
-      </div>
+    <label>Question source:</label>
+    <div class="toggle-group" id="sourceGroup">
+      <button id="aiBtn" onclick="selectSource('ai')">AI</button>
+      <button id="manualBtn" onclick="selectSource('manual')">Paste my own / No questions</button>
     </div>
 
-    <h3 id="turnDisplay">Team A’s turn</h3>
+    <label for="topic">Topic for AI:</label>
+    <input id="topic" type="text" placeholder="e.g., The Odyssey" />
 
-    <div id="questionContainer">
-      <div>
-        <div id="question"></div>
-        <div id="answer"></div>
-      </div>
-      <button id="passBtn">Pass</button>
-      <button id="skipBtn">Skip</button>
-      <button id="revealBtn" class="hidden">Reveal Answer</button>
+    <label for="questions">Questions / Q&A Blocks:</label>
+    <textarea id="questions" rows="5" placeholder="Paste questions here or leave blank to play without them."></textarea>
+
+    <label>Order:</label>
+    <div class="toggle-group" id="orderGroup">
+      <button id="sequentialBtn" onclick="setOrder('sequential')">Sequential</button>
+      <button id="randomBtn" onclick="setOrder('random')">Random</button>
     </div>
 
-    <div id="grid"></div>
-    <button id="resetBtn">🔄 Reset Game</button>
-    <div class="footer">Created by Timothy Piontek</div>
+    <button onclick="startGame()">Start Game</button>
   </div>
 
-  <!-- your game logic -->
-  <script src="script.js"></script>
+  <div class="footer">
+    Created by Timothy Piontek
+  </div>
+
+  <script>
+    let questionSource = 'manual';
+    let questionOrder = 'sequential';
+
+    function selectSource(source) {
+      questionSource = source;
+      document.getElementById('aiBtn').classList.remove('active');
+      document.getElementById('manualBtn').classList.remove('active');
+      document.getElementById(source + 'Btn').classList.add('active');
+    }
+
+    function setOrder(order) {
+      questionOrder = order;
+      document.getElementById('sequentialBtn').classList.remove('active');
+      document.getElementById('randomBtn').classList.remove('active');
+      document.getElementById(order + 'Btn').classList.add('active');
+    }
+
+    function startGame() {
+      const teamA = document.getElementById('teamA').value || 'Team A';
+      const teamB = document.getElementById('teamB').value || 'Team B';
+      const gridSize = parseInt(document.getElementById('gridSize').value);
+      const topic = document.getElementById('topic').value;
+      const questions = document.getElementById('questions').value.trim();
+
+      const useQuestions = questions.length > 0;
+
+      const gameData = {
+        teamA,
+        teamB,
+        gridSize,
+        questionSource,
+        topic,
+        questions,
+        questionOrder,
+        useQuestions
+      };
+
+      localStorage.setItem('playTornadoGameData', JSON.stringify(gameData));
+      window.location.href = 'game.html';
+    }
+
+    // Set default active styles
+    window.onload = () => {
+      document.getElementById('manualBtn').classList.add('active');
+      document.getElementById('sequentialBtn').classList.add('active');
+    };
+  </script>
 </body>
 </html>
