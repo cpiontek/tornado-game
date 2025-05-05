@@ -4,183 +4,69 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Play Tornado</title>
-
-  <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@400;600&display=swap" rel="stylesheet" />
-  <style>
-    body {
-      margin: 0;
-      padding: 1em;
-      background-color: #4c7c78; /* teal */
-      font-family: 'Lexend Deca', sans-serif;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    #logo {
-      max-width: 200px;
-      margin-bottom: 1rem;
-    }
-
-    form {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 1rem;
-      max-width: 700px;
-      width: 100%;
-    }
-
-    .row {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      flex-wrap: wrap;
-      width: 100%;
-    }
-
-    label {
-      display: flex;
-      flex-direction: column;
-      align-items: start;
-      font-weight: 600;
-      color: white;
-    }
-
-    input, select, textarea {
-      padding: 0.5em;
-      font-family: 'Lexend Deca', sans-serif;
-      border-radius: 5px;
-      border: none;
-      width: 100%;
-      max-width: 250px;
-    }
-
-    textarea {
-      height: 100px;
-    }
-
-    .button-group {
-      display: flex;
-      gap: 1rem;
-    }
-
-    .source-btn {
-      background-color: #7b4de3;
-      color: white;
-      font-weight: 600;
-      border: none;
-      padding: 0.6em 1em;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    .source-btn.active {
-      background-color: #b79aff;
-    }
-
-    #startGameBtn {
-      font-size: 1.2em;
-      padding: 1em;
-      background-color: #5f31d4;
-      border: none;
-      color: white;
-      border-radius: 12px;
-      cursor: pointer;
-      height: 120px;
-    }
-
-    footer {
-      margin-top: 2rem;
-      font-size: 0.8rem;
-      color: #ccc;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <img id="logo" src="tornado-logo.png" alt="Play Tornado Logo" />
-
-  <form id="setupForm" onsubmit="return false;">
-    <div class="row">
-      <label>Team A:
-        <input id="teamANameInput" value="Team A" required />
-      </label>
-      <label>Team B:
-        <input id="teamBNameInput" value="Team B" required />
-      </label>
-      <label>Grid Size:
-        <select id="gridSizeInput">
-          <option value="20" selected>20</option>
-          <option value="30">30</option>
-          <option value="40">40</option>
-        </select>
-      </label>
-      <button id="startGameBtn">Start Game</button>
+  <div id="setup-screen">
+    <img src="logo.png" alt="Play Tornado Logo" id="logo" />
+    <div id="form-row">
+      <label>Team A:</label>
+      <input id="team-a" type="text" value="Team A" />
+      <label>Team B:</label>
+      <input id="team-b" type="text" value="Team B" />
+      <label>Grid Size:</label>
+      <select id="grid-size">
+        <option value="20">20</option>
+        <option value="24">24</option>
+        <option value="30">30</option>
+      </select>
+      <button id="start-btn">Start Game</button>
     </div>
 
-    <div class="row">
-      <label>Question source:</label>
-    </div>
-    <div class="button-group">
-      <button type="button" class="source-btn" id="aiBtn">AI</button>
-      <button type="button" class="source-btn" id="manualBtn">Paste my own / No questions</button>
+    <div class="source-select">
+      <p>Question source:</p>
+      <button id="ai-btn" class="source-btn">AI</button>
+      <button id="manual-btn" class="source-btn">Paste my own / No questions</button>
     </div>
 
-    <label>Questions / Q&amp;A Blocks:
-      <textarea id="questionsInput" placeholder="Example format:
+    <label for="questions">Questions / Q&amp;A Blocks:</label>
+    <textarea id="questions" placeholder="Example format:
 Who is the hero of The Odyssey?
 Odysseus
 
 What city is Fenway Park in?
 Boston"></textarea>
-    </label>
 
-    <label>Topic for AI:
-      <input id="aiTopicInput" placeholder="e.g., The Beatles" />
-    </label>
-  </form>
+    <label for="topic">Topic for AI:</label>
+    <input id="topic" type="text" placeholder="e.g., The Beatles" />
+    <footer>Created by Timothy Piontek</footer>
+  </div>
 
-  <footer>Created by Timothy Piontek</footer>
+  <div id="game-screen" class="hidden">
+    <div id="scoreboard">
+      <div><h2 id="team-a-name">Team A</h2><p id="team-a-score">0</p></div>
+      <div><h2 id="team-b-name">Team B</h2><p id="team-b-score">0</p></div>
+    </div>
 
-  <script>
-    const aiBtn = document.getElementById('aiBtn');
-    const manualBtn = document.getElementById('manualBtn');
-    let useQuestions = true;
-    let questionSource = 'manual';
+    <div id="turn-display"></div>
 
-    aiBtn.onclick = () => {
-      aiBtn.classList.add('active');
-      manualBtn.classList.remove('active');
-      questionSource = 'ai';
-    };
+    <div id="qa-container">
+      <div>
+        <p id="question-box"></p>
+        <p id="answer-box" class="hidden"></p>
+      </div>
+      <div>
+        <button id="pass-btn">Pass</button>
+        <button id="skip-btn">Skip</button>
+        <button id="reveal-btn" class="hidden">Reveal Answer</button>
+      </div>
+    </div>
 
-    manualBtn.onclick = () => {
-      manualBtn.classList.add('active');
-      aiBtn.classList.remove('active');
-      questionSource = 'manual';
-    };
+    <div id="grid"></div>
+    <p id="endgame-message" class="hidden"></p>
+    <button id="reset-btn">Reset Game</button>
+  </div>
 
-    document.getElementById('startGameBtn').onclick = () => {
-      const teamA = document.getElementById('teamANameInput').value;
-      const teamB = document.getElementById('teamBNameInput').value;
-      const gridSize = document.getElementById('gridSizeInput').value;
-      const questions = document.getElementById('questionsInput').value;
-      const topic = document.getElementById('aiTopicInput').value;
-
-      const gameData = {
-        teamA,
-        teamB,
-        gridSize,
-        useQuestions,
-        questionSource,
-        questions,
-        topic
-      };
-
-      localStorage.setItem('playTornadoGameData', JSON.stringify(gameData));
-      window.location.href = 'game.html';
-    };
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
