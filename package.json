@@ -1,7 +1,10 @@
 {
   "name": "tornado-game",
   "version": "1.0.0",
+  "description": "Tornado Game with Netlify Functions & OpenAI",
+  "main": "index.html",
+  "license": "MIT",
   "dependencies": {
-    "openai": "^4.3.1"      /* ← picks up the official OpenAI SDK */
+    "openai": "^4.7.0"
   }
 }
