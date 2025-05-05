@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Play Tornado</title>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700&family=Quicksand&display=swap" rel="stylesheet">
   <style>
@@ -15,31 +15,34 @@
       align-items: center;
       padding: 20px;
     }
-    h1 {
-      font-family: 'Baloo 2', cursive;
-      font-size: 3em;
-      margin-bottom: 10px;
+    .main-container {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .left {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
     .logo {
-      height: 160px;
-      margin-bottom: 10px;
+      width: 200px;
+      max-width: 100%;
     }
     form {
       display: flex;
       flex-direction: column;
       gap: 10px;
-      align-items: center;
-      width: 90%;
-      max-width: 500px;
+      align-items: flex-start;
+      width: 300px;
     }
     label {
       font-weight: bold;
-      display: block;
-      margin-top: 10px;
     }
-    input[type="text"],
-    select,
-    textarea {
+    input[type="text"], select, textarea {
       font-family: 'Quicksand', sans-serif;
       font-size: 1em;
       width: 100%;
@@ -61,7 +64,9 @@
       font-weight: bold;
     }
     .start-button {
-      margin-top: 20px;
+      align-self: flex-end;
+      height: 200px;
+      width: 140px;
       font-size: 1.4em;
       padding: 20px;
       background-color: #6c3ebf;
@@ -69,56 +74,55 @@
       border: none;
       border-radius: 10px;
       cursor: pointer;
-      width: 100%;
     }
     .footer {
       margin-top: 40px;
       font-size: 0.9em;
       color: #ccc;
     }
-    .hint {
-      font-size: 0.85em;
-      color: gray;
-    }
   </style>
 </head>
 <body>
-  <img src="tornado-logo.png" alt="Play Tornado Logo" class="logo">
-  <h1>Play Tornado</h1>
+  <h1 style="font-family: 'Baloo 2', cursive; font-size: 2.5em;">Play Tornado</h1>
 
-  <form id="game-form">
-    <label>Team A Name:</label>
-    <input type="text" id="team-a" placeholder="Team A" maxlength="20" required>
-
-    <label>Team B Name:</label>
-    <input type="text" id="team-b" placeholder="Team B" maxlength="20" required>
-
-    <label>Grid Size:</label>
-    <select id="grid-size">
-      <option value="20">20 (4x5)</option>
-      <option value="25">25 (5x5)</option>
-      <option value="30">30 (5x6)</option>
-    </select>
-
-    <label>Question source:</label>
-    <div class="option-buttons">
-      <button type="button" id="ai">AI</button>
-      <button type="button" id="manual">Paste my own / No questions</button>
+  <div class="main-container">
+    <div class="left">
+      <img src="tornado-logo.png" alt="Play Tornado Logo" class="logo">
     </div>
+    <form id="game-form">
+      <label>Team A Name:</label>
+      <input type="text" id="team-a" placeholder="Team A" maxlength="20">
 
-    <label>Questions / Q&A Blocks:</label>
-    <textarea id="questions" rows="6" placeholder="Example format:
+      <label>Team B Name:</label>
+      <input type="text" id="team-b" placeholder="Team B" maxlength="20">
+
+      <label>Grid Size:</label>
+      <select id="grid-size">
+        <option value="20">20 (4x5)</option>
+        <option value="25">25 (5x5)</option>
+        <option value="30">30 (5x6)</option>
+      </select>
+
+      <label>Question source:</label>
+      <div class="option-buttons">
+        <button type="button" id="ai">AI</button>
+        <button type="button" id="manual">Paste my own / No questions</button>
+      </div>
+
+      <label>Questions / Q&A Blocks:</label>
+      <textarea id="questions" rows="6" placeholder="Example format:
 Who is the hero of The Odyssey?
 Odysseus
 
 What city is Fenway Park in?
 Boston"></textarea>
 
-    <label>Topic for AI:</label>
-    <input type="text" id="topic" placeholder="e.g., The Beatles">
+      <label>Topic for AI:</label>
+      <input type="text" id="topic" placeholder="e.g., The Beatles">
 
-    <button type="submit" class="start-button">Start Game</button>
-  </form>
+      <button type="submit" class="start-button">Start Game</button>
+    </form>
+  </div>
 
   <div class="footer">Created by Timothy Piontek</div>
 
