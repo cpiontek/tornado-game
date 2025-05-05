@@ -4,12 +4,14 @@ const teamBEl = document.getElementById('team-b-name');
 const teamAScoreEl = document.getElementById('team-a-score');
 const teamBScoreEl = document.getElementById('team-b-score');
 const turnIndicator = document.getElementById('turn-indicator');
-const grid = document.getElementById('grid');
 const questionBox = document.getElementById('question-box');
 const answerBox = document.getElementById('answer-box');
+const grid = document.getElementById('grid');
 const revealBtn = document.getElementById('reveal-btn');
-const skipBtn = document.getElementById('skip-btn');
 const passBtn = document.getElementById('pass-btn');
+const skipBtn = document.getElementById('skip-btn');
+const resetBtn = document.getElementById('reset-button');
+const celebrationEl = document.getElementById('celebration-message');
 
 let currentTeam = 'A';
 let scores = { A: 0, B: 0 };
@@ -19,7 +21,6 @@ let usedBoxes = new Set();
 let currentQuestion = null;
 let rewards = [];
 let gridSize = data.gridSize || 20;
-let totalBoxes = 0;
 
 function parseQuestions(input) {
   const blocks = input.trim().split(/\n\s*\n/);
@@ -46,9 +47,9 @@ function shuffle(array) {
 }
 
 function buildRewards(n) {
-  let result = [];
   const pointCount = Math.floor(n * 0.7);
   const specialCount = n - pointCount;
+  const result = [];
 
   for (let i = 0; i < pointCount; i++) {
     result.push({ type: 'points', value: (Math.floor(Math.random() * 10) + 1) * 100 });
@@ -56,8 +57,7 @@ function buildRewards(n) {
 
   const specials = ['lose', 'steal', 'x2'];
   for (let i = 0; i < specialCount; i++) {
-    const type = specials[i % specials.length];
-    result.push({ type });
+    result.push({ type: specials[i % specials.length] });
   }
 
   return shuffle(result);
@@ -78,30 +78,31 @@ function updateScores() {
 }
 
 function playSound(type) {
-  const audio = new Audio();
-  if (type === 'wind') audio.src = 'sounds/wind.mp3';
-  if (type === 'sad') audio.src = 'sounds/sad.mp3';
-  audio.play();
+  let audio;
+  if (type === 'wind') {
+    audio = new Audio('sounds/wind.mp3');
+  } else if (type === 'sad') {
+    audio = new Audio('sounds/sad.mp3');
+  }
+  if (audio) audio.play();
 }
 
 function handleEffect(effect, button) {
   let display = '';
-  let team = currentTeam;
-
   if (effect.type === 'points') {
-    scores[team] += effect.value;
+    scores[currentTeam] += effect.value;
     display = `+${effect.value}`;
   } else if (effect.type === 'x2') {
-    scores[team] *= 2;
+    scores[currentTeam] *= 2;
     display = 'x2';
   } else if (effect.type === 'steal') {
-    const other = team === 'A' ? 'B' : 'A';
-    scores[team] += scores[other];
+    const other = currentTeam === 'A' ? 'B' : 'A';
+    scores[currentTeam] += scores[other];
     scores[other] = 0;
     display = '🌪️';
     playSound('wind');
   } else if (effect.type === 'lose') {
-    scores[team] = 0;
+    scores[currentTeam] = 0;
     display = '❌';
     playSound('sad');
   }
@@ -116,21 +117,6 @@ function showQuestion(index) {
   answerBox.textContent = currentQuestion.a;
   answerBox.style.display = 'none';
   revealBtn.style.display = 'inline-block';
-}
-
-function generateGrid(n) {
-  grid.innerHTML = '';
-  const cols = Math.ceil(Math.sqrt(n));
-  grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-
-  for (let i = 0; i < n; i++) {
-    const btn = document.createElement('button');
-    btn.className = 'grid-button';
-    btn.textContent = i + 1;
-    btn.dataset.index = i;
-    btn.onclick = () => handleGridClick(btn, i);
-    grid.appendChild(btn);
-  }
 }
 
 function handleGridClick(button, index) {
@@ -150,20 +136,35 @@ function handleGridClick(button, index) {
 }
 
 function checkGameOver() {
-  if (usedBoxes.size === totalBoxes) {
-    let msg = '';
+  if (usedBoxes.size === gridSize) {
+    let msg;
     if (scores.A > scores.B) msg = `${data.teamA} wins! 🏆`;
     else if (scores.B > scores.A) msg = `${data.teamB} wins! 🏆`;
     else msg = "It's a tie!";
-    questionBox.textContent = msg;
+    celebrationEl.textContent = msg;
+    questionBox.textContent = '';
     answerBox.textContent = '';
     revealBtn.style.display = 'none';
-    skipBtn.disabled = true;
     passBtn.disabled = true;
+    skipBtn.disabled = true;
   } else {
     questionIndex++;
     switchTeam();
     showQuestion(questionIndex);
+  }
+}
+
+function generateGrid(n) {
+  grid.innerHTML = '';
+  const cols = Math.ceil(Math.sqrt(n));
+  grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+
+  for (let i = 0; i < n; i++) {
+    const btn = document.createElement('button');
+    btn.className = 'grid-button';
+    btn.textContent = i + 1;
+    btn.onclick = () => handleGridClick(btn, i);
+    grid.appendChild(btn);
   }
 }
 
@@ -178,29 +179,34 @@ passBtn.onclick = () => {
   showQuestion(questionIndex);
 };
 
+resetBtn.onclick = () => {
+  window.location.reload();
+};
+
 function initGame() {
   scores = { A: 0, B: 0 };
   questionIndex = 0;
-  currentTeam = 'A';
   usedBoxes = new Set();
+  currentTeam = 'A';
   updateScores();
   updateTurnDisplay();
+  celebrationEl.textContent = '';
 
   teamAEl.textContent = data.teamA || 'Team A';
   teamBEl.textContent = data.teamB || 'Team B';
 
   questions = data.questionSource === 'manual'
     ? parseQuestions(data.questions)
-    : Array(data.gridSize).fill().map((_, i) => ({
-        q: `AI Question ${i + 1}`, a: `AI Answer ${i + 1}`
+    : Array(gridSize).fill().map((_, i) => ({
+        q: `AI Question ${i + 1}`,
+        a: `AI Answer ${i + 1}`
       }));
 
   if (data.questionOrder === 'random') questions = shuffle(questions);
-  questions = loopQuestionsToSize(data.gridSize);
-  totalBoxes = data.gridSize;
-  rewards = buildRewards(totalBoxes);
+  questions = loopQuestionsToSize(gridSize);
+  rewards = buildRewards(gridSize);
 
-  generateGrid(totalBoxes);
+  generateGrid(gridSize);
   showQuestion(questionIndex);
 }
 
