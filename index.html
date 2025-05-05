@@ -2,46 +2,69 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Play Tornado</title>
-  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
-  <link href="style.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="setup">
-    <img src="tornado-logo.png" alt="Play Tornado Logo" id="logo" />
-    <div class="form-row">
-      <label>Team A:
-        <input type="text" id="team-a-name" value="Team A" maxlength="20">
+  <div id="setupScreen">
+    <img id="logo" src="logo.png" alt="Play Tornado Logo">
+    <div class="form-container">
+      <div class="row">
+        <label>Team A: <input id="teamAName" type="text" placeholder="Team A" /></label>
+        <label>Team B: <input id="teamBName" type="text" placeholder="Team B" /></label>
+        <label>Grid Size:
+          <select id="gridSize">
+            <option value="20">20</option>
+            <option value="30">30</option>
+            <option value="40">40</option>
+          </select>
+        </label>
+        <button id="startGame">Start Game</button>
+      </div>
+
+      <div class="row">
+        <p>Question source:</p>
+        <button id="aiBtn" class="active">AI</button>
+        <button id="manualBtn">Paste my own / No questions</button>
+      </div>
+
+      <label>Questions / Q&A Blocks:
+        <textarea id="manualQuestions" placeholder="Example format:
+Who is the hero of The Odyssey?
+Odysseus
+
+What city is Fenway Park in?
+Boston"></textarea>
       </label>
-      <label>Team B:
-        <input type="text" id="team-b-name" value="Team B" maxlength="20">
+
+      <label>Topic for AI:
+        <input type="text" id="aiTopic" placeholder="e.g., The Beatles">
       </label>
-      <label>Grid Size:
-        <select id="grid-size">
-          <option>20</option>
-          <option>24</option>
-          <option>30</option>
-        </select>
-      </label>
-      <button id="start-btn">Start Game</button>
+    </div>
+    <p class="footer">Created by Timothy Piontek</p>
+  </div>
+
+  <div id="gameScreen" class="hidden">
+    <div class="scoreboard">
+      <div class="team"><h2 id="nameA">Team A</h2><p id="scoreA">0</p></div>
+      <div class="team"><h2 id="nameB">Team B</h2><p id="scoreB">0</p></div>
     </div>
 
-    <div class="question-source">
-      <p>Question source:</p>
-      <div id="source-buttons">
-        <button id="ai-btn">AI</button>
-        <button id="manual-btn" class="active">Paste my own / No questions</button>
+    <div id="turnDisplay">Team A's turn</div>
+    <div id="question-box">
+      <div id="question"></div>
+      <div id="answer"></div>
+      <div class="controls">
+        <button id="passBtn">Pass</button>
+        <button id="skipBtn">Skip</button>
+        <button id="revealBtn" class="hidden">Reveal Answer</button>
       </div>
     </div>
 
-    <label>Questions / Q&A Blocks:</label>
-    <textarea id="question-blocks" placeholder="Example format:\nWho is the hero of The Odyssey?\nOdysseus\n\nWhat city is Fenway Park in?\nBoston"></textarea>
-
-    <label>Topic for AI:</label>
-    <input type="text" id="ai-topic" placeholder="e.g., The Beatles">
-
-    <footer>Created by Timothy Piontek</footer>
+    <div id="grid"></div>
+    <button id="resetBtn">Reset Game</button>
   </div>
 
   <script src="script.js"></script>
