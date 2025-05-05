@@ -9,29 +9,31 @@
     body {
       font-family: 'Quicksand', sans-serif;
       margin: 0;
-      padding: 0;
+      padding: 20px;
       background: #4a7d7b;
       color: #fff;
       display: flex;
       justify-content: center;
-      align-items: start;
+      align-items: flex-start;
       min-height: 100vh;
-      gap: 40px;
-      padding-top: 40px;
+      box-sizing: border-box;
+    }
+    .container {
+      max-width: 800px;
+      width: 100%;
+      text-align: center;
     }
     .logo {
-      max-height: 600px;
-      width: auto;
+      width: 200px;
+      max-width: 80%;
+      height: auto;
+      display: block;
+      margin: 0 auto 20px;
     }
-    .form-column {
-      max-width: 600px;
-      width: 100%;
-    }
-    h1 {
-      font-family: 'Baloo 2', cursive;
-      font-size: 3em;
-      margin-bottom: 20px;
-      text-align: center;
+    .footer {
+      margin-top: 40px;
+      font-size: 1em;
+      color: #eee;
     }
     label {
       font-weight: bold;
@@ -44,11 +46,12 @@
       font-size: 1em;
       border-radius: 6px;
       border: none;
-      width: 90%;
-      max-width: 300px;
+      width: 240px;
+      max-width: 90%;
     }
     #gridSize {
       width: 120px;
+      text-align: center;
     }
     textarea {
       width: 90%;
@@ -56,7 +59,6 @@
       font-size: 1em;
       border-radius: 6px;
       border: none;
-      margin-top: 10px;
     }
     button {
       margin: 10px;
@@ -79,55 +81,56 @@
     .toggle-group button.active {
       background-color: #5e3e9c;
     }
-    .footer {
-      margin-top: 30px;
-      font-size: 1em;
-      color: #eee;
-      text-align: center;
+    .start-section {
+      margin: 0 auto;
     }
   </style>
 </head>
 <body>
-  <img src="tornado-logo.png" alt="Play Tornado Logo" class="logo" />
+  <div class="container">
+    <img src="tornado-logo.png" alt="Play Tornado Logo" class="logo" />
 
-  <div class="form-column">
-    <h1>Play Tornado</h1>
+    <div class="start-section">
+      <label for="teamA">Team A Name:</label>
+      <input id="teamA" type="text" maxlength="20" placeholder="Team A" />
 
-    <label for="teamA">Team A Name:</label>
-    <input id="teamA" type="text" maxlength="20" placeholder="Team A" />
+      <label for="teamB">Team B Name:</label>
+      <input id="teamB" type="text" maxlength="20" placeholder="Team B" />
 
-    <label for="teamB">Team B Name:</label>
-    <input id="teamB" type="text" maxlength="20" placeholder="Team B" />
+      <label for="gridSize">Grid Size:</label>
+      <select id="gridSize">
+        <option value="9">9 (3x3)</option>
+        <option value="12">12 (3x4)</option>
+        <option value="16">16 (4x4)</option>
+        <option value="20" selected>20 (4x5)</option>
+        <option value="25">25 (5x5)</option>
+        <option value="30">30 (5x6)</option>
+      </select>
 
-    <label for="gridSize">Grid Size:</label>
-    <select id="gridSize">
-      <option value="9">9 (3x3)</option>
-      <option value="12">12 (3x4)</option>
-      <option value="16">16 (4x4)</option>
-      <option value="20" selected>20 (4x5)</option>
-      <option value="25">25 (5x5)</option>
-      <option value="30">30 (5x6)</option>
-    </select>
+      <label>Question source:</label>
+      <div class="toggle-group" id="sourceGroup">
+        <button id="aiBtn" onclick="selectSource('ai')">AI</button>
+        <button id="manualBtn" onclick="selectSource('manual')">Paste my own / No questions</button>
+      </div>
 
-    <label>Question source:</label>
-    <div class="toggle-group" id="sourceGroup">
-      <button id="aiBtn" onclick="selectSource('ai')">AI</button>
-      <button id="manualBtn" onclick="selectSource('manual')">Paste my own / No questions</button>
+      <label for="questions">Questions / Q&A Blocks:</label>
+      <textarea id="questions" rows="6" placeholder="Who is the hero of The Odyssey?
+Odysseus
+
+What city is Fenway Park in?
+Boston"></textarea>
+
+      <label for="topic">Topic for AI:</label>
+      <input id="topic" type="text" placeholder="e.g., The Beatles" />
+
+      <label>Order:</label>
+      <div class="toggle-group" id="orderGroup">
+        <button id="sequentialBtn" onclick="setOrder('sequential')">Sequential</button>
+        <button id="randomBtn" onclick="setOrder('random')">Random</button>
+      </div>
+
+      <button onclick="startGame()">Start Game</button>
     </div>
-
-    <label for="questions">Questions / Q&A Blocks:</label>
-    <textarea id="questions" rows="6" placeholder="Who is the hero of The Odyssey?\nOdysseus\n\nWhat city is Fenway Park in?\nBoston"></textarea>
-
-    <label for="topic">Topic for AI:</label>
-    <input id="topic" type="text" placeholder="e.g., The Odyssey" />
-
-    <label>Order:</label>
-    <div class="toggle-group" id="orderGroup">
-      <button id="sequentialBtn" onclick="setOrder('sequential')">Sequential</button>
-      <button id="randomBtn" onclick="setOrder('random')">Random</button>
-    </div>
-
-    <button onclick="startGame()">Start Game</button>
 
     <div class="footer">
       Created by Timothy Piontek
