@@ -1,5 +1,14 @@
-// script.js — Full working version with random effects and sounds
-let gameData = JSON.parse(localStorage.getItem('playTornadoGameData'));
+// script.js — safer version with fallback if game data is missing
+const gameData = JSON.parse(localStorage.getItem('playTornadoGameData')) || {
+  teamA: 'Team A',
+  teamB: 'Team B',
+  gridSize: 20,
+  questionSource: 'manual',
+  topic: '',
+  questions: '',
+  questionOrder: 'sequential',
+  useQuestions: false
+};
 
 const gridContainer = document.getElementById('grid');
 const questionBox = document.getElementById('question-box');
@@ -175,8 +184,8 @@ function initGame() {
     }
   }
 
-  document.getElementById('team-a-name').textContent = gameData.teamA;
-  document.getElementById('team-b-name').textContent = gameData.teamB;
+  document.getElementById('team-a-name')?.textContent = gameData.teamA;
+  document.getElementById('team-b-name')?.textContent = gameData.teamB;
 
   generateGrid(gameData.gridSize);
 }
