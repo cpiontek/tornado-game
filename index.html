@@ -19,7 +19,7 @@
       box-sizing: border-box;
     }
     .container {
-      max-width: 800px;
+      max-width: 1000px;
       width: 100%;
       text-align: center;
     }
@@ -46,6 +46,8 @@
       font-size: 1em;
       border-radius: 6px;
       border: none;
+    }
+    #teamA, #teamB {
       width: 240px;
       max-width: 90%;
     }
@@ -60,17 +62,6 @@
       border-radius: 6px;
       border: none;
     }
-    button {
-      margin: 10px;
-      padding: 12px 24px;
-      font-size: 1.1em;
-      font-weight: bold;
-      cursor: pointer;
-      border-radius: 6px;
-      border: none;
-      background-color: #7e57c2;
-      color: #fff;
-    }
     .toggle-group {
       display: flex;
       justify-content: center;
@@ -78,11 +69,39 @@
       margin-top: 10px;
       flex-wrap: wrap;
     }
+    .toggle-group button {
+      font-size: 1em;
+      padding: 10px 20px;
+      background-color: #7e57c2;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
     .toggle-group button.active {
       background-color: #5e3e9c;
     }
-    .start-section {
-      margin: 0 auto;
+    .team-inputs {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .team-inputs > div {
+      text-align: left;
+    }
+    #startBtn {
+      background-color: #7e57c2;
+      color: #fff;
+      font-size: 1.5em;
+      font-weight: bold;
+      padding: 80px 30px;
+      height: auto;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -90,46 +109,47 @@
   <div class="container">
     <img src="tornado-logo.png" alt="Play Tornado Logo" class="logo" />
 
-    <div class="start-section">
-      <label for="teamA">Team A Name:</label>
-      <input id="teamA" type="text" maxlength="20" placeholder="Team A" />
+    <div class="team-inputs">
+      <div>
+        <label for="teamA">Team A Name:</label>
+        <input id="teamA" type="text" maxlength="20" placeholder="Team A" />
 
-      <label for="teamB">Team B Name:</label>
-      <input id="teamB" type="text" maxlength="20" placeholder="Team B" />
+        <label for="teamB">Team B Name:</label>
+        <input id="teamB" type="text" maxlength="20" placeholder="Team B" />
 
-      <label for="gridSize">Grid Size:</label>
-      <select id="gridSize">
-        <option value="9">9 (3x3)</option>
-        <option value="12">12 (3x4)</option>
-        <option value="16">16 (4x4)</option>
-        <option value="20" selected>20 (4x5)</option>
-        <option value="25">25 (5x5)</option>
-        <option value="30">30 (5x6)</option>
-      </select>
-
-      <label>Question source:</label>
-      <div class="toggle-group" id="sourceGroup">
-        <button id="aiBtn" onclick="selectSource('ai')">AI</button>
-        <button id="manualBtn" onclick="selectSource('manual')">Paste my own / No questions</button>
+        <label for="gridSize">Grid Size:</label>
+        <select id="gridSize">
+          <option value="9">9 (3x3)</option>
+          <option value="12">12 (3x4)</option>
+          <option value="16">16 (4x4)</option>
+          <option value="20" selected>20 (4x5)</option>
+          <option value="25">25 (5x5)</option>
+          <option value="30">30 (5x6)</option>
+        </select>
       </div>
+      <button id="startBtn" onclick="startGame()">Start Game</button>
+    </div>
 
-      <label for="questions">Questions / Q&A Blocks:</label>
-      <textarea id="questions" rows="6" placeholder="Who is the hero of The Odyssey?
+    <label>Question source:</label>
+    <div class="toggle-group" id="sourceGroup">
+      <button id="aiBtn" onclick="selectSource('ai')">AI</button>
+      <button id="manualBtn" onclick="selectSource('manual')">Paste my own / No questions</button>
+    </div>
+
+    <label for="questions">Questions / Q&A Blocks:</label>
+    <textarea id="questions" rows="6" placeholder="Who is the hero of The Odyssey?
 Odysseus
 
 What city is Fenway Park in?
 Boston"></textarea>
 
-      <label for="topic">Topic for AI:</label>
-      <input id="topic" type="text" placeholder="e.g., The Beatles" />
+    <label for="topic">Topic for AI:</label>
+    <input id="topic" type="text" placeholder="e.g., The Beatles" />
 
-      <label>Order:</label>
-      <div class="toggle-group" id="orderGroup">
-        <button id="sequentialBtn" onclick="setOrder('sequential')">Sequential</button>
-        <button id="randomBtn" onclick="setOrder('random')">Random</button>
-      </div>
-
-      <button onclick="startGame()">Start Game</button>
+    <label>Order:</label>
+    <div class="toggle-group" id="orderGroup">
+      <button id="sequentialBtn" onclick="setOrder('sequential')">Sequential</button>
+      <button id="randomBtn" onclick="setOrder('random')">Random</button>
     </div>
 
     <div class="footer">
