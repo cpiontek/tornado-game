@@ -1,4 +1,3 @@
-// script.js
 let gameData = JSON.parse(localStorage.getItem('playTornadoGameData')) || {};
 
 const gridContainer = document.getElementById('grid');
@@ -9,7 +8,6 @@ const teamAScore = document.getElementById('team-a-score');
 const teamBScore = document.getElementById('team-b-score');
 
 let currentQuestionIndex = -1;
-let revealedAnswers = new Set();
 let questions = [];
 
 function parseManualQuestions(raw) {
@@ -48,8 +46,7 @@ function generateGrid(num) {
 function handleGridClick(index) {
   const button = document.querySelectorAll('.grid-button')[index];
   const value = button.dataset.value;
-
-  if (typeof value === 'undefined') return;
+  if (!value) return;
 
   button.disabled = true;
   currentQuestionIndex = index;
