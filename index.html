@@ -2,74 +2,46 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Play Tornado</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
+  <link href="style.css" rel="stylesheet">
 </head>
 <body>
-  <div class="setup-screen">
-    <img src="tornado-logo.png" alt="Tornado Logo" id="logo" />
+  <div id="setup">
+    <img src="tornado-logo.png" alt="Play Tornado Logo" id="logo" />
     <div class="form-row">
-      <label for="team-a">Team A:</label>
-      <input type="text" id="team-a" placeholder="Team A" maxlength="20" />
-      <label for="team-b">Team B:</label>
-      <input type="text" id="team-b" placeholder="Team B" maxlength="20" />
-      <label for="grid-size">Grid Size:</label>
-      <select id="grid-size">
-        <option>20</option>
-        <option>24</option>
-        <option>30</option>
-        <option>36</option>
-      </select>
+      <label>Team A:
+        <input type="text" id="team-a-name" value="Team A" maxlength="20">
+      </label>
+      <label>Team B:
+        <input type="text" id="team-b-name" value="Team B" maxlength="20">
+      </label>
+      <label>Grid Size:
+        <select id="grid-size">
+          <option>20</option>
+          <option>24</option>
+          <option>30</option>
+        </select>
+      </label>
       <button id="start-btn">Start Game</button>
     </div>
 
-    <p>Question source:</p>
-    <div class="source-buttons">
-      <button id="ai-btn">AI</button>
-      <button id="manual-btn">Paste my own / No questions</button>
+    <div class="question-source">
+      <p>Question source:</p>
+      <div id="source-buttons">
+        <button id="ai-btn">AI</button>
+        <button id="manual-btn" class="active">Paste my own / No questions</button>
+      </div>
     </div>
 
-    <label for="manual-questions">Questions / Q&amp;A Blocks:</label>
-    <textarea id="manual-questions" placeholder="Example format:
-Who is the hero of The Odyssey?
-Odysseus
+    <label>Questions / Q&A Blocks:</label>
+    <textarea id="question-blocks" placeholder="Example format:\nWho is the hero of The Odyssey?\nOdysseus\n\nWhat city is Fenway Park in?\nBoston"></textarea>
 
-What city is Fenway Park in?
-Boston"></textarea>
-
-    <label for="topic">Topic for AI:</label>
-    <input type="text" id="topic" placeholder="e.g., The Beatles" />
+    <label>Topic for AI:</label>
+    <input type="text" id="ai-topic" placeholder="e.g., The Beatles">
 
     <footer>Created by Timothy Piontek</footer>
-  </div>
-
-  <div class="game-screen hidden">
-    <h2 id="turn-indicator"></h2>
-
-    <div id="question-box"></div>
-    <div id="answer-box"></div>
-
-    <div class="button-row">
-      <button id="pass-btn">Pass</button>
-      <button id="skip-btn">Skip</button>
-      <button id="reveal-btn" class="hidden">Reveal Answer</button>
-    </div>
-
-    <div class="scoreboard">
-      <div class="score">
-        <h3 id="team-a-name"></h3>
-        <p id="team-a-score">0</p>
-      </div>
-      <div class="score">
-        <h3 id="team-b-name"></h3>
-        <p id="team-b-score">0</p>
-      </div>
-    </div>
-
-    <div id="grid"></div>
-    <div id="celebration-message"></div>
-    <button id="reset-button">Reset Game</button>
   </div>
 
   <script src="script.js"></script>
