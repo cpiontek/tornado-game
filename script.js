@@ -1,155 +1,123 @@
-const gameData = JSON.parse(localStorage.getItem('playTornadoGameData')) || {};
-
-const gridContainer = document.getElementById('grid');
+const data = JSON.parse(localStorage.getItem('playTornadoGameData')) || {};
+const teamAEl = document.getElementById('team-a-name');
+const teamBEl = document.getElementById('team-b-name');
+const teamAScoreEl = document.getElementById('team-a-score');
+const teamBScoreEl = document.getElementById('team-b-score');
+const turnIndicator = document.getElementById('turn-indicator');
+const grid = document.getElementById('grid');
 const questionBox = document.getElementById('question-box');
 const answerBox = document.getElementById('answer-box');
-const revealButton = document.getElementById('reveal-btn');
-const skipButton = document.getElementById('skip-btn');
-const passButton = document.getElementById('pass-btn');
-const teamAScore = document.getElementById('team-a-score');
-const teamBScore = document.getElementById('team-b-score');
+const revealBtn = document.getElementById('reveal-btn');
+const skipBtn = document.getElementById('skip-btn');
+const passBtn = document.getElementById('pass-btn');
 
-let currentIndex = -1;
+let currentTeam = 'A';
 let questions = [];
-let usedQuestions = [];
+let questionIndex = 0;
+let usedBoxes = new Set();
+let lastClickedBox = null;
 
-function parseManualQuestions(raw) {
-  return raw.split('\n\n').map(qb => {
-    const [q, a] = qb.split('\n').map(s => s.trim());
-    return { q, a };
-  }).filter(pair => pair.q && pair.a);
+function parseQuestions(input) {
+  return input.split('\n\n').map(block => {
+    const [q, a] = block.trim().split('\n');
+    return { q: q?.trim(), a: a?.trim() };
+  }).filter(q => q.q && q.a);
 }
 
-function loopQuestion(i) {
-  return questions[i % questions.length];
+function shuffle(arr) {
+  return arr.map(x => [Math.random(), x]).sort().map(x => x[1]);
 }
 
-function getRandomEffect() {
-  const rand = Math.random();
-  if (rand < 0.7) return { type: 'points', value: (Math.floor(Math.random() * 10) + 1) * 100 };
-  if (rand < 0.85) return { type: 'x2' };
-  if (rand < 0.95) return { type: 'steal' };
-  return { type: 'lose' };
-}
-
-function generateGrid(size) {
-  const cols = Math.ceil(Math.sqrt(size));
-  gridContainer.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-  gridContainer.innerHTML = '';
-
+function loopQuestionsToSize(size) {
+  const extended = [];
   for (let i = 0; i < size; i++) {
+    extended.push(questions[i % questions.length]);
+  }
+  return extended;
+}
+
+function updateTurnDisplay() {
+  turnIndicator.textContent = `Current Turn: Team ${currentTeam}`;
+}
+
+function awardPoints(team, amount) {
+  const el = team === 'A' ? teamAScoreEl : teamBScoreEl;
+  el.textContent = parseInt(el.textContent) + amount;
+}
+
+function switchTeam() {
+  currentTeam = currentTeam === 'A' ? 'B' : 'A';
+  updateTurnDisplay();
+}
+
+function showNextQuestion() {
+  questionBox.textContent = questions[questionIndex % questions.length].q;
+  answerBox.textContent = questions[questionIndex % questions.length].a;
+  answerBox.style.display = 'none';
+  revealBtn.style.display = 'inline-block';
+}
+
+function generateGrid(n) {
+  const cols = Math.ceil(Math.sqrt(n));
+  grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+  for (let i = 0; i < n; i++) {
     const btn = document.createElement('button');
     btn.className = 'grid-button';
     btn.textContent = i + 1;
-    const effect = getRandomEffect();
-    btn.dataset.effect = JSON.stringify(effect);
-    btn.onclick = () => handleGridClick(btn, i);
-    gridContainer.appendChild(btn);
+    btn.onclick = () => handleBoxClick(btn);
+    grid.appendChild(btn);
   }
 }
 
-function handleGridClick(button, i) {
-  if (button.disabled) return;
-  button.disabled = true;
-  currentIndex = i;
+function handleBoxClick(btn) {
+  if (usedBoxes.has(btn)) return;
 
-  const effect = JSON.parse(button.dataset.effect);
-  let display = '';
+  lastClickedBox = btn;
+  usedBoxes.add(btn);
+  btn.disabled = true;
+  btn.style.opacity = 0.5;
 
-  const team = Math.random() < 0.5 ? 'A' : 'B';
-
-  if (effect.type === 'points') {
-    addPoints(team, effect.value);
-    display = `+${effect.value}`;
-  } else if (effect.type === 'x2') {
-    addPoints(team, 200);
-    display = 'x2';
-  } else if (effect.type === 'steal') {
-    stealPoints(team, 100);
-    display = '🌪️';
-    playSound('wind');
-  } else if (effect.type === 'lose') {
-    resetPoints(team);
-    display = '❌';
-    playSound('sad');
-  }
-
-  button.textContent = display;
-
-  const q = loopQuestion(i);
-  questionBox.textContent = q?.q || '';
-  answerBox.textContent = q?.a || '';
-  answerBox.style.display = 'none';
-  revealButton.style.display = 'inline-block';
+  showNextQuestion();
 }
 
-function addPoints(team, amount) {
-  const el = team === 'A' ? teamAScore : teamBScore;
-  const current = parseInt(el.textContent);
-  el.textContent = current + amount;
-}
-
-function stealPoints(fromTeam, amount) {
-  const toTeam = fromTeam === 'A' ? 'B' : 'A';
-  const fromEl = fromTeam === 'A' ? teamAScore : teamBScore;
-  const toEl = toTeam === 'A' ? teamAScore : teamBScore;
-
-  const fromScore = parseInt(fromEl.textContent);
-  const stolen = Math.min(fromScore, amount);
-  fromEl.textContent = fromScore - stolen;
-  toEl.textContent = parseInt(toEl.textContent) + stolen;
-}
-
-function resetPoints(team) {
-  const el = team === 'A' ? teamAScore : teamBScore;
-  el.textContent = 0;
-}
-
-function playSound(type) {
-  const audio = new Audio();
-  if (type === 'wind') audio.src = 'sounds/wind.mp3';
-  if (type === 'sad') audio.src = 'sounds/sad.mp3';
-  audio.play();
-}
-
-revealButton.onclick = () => {
+revealBtn.onclick = () => {
   answerBox.style.display = 'block';
-  revealButton.style.display = 'none';
+  revealBtn.style.display = 'none';
+  awardPoints(currentTeam, 100);
+  questionIndex++;
+  switchTeam();
 };
 
-skipButton.onclick = () => {
-  questionBox.textContent = 'Skipped.';
-  answerBox.style.display = 'none';
-  revealButton.style.display = 'none';
+skipBtn.onclick = () => {
+  questionIndex++;
+  switchTeam();
+  showNextQuestion();
 };
 
-passButton.onclick = () => {
-  questionBox.textContent = 'Passed.';
-  answerBox.style.display = 'none';
-  revealButton.style.display = 'none';
+passBtn.onclick = () => {
+  switchTeam(); // Don't increment question index
+  showNextQuestion();
 };
 
 function initGame() {
-  if (!gameData || !gameData.gridSize) {
-    questionBox.textContent = 'Missing game data. Please start from the homepage.';
-    return;
-  }
+  teamAEl.textContent = data.teamA || 'Team A';
+  teamBEl.textContent = data.teamB || 'Team B';
 
-  document.getElementById('team-a-name').textContent = gameData.teamA;
-  document.getElementById('team-b-name').textContent = gameData.teamB;
-
-  questions = gameData.questionSource === 'manual'
-    ? parseManualQuestions(gameData.questions)
-    : Array(gameData.gridSize).fill().map((_, i) => ({
-        q: `AI Question ${i + 1}`,
-        a: `AI Answer ${i + 1}`
+  questions = data.questionSource === 'manual'
+    ? parseQuestions(data.questions)
+    : Array(data.gridSize).fill().map((_, i) => ({
+        q: `AI Question ${i + 1}`, a: `AI Answer ${i + 1}`
       }));
 
-  if (gameData.questionOrder === 'random') {
-    questions.sort(() => Math.random() - 0.5);
+  if (data.questionOrder === 'random') {
+    questions = shuffle(questions);
   }
 
-  generateGrid(gameData.gridSize);
+  questions = loopQuestionsToSize(data.gridSize);
+
+  updateTurnDisplay();
+  generateGrid(data.gridSize);
+  showNextQuestion();
 }
 
 initGame();
