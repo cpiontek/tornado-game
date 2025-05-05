@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tornado Game</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    .scores {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin: 20px 0;
+    }
+    .team-name {
+      font-weight: bold;
+    }
+    .score {
+      font-size: 2em;
+    }
+    .team-a {
+      color: red;
+    }
+    .team-b {
+      color: blue;
+    }
+    .score-popup {
+      position: absolute;
+      animation: pop 1s ease-out forwards;
+      font-size: 1.5em;
+    }
+    @keyframes pop {
+      0% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-30px); }
+    }
+    #grid {
+      display: grid;
+      gap: 10px;
+      justify-content: center;
+      margin: 20px auto;
+    }
+    .grid-button {
+      width: 60px;
+      height: 60px;
+      font-size: 1.2em;
+      cursor: pointer;
+    }
+    #question-box, #answer-box {
+      margin: 20px auto;
+      max-width: 600px;
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      display: none;
+    }
+    #reveal-btn {
+      display: none;
+      margin-top: 10px;
+      padding: 10px 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Tornado Game</h1>
+  <div class="scores">
+    <div>
+      <div class="team-name team-a" id="team-a-name">Team A</div>
+      <div class="score team-a" id="team-a-score">0</div>
+    </div>
+    <div>
+      <div class="team-name team-b" id="team-b-name">Team B</div>
+      <div class="score team-b" id="team-b-score">0</div>
+    </div>
+  </div>
+
+  <div id="grid"></div>
+
+  <div id="question-box"></div>
+  <div id="answer-box"></div>
+  <button id="reveal-btn" onclick="document.getElementById('answer-box').style.display='block'">Reveal Answer</button>
+
+  <script src="script.js"></script>
+</body>
+</html>
