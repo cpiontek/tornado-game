@@ -98,4 +98,87 @@ function handleGridClick(index, button) {
 }
 
 function addPoints(team, points) {
-  const el
+  const el = team === 'A' ? teamAScore : teamBScore;
+  let score = parseInt(el.textContent);
+  score += points;
+  el.textContent = score;
+
+  const pop = document.createElement('div');
+  pop.textContent = `+${points}`;
+  pop.className = 'score-popup ' + (team === 'A' ? 'team-a' : 'team-b');
+  el.appendChild(pop);
+  setTimeout(() => pop.remove(), 1000);
+}
+
+function stealPoints(stealingTeam, amount) {
+  const fromTeam = stealingTeam === 'A' ? 'B' : 'A';
+  const fromEl = fromTeam === 'A' ? teamAScore : teamBScore;
+  const toEl = stealingTeam === 'A' ? teamAScore : teamBScore;
+  let fromScore = parseInt(fromEl.textContent);
+  let toScore = parseInt(toEl.textContent);
+
+  const stolen = Math.min(amount, fromScore);
+  fromEl.textContent = fromScore - stolen;
+  toEl.textContent = toScore + stolen;
+
+  const stealPop = document.createElement('div');
+  stealPop.textContent = `+${stolen}`;
+  stealPop.className = 'score-popup ' + (stealingTeam === 'A' ? 'team-a' : 'team-b');
+  toEl.appendChild(stealPop);
+  setTimeout(() => stealPop.remove(), 1000);
+}
+
+function resetScore(team) {
+  const el = team === 'A' ? teamAScore : teamBScore;
+  el.textContent = '0';
+  const pop = document.createElement('div');
+  pop.textContent = '-ALL';
+  pop.className = 'score-popup ' + (team === 'A' ? 'team-a' : 'team-b');
+  el.appendChild(pop);
+  setTimeout(() => pop.remove(), 1000);
+}
+
+function addSkipAndPassButtons() {
+  const skip = document.createElement('button');
+  skip.textContent = '⏭️ Skip';
+  skip.onclick = () => {
+    questionBox.textContent = 'Question skipped.';
+    answerBox.textContent = '';
+    answerBox.style.display = 'none';
+    buttonsLocked = false;
+  };
+
+  const pass = document.createElement('button');
+  pass.textContent = '✅ Pass';
+  pass.onclick = () => {
+    questionBox.textContent = 'Point passed to other team.';
+    answerBox.style.display = 'none';
+    buttonsLocked = false;
+  };
+
+  gridContainer.parentNode.insertBefore(skip, gridContainer.nextSibling);
+  gridContainer.parentNode.insertBefore(pass, skip.nextSibling);
+}
+
+function initGame() {
+  if (gameData.useQuestions) {
+    if (gameData.questionSource === 'manual') {
+      questions = parseManualQuestions(gameData.questions);
+    } else {
+      questions = Array(gameData.gridSize).fill().map((_, i) => ({
+        q: `AI Question ${i + 1}`,
+        a: `AI Answer ${i + 1}`
+      }));
+    }
+    if (gameData.questionOrder === 'random') {
+      questions = questions.sort(() => Math.random() - 0.5);
+    }
+  }
+
+  document.getElementById('team-a-name').textContent = gameData.teamA;
+  document.getElementById('team-b-name').textContent = gameData.teamB;
+
+  generateGrid(gameData.gridSize);
+}
+
+initGame();
