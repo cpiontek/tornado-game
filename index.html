@@ -1,208 +1,164 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Play Tornado</title>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700&family=Quicksand&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: 'Quicksand', sans-serif;
-      margin: 0;
-      padding: 20px;
-      background: #4a7d7b;
-      color: #fff;
+      background-color: #4a7d7b;
+      color: white;
       display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      min-height: 100vh;
-      box-sizing: border-box;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
     }
-    .container {
-      max-width: 1000px;
-      width: 100%;
-      text-align: center;
+    h1 {
+      font-family: 'Baloo 2', cursive;
+      font-size: 3em;
+      margin-bottom: 10px;
     }
     .logo {
-      width: 200px;
-      max-width: 80%;
-      height: auto;
-      display: block;
-      margin: 0 auto 20px;
+      height: 160px;
+      margin-bottom: 10px;
     }
-    .footer {
-      margin-top: 40px;
-      font-size: 1em;
-      color: #eee;
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+      width: 90%;
+      max-width: 500px;
     }
     label {
       font-weight: bold;
       display: block;
-      margin-top: 20px;
-      font-size: 1.1em;
-    }
-    input[type="text"], select {
-      padding: 10px;
-      font-size: 1em;
-      border-radius: 6px;
-      border: none;
-    }
-    #teamA, #teamB {
-      width: 240px;
-      max-width: 90%;
-    }
-    #gridSize {
-      width: 120px;
-      text-align: center;
-    }
-    textarea {
-      width: 90%;
-      padding: 10px;
-      font-size: 1em;
-      border-radius: 6px;
-      border: none;
-    }
-    .toggle-group {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
       margin-top: 10px;
-      flex-wrap: wrap;
     }
-    .toggle-group button {
+    input[type="text"],
+    select,
+    textarea {
+      font-family: 'Quicksand', sans-serif;
       font-size: 1em;
-      padding: 10px 20px;
-      background-color: #7e57c2;
-      color: #fff;
-      border: none;
+      width: 100%;
+      padding: 10px;
       border-radius: 6px;
-      cursor: pointer;
-    }
-    .toggle-group button.active {
-      background-color: #5e3e9c;
-    }
-    .team-inputs {
-      display: flex;
-      justify-content: center;
-      align-items: flex-end;
-      gap: 20px;
-      flex-wrap: wrap;
-      margin-bottom: 20px;
-    }
-    .team-inputs > div {
-      text-align: left;
-    }
-    #startBtn {
-      background-color: #7e57c2;
-      color: #fff;
-      font-size: 1.5em;
-      font-weight: bold;
-      padding: 80px 30px;
-      height: auto;
       border: none;
-      border-radius: 12px;
+    }
+    .option-buttons {
+      display: flex;
+      gap: 10px;
+    }
+    .option-buttons button {
+      padding: 10px 20px;
+      background-color: #6c3ebf;
+      color: white;
+      border: none;
+      border-radius: 8px;
       cursor: pointer;
+      font-weight: bold;
+    }
+    .start-button {
+      margin-top: 20px;
+      font-size: 1.4em;
+      padding: 20px;
+      background-color: #6c3ebf;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      width: 100%;
+    }
+    .footer {
+      margin-top: 40px;
+      font-size: 0.9em;
+      color: #ccc;
+    }
+    .hint {
+      font-size: 0.85em;
+      color: gray;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <img src="tornado-logo.png" alt="Play Tornado Logo" class="logo" />
+  <img src="tornado-logo.png" alt="Play Tornado Logo" class="logo">
+  <h1>Play Tornado</h1>
 
-    <div class="team-inputs">
-      <div>
-        <label for="teamA">Team A Name:</label>
-        <input id="teamA" type="text" maxlength="20" placeholder="Team A" />
+  <form id="game-form">
+    <label>Team A Name:</label>
+    <input type="text" id="team-a" placeholder="Team A" maxlength="20" required>
 
-        <label for="teamB">Team B Name:</label>
-        <input id="teamB" type="text" maxlength="20" placeholder="Team B" />
+    <label>Team B Name:</label>
+    <input type="text" id="team-b" placeholder="Team B" maxlength="20" required>
 
-        <label for="gridSize">Grid Size:</label>
-        <select id="gridSize">
-          <option value="9">9 (3x3)</option>
-          <option value="12">12 (3x4)</option>
-          <option value="16">16 (4x4)</option>
-          <option value="20" selected>20 (4x5)</option>
-          <option value="25">25 (5x5)</option>
-          <option value="30">30 (5x6)</option>
-        </select>
-      </div>
-      <button id="startBtn" onclick="startGame()">Start Game</button>
-    </div>
+    <label>Grid Size:</label>
+    <select id="grid-size">
+      <option value="20">20 (4x5)</option>
+      <option value="25">25 (5x5)</option>
+      <option value="30">30 (5x6)</option>
+    </select>
 
     <label>Question source:</label>
-    <div class="toggle-group" id="sourceGroup">
-      <button id="aiBtn" onclick="selectSource('ai')">AI</button>
-      <button id="manualBtn" onclick="selectSource('manual')">Paste my own / No questions</button>
+    <div class="option-buttons">
+      <button type="button" id="ai">AI</button>
+      <button type="button" id="manual">Paste my own / No questions</button>
     </div>
 
-    <label for="questions">Questions / Q&A Blocks:</label>
-    <textarea id="questions" rows="6" placeholder="Who is the hero of The Odyssey?
+    <label>Questions / Q&A Blocks:</label>
+    <textarea id="questions" rows="6" placeholder="Example format:
+Who is the hero of The Odyssey?
 Odysseus
 
 What city is Fenway Park in?
 Boston"></textarea>
 
-    <label for="topic">Topic for AI:</label>
-    <input id="topic" type="text" placeholder="e.g., The Beatles" />
+    <label>Topic for AI:</label>
+    <input type="text" id="topic" placeholder="e.g., The Beatles">
 
-    <label>Order:</label>
-    <div class="toggle-group" id="orderGroup">
-      <button id="sequentialBtn" onclick="setOrder('sequential')">Sequential</button>
-      <button id="randomBtn" onclick="setOrder('random')">Random</button>
-    </div>
+    <button type="submit" class="start-button">Start Game</button>
+  </form>
 
-    <div class="footer">
-      Created by Timothy Piontek
-    </div>
-  </div>
+  <div class="footer">Created by Timothy Piontek</div>
 
   <script>
+    const gameForm = document.getElementById('game-form');
+    const aiBtn = document.getElementById('ai');
+    const manualBtn = document.getElementById('manual');
+    const topicInput = document.getElementById('topic');
+    const questionsInput = document.getElementById('questions');
+
     let questionSource = 'manual';
-    let questionOrder = 'sequential';
 
-    function selectSource(source) {
-      questionSource = source;
-      document.getElementById('aiBtn').classList.remove('active');
-      document.getElementById('manualBtn').classList.remove('active');
-      document.getElementById(source + 'Btn').classList.add('active');
-    }
+    aiBtn.addEventListener('click', () => {
+      questionSource = 'ai';
+      aiBtn.style.backgroundColor = '#9575cd';
+      manualBtn.style.backgroundColor = '#6c3ebf';
+    });
 
-    function setOrder(order) {
-      questionOrder = order;
-      document.getElementById('sequentialBtn').classList.remove('active');
-      document.getElementById('randomBtn').classList.remove('active');
-      document.getElementById(order + 'Btn').classList.add('active');
-    }
+    manualBtn.addEventListener('click', () => {
+      questionSource = 'manual';
+      manualBtn.style.backgroundColor = '#9575cd';
+      aiBtn.style.backgroundColor = '#6c3ebf';
+    });
 
-    function startGame() {
-      const teamA = document.getElementById('teamA').value || 'Team A';
-      const teamB = document.getElementById('teamB').value || 'Team B';
-      const gridSize = parseInt(document.getElementById('gridSize').value);
-      const topic = document.getElementById('topic').value;
-      const questions = document.getElementById('questions').value.trim();
+    gameForm.addEventListener('submit', (e) => {
+      e.preventDefault();
 
-      const useQuestions = questions.length > 0;
-
-      const gameData = {
-        teamA,
-        teamB,
-        gridSize,
+      const data = {
+        teamA: document.getElementById('team-a').value || 'Team A',
+        teamB: document.getElementById('team-b').value || 'Team B',
+        gridSize: parseInt(document.getElementById('grid-size').value),
         questionSource,
-        topic,
-        questions,
-        questionOrder,
-        useQuestions
+        questions: questionsInput.value,
+        topic: topicInput.value,
+        questionOrder: 'random'
       };
 
-      localStorage.setItem('playTornadoGameData', JSON.stringify(gameData));
+      localStorage.setItem('playTornadoGameData', JSON.stringify(data));
       window.location.href = 'game.html';
-    }
-
-    window.onload = () => {
-      document.getElementById('manualBtn').classList.add('active');
-      document.getElementById('sequentialBtn').classList.add('active');
-    };
+    });
   </script>
 </body>
 </html>
