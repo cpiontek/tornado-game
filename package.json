@@ -1,7 +1,7 @@
 {
   "name": "tornado-game",
   "version": "1.0.0",
-  "description": "Tornado Game with Netlify Functions & OpenAI",
+  "description": "Play Tornado: classroom quiz game with OpenAI",
   "main": "index.html",
   "license": "MIT",
   "dependencies": {
