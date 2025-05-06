@@ -391,6 +391,22 @@
       60% { transform: translateX(10%); opacity: 1; }
       100% { transform: translateX(0); opacity: 0; }
     }
+    .purple-btn {
+      background: #6F5C91;
+      color: #fff;
+      font-weight: 700;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 32px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      transition: background 0.2s, transform 0.2s;
+    }
+    .purple-btn:hover {
+      background: #59487a;
+      transform: scale(1.05);
+    }
   </style>
 </head>
 <body>
@@ -399,7 +415,7 @@
   <div id="setupScreen">
     <div class="logo-start-container">
       <img src="tornado-logo.png" alt="Tornado Game Logo" class="logo-large">
-      <button id="startGameBtn" class="start-large">Start Game</button>
+      <button id="startGameBtnTop" class="start-large purple-btn">Start Game</button>
     </div>
     <div class="game-info">
       <div class="how-to-play">
@@ -468,7 +484,7 @@ Mars"></textarea>
         <label><input type="radio" name="order" value="random"> Random</label>
       </div>
 
-      <button id="startGameBtn">Start Game</button>
+      <button id="startGameBtnBottom" class="purple-btn">Start Game</button>
     </form>
   </div>
 
@@ -521,7 +537,8 @@ Mars"></textarea>
     // DOM refs
     const setupScreen=document.getElementById('setupScreen'),
           gameScreen=document.getElementById('gameScreen'),
-          startBtn=document.getElementById('startGameBtn'),
+          startBtnTop=document.getElementById('startGameBtnTop'),
+          startBtnBottom=document.getElementById('startGameBtnBottom'),
           resetBtn=document.getElementById('resetBtn'),
           passBtn=document.getElementById('passBtn'),
           skipBtn=document.getElementById('skipBtn'),
@@ -538,7 +555,8 @@ Mars"></textarea>
           answerEl=document.getElementById('answer'),
           specialPopup=document.getElementById('specialPopup');
 
-    startBtn.onclick = () => {
+    // Attach start logic to both buttons
+    startBtnTop.onclick = startBtnBottom.onclick = () => {
       names.A = document.getElementById('teamANameInput').value.trim()||'Team A';
       names.B = document.getElementById('teamBNameInput').value.trim()||'Team B';
       total = +document.getElementById('gridSizeInput').value;
