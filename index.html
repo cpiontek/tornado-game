@@ -407,6 +407,16 @@
       background: #59487a;
       transform: scale(1.05);
     }
+    .special-legend {
+      margin-top: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      font-size: 1.1rem;
+      text-align: left;
+      align-items: flex-start;
+      justify-content: center;
+    }
   </style>
 </head>
 <body>
@@ -423,11 +433,6 @@
         <p class="how-body">
           You control the game! Ask your own questions aloud (from a worksheet or lesson), or paste questions into the game below. When a student answers correctly, let them pick a number to reveal points or a special animal event for their team.
         </p>
-        <div class="special-items compact">
-          <div class="special-item"><span class="emoji-big">🦘🦘</span> <span class="slogan">Kangaroo Swap! Teams bounce and swap points!</span></div>
-          <div class="special-item"><span class="emoji-big">🦁🦁</span> <span class="slogan">Double Lion Roar! Double your points!</span></div>
-          <div class="special-item"><span class="emoji-big">🦨</span> <span class="slogan">Skunked! Lose all your points!</span></div>
-        </div>
       </div>
       <div class="special-item-selectors">
         <label><span class="emoji-big">🦘🦘</span> Kangaroo Swap:
@@ -450,6 +455,12 @@
             <option>0</option><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option>
           </select>
         </label>
+      </div>
+      <div class="special-legend">
+        <div><span class="emoji-big">🦘🦘</span> <b>Swap:</b> Swap points with the other team</div>
+        <div><span class="emoji-big">🦁🦁</span> <b>Double:</b> Double your points</div>
+        <div><span class="emoji-big">🦨</span> <b>Lose:</b> Lose all your points</div>
+        <div><span class="emoji-big">🌪️</span> <b>Tornado:</b> Steal the other team's points</div>
       </div>
     </div>
     <form id="setupForm" onsubmit="return false;">
