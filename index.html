@@ -184,7 +184,7 @@
     }
     .footer {
       font-size: 0.8em;
-      color: #666;
+      color: #fff;
       margin-top: 30px;
     }
 
@@ -489,6 +489,71 @@
       box-sizing: border-box;
       margin-bottom: 0.5rem;
     }
+    .game-controls {
+      display: flex;
+      justify-content: center;
+      gap: 1.2rem;
+      margin-bottom: 0.7rem;
+    }
+    #questionAnswerRow {
+      display: flex;
+      justify-content: flex-start;
+      align-items: flex-start;
+      min-height: 90px;
+      margin-bottom: 0.5rem;
+      width: 100%;
+    }
+    .bubble-left, .bubble-right {
+      max-width: 40vw;
+      min-width: 260px;
+      background: #fff;
+      color: #222;
+      border-radius: 18px;
+      padding: 1.1rem 1.5rem 1.1rem 1.5rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.2rem;
+      margin-top: 0.2rem;
+      word-break: break-word;
+      overflow-wrap: break-word;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      min-height: 60px;
+    }
+    .bubble-left {
+      margin-left: 2vw;
+      align-items: flex-start;
+      border-top-left-radius: 0;
+    }
+    .bubble-right {
+      margin-left: auto;
+      margin-right: 2vw;
+      align-items: flex-end;
+      border-top-right-radius: 0;
+    }
+    #question {
+      color: #6F5C91;
+      font-size: 1.5em;
+      font-weight: 900;
+      text-align: left;
+      margin-bottom: 0.3em;
+      line-height: 1.2;
+    }
+    #answer {
+      color: #31727A;
+      font-size: 1.1em;
+      font-style: italic;
+      text-align: left;
+      margin-top: 0.2em;
+      line-height: 1.2;
+    }
+    @media (max-width: 900px) {
+      .bubble-left, .bubble-right { max-width: 90vw; min-width: 0; font-size: 1.1rem; padding: 0.7rem 1rem; }
+      #question { font-size: 1.1em; }
+    }
   </style>
 </head>
 <body>
@@ -580,19 +645,17 @@ Mars"></textarea>
 
     <h3 id="turnDisplay">Team A's turn</h3>
 
-    <div id="questionContainer">
-      <div>
-        <div id="question"></div>
-        <div id="answer"></div>
-        <div id="correctIncorrectButtons" class="hidden" style="margin-top: 10px;">
-          <button id="correctBtn" style="background: #4CAF50; color: white; margin-right: 10px;">Correct</button>
-          <button id="incorrectBtn" style="background: #f44336; color: white;">Incorrect</button>
-        </div>
-        <div id="selectNumberText" class="hidden" style="margin-top: 10px; font-weight: bold;">Select a Number</div>
-      </div>
+    <div class="game-controls">
       <button id="passBtn">Pass</button>
       <button id="skipBtn">Skip</button>
       <button id="revealBtn">Reveal Answer</button>
+    </div>
+
+    <div id="questionAnswerRow">
+      <div id="questionBubble" class="bubble-left">
+        <div id="question"></div>
+        <div id="answer"></div>
+      </div>
     </div>
 
     <div id="grid"></div>
@@ -800,9 +863,16 @@ Mars"></textarea>
     function showQuestion(){
       const qObj=questions[qIndex]||{question:'',answer:null};
       questionEl.textContent=qObj.question;
-      questionEl.style.color = turn==='A'?'var(--teamA)':'var(--teamB)';
-      questionEl.style.textAlign = turn==='A'?'left':'right';
       answerEl.textContent = '';
+      // Alternate bubble side based on team turn
+      const bubble = document.getElementById('questionBubble');
+      if (turn === 'A') {
+        bubble.classList.add('bubble-left');
+        bubble.classList.remove('bubble-right');
+      } else {
+        bubble.classList.add('bubble-right');
+        bubble.classList.remove('bubble-left');
+      }
       revealBtn.classList.toggle('hidden', !qObj.answer);
     }
 
