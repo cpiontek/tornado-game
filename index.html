@@ -654,6 +654,29 @@
       padding: 1rem 1.2rem 0.5rem 1.2rem;
       box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }
+    .setup-form-and-questions {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      min-width: 180px;
+      max-width: 240px;
+      flex: 0 0 240px;
+    }
+    .slightly-wider-questions-block {
+      max-width: 270px;
+      width: 100%;
+      margin-top: 1.2rem;
+      margin-bottom: 0;
+      padding-left: 0;
+      padding-right: 0;
+    }
+    @media (max-width: 900px) {
+      .setup-form-and-questions, .slightly-wider-questions-block {
+        max-width: 98vw;
+        width: 100%;
+        min-width: 0;
+      }
+    }
   </style>
 </head>
 <body>
@@ -691,37 +714,39 @@
           </div>
         </div>
       </div>
-      <form id="setupForm" onsubmit="return false;" class="compact-setup-form">
-        <label>Team A Name:
-          <input id="teamANameInput" value="Team A" required maxlength="16">
-        </label>
-        <label>Team B Name:
-          <input id="teamBNameInput" value="Team B" required maxlength="16">
-        </label>
-        <label>Grid Size:
-          <select id="gridSizeInput">
-            <option>8</option><option>10</option><option>16</option>
-            <option selected>20</option><option>24</option>
-            <option>30</option><option>32</option><option>40</option>
-          </select>
-        </label>
-      </form>
-    </div>
-    <div class="questions-block compact-questions-block">
-      <label>
-        Questions &amp; Answers:<br/>
-        <small>Enter questions (and optional answers). One per line, or use a blank line between question and answer.</small>
-        <textarea id="questionsInput"
-          placeholder="What is the capital of France?
+      <div class="setup-form-and-questions">
+        <form id="setupForm" onsubmit="return false;" class="compact-setup-form">
+          <label>Team A Name:
+            <input id="teamANameInput" value="Team A" required maxlength="16">
+          </label>
+          <label>Team B Name:
+            <input id="teamBNameInput" value="Team B" required maxlength="16">
+          </label>
+          <label>Grid Size:
+            <select id="gridSizeInput">
+              <option>8</option><option>10</option><option>16</option>
+              <option selected>20</option><option>24</option>
+              <option>30</option><option>32</option><option>40</option>
+            </select>
+          </label>
+        </form>
+        <div class="questions-block compact-questions-block slightly-wider-questions-block">
+          <label>
+            Questions &amp; Answers:<br/>
+            <small>Enter questions (and optional answers). One per line, or use a blank line between question and answer.</small>
+            <textarea id="questionsInput"
+              placeholder="What is the capital of France?
 Paris
 
 Which planet is known as the Red Planet?
 Mars"></textarea>
-      </label>
-      <div class="inline-radio">
-        <span>Order:</span>
-        <label><input type="radio" name="order" value="inorder" checked> In order</label>
-        <label><input type="radio" name="order" value="random"> Random</label>
+          </label>
+          <div class="inline-radio">
+            <span>Order:</span>
+            <label><input type="radio" name="order" value="inorder" checked> In order</label>
+            <label><input type="radio" name="order" value="random"> Random</label>
+          </div>
+        </div>
       </div>
     </div>
     <button id="startGameBtnBottom" class="purple-btn">Start Game</button>
