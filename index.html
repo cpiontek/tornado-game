@@ -554,6 +554,41 @@
       .bubble-left, .bubble-right { max-width: 90vw; min-width: 0; font-size: 1.1rem; padding: 0.7rem 1rem; }
       #question { font-size: 1.1em; }
     }
+    .scorebar-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.2rem;
+      margin-bottom: 0.7rem;
+      width: 100%;
+      max-width: 1100px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .team-left, .team-right {
+      flex: 0 0 220px;
+      min-width: 180px;
+      max-width: 260px;
+    }
+    .center-controls {
+      flex: 1 1 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-width: 0;
+    }
+    #turnDisplay {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+    }
+    .compact-controls {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      align-items: center;
+    }
   </style>
 </head>
 <body>
@@ -632,23 +667,23 @@ Mars"></textarea>
     </div>
     <div id="specialPopup" class="special-popup hidden"></div>
 
-    <div class="scoreboard">
-      <div class="team">
+    <div class="scorebar-row">
+      <div class="team team-left">
         <div id="annA" class="announcement"></div>
         <h2 id="nameA">Team A</h2><p id="scoreA">0</p>
       </div>
-      <div class="team">
+      <div class="center-controls">
+        <div id="turnDisplay">Team A's turn</div>
+        <div class="game-controls compact-controls">
+          <button id="passBtn">Pass</button>
+          <button id="skipBtn">Skip</button>
+          <button id="revealBtn">Reveal Answer</button>
+        </div>
+      </div>
+      <div class="team team-right">
         <div id="annB" class="announcement"></div>
         <h2 id="nameB">Team B</h2><p id="scoreB">0</p>
       </div>
-    </div>
-
-    <h3 id="turnDisplay">Team A's turn</h3>
-
-    <div class="game-controls">
-      <button id="passBtn">Pass</button>
-      <button id="skipBtn">Skip</button>
-      <button id="revealBtn">Reveal Answer</button>
     </div>
 
     <div id="questionAnswerRow">
