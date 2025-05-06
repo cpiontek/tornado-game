@@ -264,6 +264,133 @@
       background: #59487a;
       transform: scale(1.05);
     }
+    .special-item-selectors {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      justify-content: center;
+      margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .special-item-selectors label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.1rem;
+      background: #f6f6f6;
+      border-radius: 8px;
+      padding: 0.4rem 0.8rem;
+    }
+    .special-item-selectors select {
+      font-size: 1.1rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      margin-left: 0.3rem;
+    }
+    .slogan {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-left: 0.5rem;
+      color: #333;
+      display: inline-block;
+    }
+    .special-popup {
+      position: fixed;
+      top: 20%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255,255,255,0.97);
+      color: #222;
+      font-size: 2.5rem;
+      font-weight: 900;
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+      padding: 2rem 3rem;
+      z-index: 1000;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .special-popup.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .score-animate {
+      transition: transform 0.7s cubic-bezier(.68,-0.55,.27,1.55), color 0.7s;
+    }
+    .kangaroo-jump {
+      animation: kangarooJump 0.7s;
+    }
+    @keyframes kangarooJump {
+      0% { transform: translateY(0); }
+      30% { transform: translateY(-40px) scale(1.2); }
+      60% { transform: translateY(0) scale(1); }
+      100% { transform: translateY(0); }
+    }
+    .lion-roar {
+      animation: lionRoar 0.7s;
+    }
+    @keyframes lionRoar {
+      0% { transform: scale(1); }
+      20% { transform: scale(1.3) rotate(-5deg); }
+      40% { transform: scale(1.1) rotate(5deg); }
+      60% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    .skunk-cloud {
+      animation: skunkCloud 1s;
+      color: #6e7f5c !important;
+      opacity: 0.5;
+    }
+    @keyframes skunkCloud {
+      0% { filter: blur(0); opacity: 1; }
+      50% { filter: blur(2px); opacity: 0.7; }
+      100% { filter: blur(6px); opacity: 0; }
+    }
+    .special-popup.tornado-mode {
+      background: transparent;
+      box-shadow: none;
+      padding: 0;
+      font-size: 3.5rem;
+      color: #333;
+      pointer-events: none;
+    }
+    .tornado-emoji-big {
+      font-size: 7rem;
+      animation: tornadoSpinBig 1.2s linear;
+      display: block;
+      margin: 0 auto;
+      filter: drop-shadow(0 8px 32px rgba(0,0,0,0.18));
+    }
+    @keyframes tornadoSpinBig {
+      0% { transform: scale(1) rotate(0deg); }
+      40% { transform: scale(1.5) rotate(180deg); }
+      70% { transform: scale(2.2) rotate(360deg); }
+      100% { transform: scale(1) rotate(720deg); }
+    }
+    .tornado-text {
+      font-size: 3rem;
+      font-weight: 900;
+      color: #6F5C91;
+      letter-spacing: 0.2em;
+      margin-top: 0.5rem;
+      animation: tornadoTextScroll 1.2s cubic-bezier(.68,-0.55,.27,1.55);
+      white-space: nowrap;
+      overflow: hidden;
+      text-shadow: 2px 2px 8px #fff, 0 0 8px #6F5C91;
+    }
+    @keyframes tornadoTextScroll {
+      0% { transform: translateX(-120%); opacity: 0; }
+      30% { opacity: 1; }
+      60% { transform: translateX(10%); opacity: 1; }
+      100% { transform: translateX(0); opacity: 0; }
+    }
   </style>
 </head>
 <body>
@@ -278,13 +405,35 @@
       <div class="how-to-play">
         <p class="how-title">How to Play (for Teachers):</p>
         <p class="how-body">
-          You control the game! Ask your own questions aloud (from a worksheet or lesson), or paste questions into the game below. When a student answers correctly, let them pick a number to reveal points or a special item for their team.
+          You control the game! Ask your own questions aloud (from a worksheet or lesson), or paste questions into the game below. When a student answers correctly, let them pick a number to reveal points or a special animal event for their team.
         </p>
         <div class="special-items compact">
-          <div class="special-item"><span class="emoji-big">🌪️</span> <span>Steal other team's points</span></div>
-          <div class="special-item"><span class="emoji-big">x2</span> <span>Double your points</span></div>
-          <div class="special-item"><span class="emoji-big">😢</span> <span>Lose all points</span></div>
+          <div class="special-item"><span class="emoji-big">🦘🦘</span> <span class="slogan">Kangaroo Swap! Teams bounce and swap points!</span></div>
+          <div class="special-item"><span class="emoji-big">🦁🦁</span> <span class="slogan">Double Lion Roar! Double your points!</span></div>
+          <div class="special-item"><span class="emoji-big">🦨</span> <span class="slogan">Skunked! Lose all your points!</span></div>
         </div>
+      </div>
+      <div class="special-item-selectors">
+        <label><span class="emoji-big">🦘🦘</span> Kangaroo Swap:
+          <select id="swapCount">
+            <option>0</option><option selected>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+          </select>
+        </label>
+        <label><span class="emoji-big">🦁🦁</span> Double Lion:
+          <select id="doubleCount">
+            <option>0</option><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option>
+          </select>
+        </label>
+        <label><span class="emoji-big">🦨</span> Skunk:
+          <select id="loseCount">
+            <option>0</option><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option>
+          </select>
+        </label>
+        <label><span class="emoji-big">🌪️</span> Tornado:
+          <select id="tornadoCount">
+            <option>0</option><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option>
+          </select>
+        </label>
       </div>
     </div>
     <form id="setupForm" onsubmit="return false;">
@@ -328,6 +477,7 @@ Mars"></textarea>
     <div style="text-align: center; margin-bottom: 2rem;">
       <img src="tornado-logo.png" alt="Tornado Game Logo" style="max-width: 200px;">
     </div>
+    <div id="specialPopup" class="special-popup hidden"></div>
 
     <div class="scoreboard">
       <div class="team">
@@ -385,12 +535,32 @@ Mars"></textarea>
           scoreBEl=document.getElementById('scoreB'),
           turnEl=document.getElementById('turnDisplay'),
           questionEl=document.getElementById('question'),
-          answerEl=document.getElementById('answer');
+          answerEl=document.getElementById('answer'),
+          specialPopup=document.getElementById('specialPopup');
 
     startBtn.onclick = () => {
       names.A = document.getElementById('teamANameInput').value.trim()||'Team A';
       names.B = document.getElementById('teamBNameInput').value.trim()||'Team B';
       total = +document.getElementById('gridSizeInput').value;
+
+      // Get special item counts from selectors
+      let tornadoCount = parseInt(document.getElementById('tornadoCount').value);
+      let doubleCount = parseInt(document.getElementById('doubleCount').value);
+      let loseCount = parseInt(document.getElementById('loseCount').value);
+      let swapCount = parseInt(document.getElementById('swapCount').value);
+
+      // Adjust defaults for small grids
+      if (total <= 10) {
+        tornadoCount = 2;
+        doubleCount = 1;
+        loseCount = 1;
+        swapCount = 1;
+        document.getElementById('tornadoCount').value = 2;
+        document.getElementById('doubleCount').value = 1;
+        document.getElementById('loseCount').value = 1;
+        document.getElementById('swapCount').value = 1;
+      }
+
       const raw = document.getElementById('questionsInput').value;
       // split blocks on blank line
       const blocks = raw.split(/\n\s*\n/).map(b=>b.trim()).filter(b=>b);
@@ -414,7 +584,7 @@ Mars"></textarea>
       qIndex=0;
       setupScreen.classList.add('hidden');
       gameScreen.classList.remove('hidden');
-      initGame();
+      initGame(tornadoCount, doubleCount, loseCount, swapCount); buildGrid(total); showQuestion();
     };
 
     passBtn.onclick = () => { turn = turn==='A'?'B':'A'; updateTurn(); showQuestion(); };
@@ -440,29 +610,26 @@ Mars"></textarea>
     };
     resetBtn.onclick = initGame;
 
-    function initGame(){
+    function initGame(tornadoCount=2, doubleCount=2, loseCount=2, swapCount=1){
       scores={A:0,B:0}; picks={A:0,B:0};
       annA.textContent=''; annB.textContent='';
       nameAEl.textContent=names.A; nameBEl.textContent=names.B;
       updateScores(); turn='A'; updateTurn();
-      buildRewards(total); buildGrid(total); showQuestion();
+      buildRewards(total, tornadoCount, doubleCount, loseCount, swapCount); buildGrid(total); showQuestion();
     }
 
-    function buildRewards(n){
-      const ptsBase=Math.floor(n*0.7),
-            loseBase=Math.floor(n*0.1),
-            stealBase=loseBase,
-            dblBase=n-(ptsBase+loseBase+stealBase),
-            minSpec=n>=24?3:2,
-            loseCount=Math.max(loseBase,minSpec),
-            stealCount=Math.max(stealBase,minSpec),
-            dblCount=Math.max(dblBase,minSpec),
-            ptsCount=n-(loseCount+stealCount+dblCount);
+    function buildRewards(n, tornadoCount=2, doubleCount=2, loseCount=2, swapCount=1){
+      const minSpec=n>=24?3:2;
+      // Calculate how many points left after special items
+      let specialTotal = tornadoCount + doubleCount + loseCount + swapCount;
+      let ptsCount = n - specialTotal;
+      if (ptsCount < 0) ptsCount = 0;
       rewards=[];
       for(let i=0;i<ptsCount;i++) rewards.push({type:'points',value:(Math.floor(Math.random()*10)+1)*100});
       for(let i=0;i<loseCount;i++) rewards.push({type:'lose'});
-      for(let i=0;i<stealCount;i++) rewards.push({type:'steal'});
-      for(let i=0;i<dblCount;i++) rewards.push({type:'double'});
+      for(let i=0;i<tornadoCount;i++) rewards.push({type:'steal'});
+      for(let i=0;i<doubleCount;i++) rewards.push({type:'double'});
+      for(let i=0;i<swapCount;i++) rewards.push({type:'swap'});
       for(let i=rewards.length-1;i>0;i--){
         const j=Math.floor(Math.random()*(i+1));
         [rewards[i],rewards[j]]=[rewards[j],rewards[i]];
@@ -491,9 +658,10 @@ Mars"></textarea>
         scores[me]+=r.value; out='+'+r.value;
         btn.style.color = me==='A'?'var(--teamA)':'var(--teamB)';
       } else if(r.type==='lose'){
-        scores[me]=0; out='☹️'; 
+        scores[me]=0; out='🦨'; 
         styleSpecial(btn,me); 
-        btn.classList.add('sad-animation');
+        showSpecialPopup('🦨','Skunked! Lose all your points!');
+        animateSkunk(me);
         playSad();
       } else if(r.type==='steal'){
         const o=me==='A'?'B':'A';
@@ -501,11 +669,22 @@ Mars"></textarea>
         out='🌪'; 
         styleSpecial(btn,me); 
         btn.classList.add('tornado-animation');
+        showSpecialPopup('🌪️','Tornado! Steal the other team\'s points!', true);
         playWind();
+      } else if(r.type==='swap'){
+        // Swap scores between teams
+        let temp = scores['A'];
+        scores['A'] = scores['B'];
+        scores['B'] = temp;
+        out='🦘🦘';
+        styleSpecial(btn,me);
+        showSpecialPopup('🦘🦘','Kangaroo Swap! Teams bounce and swap points!');
+        animateKangarooSwap();
       } else {
-        scores[me]*=2; out='x2'; 
+        scores[me]*=2; out='🦁🦁'; 
         styleSpecial(btn,me); 
-        btn.classList.add('double-animation');
+        showSpecialPopup('🦁🦁','Double Lion Roar! Double your points!');
+        animateScore(me, 'lion-roar');
       }
       if(me==='A'){
         annA.textContent=`${names.A} got ${out}`; annB.textContent='';
@@ -571,6 +750,50 @@ Mars"></textarea>
       o.start(); g.gain.setValueAtTime(1,C.currentTime);
       g.gain.exponentialRampToValueAtTime(0.001,C.currentTime+0.8);
       setTimeout(()=>o.stop(),800);
+    }
+
+    function showSpecialPopup(emoji, slogan, tornadoMode=false) {
+      if (tornadoMode) {
+        specialPopup.innerHTML = `<span class='tornado-emoji-big'>🌪️</span><div class='tornado-text'>TORNADO!</div>`;
+        specialPopup.classList.add('show', 'tornado-mode');
+        specialPopup.classList.remove('hidden');
+        setTimeout(() => {
+          specialPopup.classList.remove('show');
+          setTimeout(() => specialPopup.classList.add('hidden'), 400);
+          specialPopup.classList.remove('tornado-mode');
+        }, 1400);
+        return;
+      }
+      specialPopup.innerHTML = `<span style="font-size:3.2rem;">${emoji}</span><div style="margin-top:0.5rem;font-size:1.5rem;">${slogan}</div>`;
+      specialPopup.classList.add('show');
+      specialPopup.classList.remove('hidden');
+      setTimeout(() => {
+        specialPopup.classList.remove('show');
+        setTimeout(() => specialPopup.classList.add('hidden'), 400);
+      }, 1400);
+    }
+
+    function animateScore(team, animationClass) {
+      const el = team === 'A' ? scoreAEl : scoreBEl;
+      el.classList.add('score-animate', animationClass);
+      setTimeout(() => {
+        el.classList.remove(animationClass);
+      }, 800);
+    }
+    function animateKangarooSwap() {
+      scoreAEl.classList.add('score-animate', 'kangaroo-jump');
+      scoreBEl.classList.add('score-animate', 'kangaroo-jump');
+      setTimeout(() => {
+        scoreAEl.classList.remove('kangaroo-jump');
+        scoreBEl.classList.remove('kangaroo-jump');
+      }, 800);
+    }
+    function animateSkunk(team) {
+      const el = team === 'A' ? scoreAEl : scoreBEl;
+      el.classList.add('skunk-cloud');
+      setTimeout(() => {
+        el.classList.remove('skunk-cloud');
+      }, 1100);
     }
   </script>
 </body>
