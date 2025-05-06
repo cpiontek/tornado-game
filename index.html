@@ -940,7 +940,6 @@ Mars"></textarea>
       let doubleCount = parseInt(document.getElementById('doubleCount').value);
       let loseCount = parseInt(document.getElementById('loseCount').value);
       let swapCount = parseInt(document.getElementById('swapCount').value);
-      // Fully reset game state and grid
       initGame(tornadoCount, doubleCount, loseCount, swapCount);
       buildGrid(total);
       showQuestion();
@@ -956,8 +955,11 @@ Mars"></textarea>
       updateScores(); turn='A'; updateTurn();
       gridEl.innerHTML='';
       document.getElementById('questionAnswerRow').style.display = 'none';
-      // No need to reassign selector values; UI is already reset
-      showQuestion();
+      // Reset special item selectors to their current values
+      document.getElementById('tornadoCount').value = document.getElementById('tornadoCount').value;
+      document.getElementById('doubleCount').value = document.getElementById('doubleCount').value;
+      document.getElementById('loseCount').value = document.getElementById('loseCount').value;
+      document.getElementById('swapCount').value = document.getElementById('swapCount').value;
     };
 
     function initGame(tornadoCount=2, doubleCount=2, loseCount=2, swapCount=1){
@@ -1042,7 +1044,6 @@ Mars"></textarea>
         annB.textContent=`${names.B} got ${out}`; annA.textContent='';
       }
       btn.textContent=out; btn.disabled=true;
-      btn.classList.add('flip');
       setTimeout(()=>btn.classList.remove('flip'), 600);
       // Confetti for big points
       if(r.type==='points' && r.value>=800){ confettiBurst(btn); playCorrect(); }
@@ -1174,7 +1175,7 @@ Mars"></textarea>
       confetti.style.top=targetBtn.offsetTop+targetBtn.offsetHeight/2+'px';
       confetti.style.pointerEvents='none';
       confetti.style.zIndex=10000;
-      confetti.innerHTML = Array.from({length:24}).map(()=>`<span style="display:inline-block;font-size:1.5em;transform:rotate(${Math.random()*360}deg);color:hsl(${Math.random()*360},90%,60%);">🎉</span>`).join('');
+      confetti.innerHTML = Array.from({length:7}).map(()=>`<span style="display:inline-block;font-size:3em;transform:rotate(${Math.random()*360}deg);color:hsl(${Math.random()*360},90%,60%);">🎉</span>`).join('');
       document.body.appendChild(confetti);
       setTimeout(()=>confetti.remove(),900);
     }
