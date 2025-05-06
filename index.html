@@ -46,7 +46,7 @@
     p, label, button, select, input, textarea { font-size: 1rem; }
 
     :root {
-      --teamA: #e74c3c;
+      --teamA: #e57373;
       --teamB: #3498db;
       --btn-bg: #add8e6;
       --btn-hover: #87ceeb;
@@ -106,7 +106,7 @@
     }
     .team h2 { margin: 5px 0 0; }
     .team p { font-size: 2em; margin: 5px 0 0; }
-    #turnDisplay { margin-bottom: 20px; }
+    #turnDisplay { margin-bottom: 20px; color: var(--teamA); }
 
     /* Question & Controls */
     #questionContainer {
@@ -116,7 +116,7 @@
       align-items: center;
       gap: 10px;
     }
-    #question { font-weight: bold; max-width: 400px; text-align: left; }
+    #question { font-weight: bold; max-width: 400px; text-align: left; color: var(--teamA); }
     #answer { font-style: italic; margin-top: 5px; }
 
     #passBtn, #skipBtn, #revealBtn {
@@ -196,17 +196,73 @@
       margin: 20px auto;
       max-width: 600px;
       text-align: left;
+      position: relative;
     }
-    .special-items {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      margin: 10px 0;
+    .how-to-play {
+      margin-top: 0;
+      padding-top: 0;
+    }
+    .how-title {
+      font-weight: 900;
+      font-size: 1.3rem;
+      margin: 0 0 8px 0;
+      text-align: center;
+    }
+    .how-body {
+      margin: 0 0 8px 0;
+      font-size: 1.08rem;
+      text-align: center;
+    }
+    .special-items.compact {
+      margin: 0;
+      gap: 1.5rem;
+      justify-content: space-around;
     }
     .special-item {
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 10px;
+      font-size: 1.1rem;
+      margin: 0 0 0 0;
+    }
+    .emoji-big {
+      font-size: 2.2rem;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      height: 2.2rem;
+    }
+    .logo-start-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+      margin-bottom: 2rem;
+      margin-top: 2rem;
+    }
+    .logo-large {
+      max-width: 200px;
+      height: auto;
+    }
+    .start-large {
+      font-size: 2.2rem;
+      padding: 1.2rem 2.5rem;
+      font-weight: 900;
+      background: #6F5C91;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      transition: background 0.2s, transform 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100px;
+    }
+    .start-large:hover {
+      background: #59487a;
+      transform: scale(1.05);
     }
   </style>
 </head>
@@ -214,16 +270,21 @@
 
   <!-- SETUP SCREEN -->
   <div id="setupScreen">
-    <div style="text-align: center; margin-bottom: 2rem;">
-      <img src="tornado-logo.png" alt="Tornado Game Logo" style="max-width: 200px;">
+    <div class="logo-start-container">
+      <img src="tornado-logo.png" alt="Tornado Game Logo" class="logo-large">
+      <button id="startGameBtn" class="start-large">Start Game</button>
     </div>
     <div class="game-info">
-      <p style="text-align: center; font-weight: bold; margin-bottom: 10px;">How to Play:</p>
-      <p>Answer questions correctly to select numbers and earn points. First round is safe - only points available. After that, watch out for special items!</p>
-      <div class="special-items">
-        <div class="special-item">🌪️ <span>Steal other team's points</span></div>
-        <div class="special-item">x2 <span>Double your points</span></div>
-        <div class="special-item">😢 <span>Lose all points</span></div>
+      <div class="how-to-play">
+        <p class="how-title">How to Play (for Teachers):</p>
+        <p class="how-body">
+          You control the game! Ask your own questions aloud (from a worksheet or lesson), or paste questions into the game below. When a student answers correctly, let them pick a number to reveal points or a special item for their team.
+        </p>
+        <div class="special-items compact">
+          <div class="special-item"><span class="emoji-big">🌪️</span> <span>Steal other team's points</span></div>
+          <div class="special-item"><span class="emoji-big">x2</span> <span>Double your points</span></div>
+          <div class="special-item"><span class="emoji-big">😢</span> <span>Lose all points</span></div>
+        </div>
       </div>
     </div>
     <form id="setupForm" onsubmit="return false;">
