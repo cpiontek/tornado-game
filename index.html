@@ -36,7 +36,7 @@
       padding: 20px;
       font-family: 'Lexend Deca', sans-serif;
       line-height: 1.5;
-      background: #eef6fb;
+      background: #31727A;
       color: #333;
       text-align: center;
     }
@@ -122,7 +122,15 @@
     #passBtn, #skipBtn, #revealBtn {
       padding: 8px 16px;
       cursor: pointer;
-      font-weight: 600;
+      font-weight: 700;
+      background: #6F5C91;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      margin: 0 5px;
+    }
+    #passBtn:hover, #skipBtn:hover, #revealBtn:hover {
+      opacity: 0.9;
     }
 
     /* Grid */
@@ -160,17 +168,64 @@
       color: #666;
       margin-top: 30px;
     }
+
+    /* Animations */
+    @keyframes tornado {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    @keyframes double {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+    @keyframes sad {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0); }
+    }
+    .tornado-animation { animation: tornado 0.5s linear; }
+    .double-animation { animation: double 0.5s ease; }
+    .sad-animation { animation: sad 0.5s ease; }
+
+    /* Game Info */
+    .game-info {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 15px;
+      border-radius: 10px;
+      margin: 20px auto;
+      max-width: 600px;
+      text-align: left;
+    }
+    .special-items {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin: 10px 0;
+    }
+    .special-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
   </style>
 </head>
 <body>
 
   <!-- SETUP SCREEN -->
   <div id="setupScreen">
-    <h1>🌪 Tornado Game Setup</h1>
-    <p>
-      Configure your game below. Questions are <strong>optional</strong> &ndash;
-      include as many or as few as you like.
-    </p>
+    <div style="text-align: center; margin-bottom: 2rem;">
+      <img src="tornado-logo.png" alt="Tornado Game Logo" style="max-width: 200px;">
+    </div>
+    <div class="game-info">
+      <p style="text-align: center; font-weight: bold; margin-bottom: 10px;">How to Play:</p>
+      <p>Answer questions correctly to select numbers and earn points. First round is safe - only points available. After that, watch out for special items!</p>
+      <div class="special-items">
+        <div class="special-item">🌪️ <span>Steal other team's points</span></div>
+        <div class="special-item">x2 <span>Double your points</span></div>
+        <div class="special-item">😢 <span>Lose all points</span></div>
+      </div>
+    </div>
     <form id="setupForm" onsubmit="return false;">
       <label>Team A Name:
         <input id="teamANameInput" value="Team A" required>
@@ -209,8 +264,9 @@ Mars"></textarea>
 
   <!-- GAME SCREEN -->
   <div id="gameScreen" class="hidden">
-    <h1>🌪 Tornado Game</h1>
-    <h2>Classroom &amp; Trivia Platform</h2>
+    <div style="text-align: center; margin-bottom: 2rem;">
+      <img src="tornado-logo.png" alt="Tornado Game Logo" style="max-width: 200px;">
+    </div>
 
     <div class="scoreboard">
       <div class="team">
@@ -223,16 +279,21 @@ Mars"></textarea>
       </div>
     </div>
 
-    <h3 id="turnDisplay">Team A’s turn</h3>
+    <h3 id="turnDisplay">Team A's turn</h3>
 
     <div id="questionContainer">
       <div>
         <div id="question"></div>
         <div id="answer"></div>
+        <div id="correctIncorrectButtons" class="hidden" style="margin-top: 10px;">
+          <button id="correctBtn" style="background: #4CAF50; color: white; margin-right: 10px;">Correct</button>
+          <button id="incorrectBtn" style="background: #f44336; color: white;">Incorrect</button>
+        </div>
+        <div id="selectNumberText" class="hidden" style="margin-top: 10px; font-weight: bold;">Select a Number</div>
       </div>
       <button id="passBtn">Pass</button>
       <button id="skipBtn">Skip</button>
-      <button id="revealBtn" class="hidden">Reveal Answer</button>
+      <button id="revealBtn">Reveal Answer</button>
     </div>
 
     <div id="grid"></div>
@@ -301,6 +362,20 @@ Mars"></textarea>
       answerEl.textContent = questions[qIndex]?.answer||'';
       answerEl.style.color = turn==='A'?'var(--teamA)':'var(--teamB)';
       answerEl.style.textAlign = turn==='A'?'left':'right';
+      document.getElementById('correctIncorrectButtons').classList.remove('hidden');
+    };
+
+    document.getElementById('correctBtn').onclick = () => {
+      document.getElementById('selectNumberText').classList.remove('hidden');
+      document.getElementById('correctIncorrectButtons').classList.add('hidden');
+    };
+
+    document.getElementById('incorrectBtn').onclick = () => {
+      turn = turn==='A'?'B':'A';
+      document.getElementById('correctIncorrectButtons').classList.add('hidden');
+      document.getElementById('selectNumberText').classList.add('hidden');
+      updateTurn();
+      showQuestion();
     };
     resetBtn.onclick = initGame;
 
@@ -355,13 +430,21 @@ Mars"></textarea>
         scores[me]+=r.value; out='+'+r.value;
         btn.style.color = me==='A'?'var(--teamA)':'var(--teamB)';
       } else if(r.type==='lose'){
-        scores[me]=0; out='☹️'; styleSpecial(btn,me); playSad();
+        scores[me]=0; out='☹️'; 
+        styleSpecial(btn,me); 
+        btn.classList.add('sad-animation');
+        playSad();
       } else if(r.type==='steal'){
         const o=me==='A'?'B':'A';
         scores[me]+=scores[o]; scores[o]=0;
-        out='🌪'; styleSpecial(btn,me); playWind();
+        out='🌪'; 
+        styleSpecial(btn,me); 
+        btn.classList.add('tornado-animation');
+        playWind();
       } else {
-        scores[me]*=2; out='x2'; styleSpecial(btn,me);
+        scores[me]*=2; out='x2'; 
+        styleSpecial(btn,me); 
+        btn.classList.add('double-animation');
       }
       if(me==='A'){
         annA.textContent=`${names.A} got ${out}`; annB.textContent='';
