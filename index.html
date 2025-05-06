@@ -618,36 +618,33 @@
       align-items: flex-start;
       justify-content: center;
       margin-bottom: 0.5rem;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .game-info.compact-info {
+      min-width: 320px;
+      max-width: 420px;
+      flex: 1 1 0;
+    }
+    .compact-setup-form {
+      min-width: 180px;
+      max-width: 220px;
+      flex: 0 0 220px;
     }
     @media (max-width: 900px) {
       .setup-flex-row {
         flex-direction: column;
         gap: 1.2rem;
         align-items: center;
+        max-width: 98vw;
       }
-    }
-    .compact-setup-form {
-      display: flex;
-      flex-direction: column;
-      gap: 0.7rem;
-      min-width: 180px;
-      max-width: 220px;
-      background: rgba(255,255,255,0.92);
-      border-radius: 10px;
-      padding: 1.1rem 1.2rem 1.1rem 1.2rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-      font-size: 1.1rem;
-    }
-    .compact-setup-form input, .compact-setup-form select {
-      width: 100%;
-      font-size: 1.1rem;
-      padding: 0.3rem 0.5rem;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      margin-top: 0.2rem;
-      margin-bottom: 0.2rem;
-      box-sizing: border-box;
+      .game-info.compact-info, .compact-setup-form {
+        min-width: 0;
+        max-width: 98vw;
+        width: 100%;
+      }
     }
     .compact-questions-block {
       margin: 1.2rem auto 0 auto;
@@ -756,7 +753,7 @@ Mars"></textarea>
       </div>
     </div>
 
-    <div id="questionAnswerRow">
+    <div id="questionAnswerRow" style="display:none;">
       <div id="questionBubble" class="bubble-left">
         <div id="question"></div>
         <div id="answer"></div>
@@ -976,6 +973,14 @@ Mars"></textarea>
       const qObj=questions[qIndex]||{question:'',answer:null};
       questionEl.textContent=qObj.question;
       answerEl.textContent = '';
+      // Hide question bubble if no questions
+      const questionRow = document.getElementById('questionAnswerRow');
+      if (!qObj.question) {
+        questionRow.style.display = 'none';
+        return;
+      } else {
+        questionRow.style.display = 'flex';
+      }
       // Alternate bubble side based on team turn
       const bubble = document.getElementById('questionBubble');
       if (turn === 'A') {
