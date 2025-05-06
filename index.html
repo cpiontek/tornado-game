@@ -479,32 +479,6 @@
       <img src="tornado-logo.png" alt="Tornado Game Logo" class="logo-large">
       <button id="startGameBtnTop" class="start-large purple-btn">Start Game</button>
     </div>
-    <div class="game-info compact-info">
-      <div class="how-to-play">
-        <p class="how-title">How to Play (for Teachers):</p>
-        <p class="how-body">
-          You control the game! Ask your own questions aloud (from a worksheet or lesson), or paste questions into the game below. When a student answers correctly, let them pick a number to reveal points or a special animal event for their team.
-        </p>
-      </div>
-      <div class="special-item-compact-list">
-        <div class="special-item-compact">
-          <div class="special-row"><span class="emoji-big">🦘🦘</span> <b>Kangaroo Swap</b> <select id="swapCount"><option>0</option><option selected>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
-          <div class="special-desc">Swap points with the other team</div>
-        </div>
-        <div class="special-item-compact">
-          <div class="special-row"><span class="emoji-big">🦁🦁</span> <b>Double Lion</b> <select id="doubleCount"><option>0</option><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option></select></div>
-          <div class="special-desc">Double your points</div>
-        </div>
-        <div class="special-item-compact">
-          <div class="special-row"><span class="emoji-big">🦨</span> <b>Skunk</b> <select id="loseCount"><option>0</option><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option></select></div>
-          <div class="special-desc">Lose all your points</div>
-        </div>
-        <div class="special-item-compact">
-          <div class="special-row"><span class="emoji-big">🌪️</span> <b>Tornado</b> <select id="tornadoCount"><option>0</option><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option></select></div>
-          <div class="special-desc">Steal the other team's points</div>
-        </div>
-      </div>
-    </div>
     <form id="setupForm" onsubmit="return false;">
       <label>Team A Name:
         <input id="teamANameInput" value="Team A" required>
@@ -519,26 +493,34 @@
           <option>30</option><option>32</option><option>40</option>
         </select>
       </label>
-
-      <label>
-        Questions / Q&amp;A Blocks:<br/>
-        <small>(Either one question per line, or blocks separated by a blank line: question then answer.)</small>
-        <textarea id="questionsInput"
-          placeholder="What is the capital of France?
-Paris
-
-Which planet is known as the Red Planet?
-Mars"></textarea>
-      </label>
-
-      <div class="inline-radio">
-        <span>Order:</span>
-        <label><input type="radio" name="order" value="inorder" checked> In order</label>
-        <label><input type="radio" name="order" value="random"> Random</label>
-      </div>
-
-      <button id="startGameBtnBottom" class="purple-btn">Start Game</button>
     </form>
+    <div class="game-info compact-info">
+      <div class="how-to-play">
+        <p class="how-title">How to Play (for Teachers):</p>
+        <p class="how-body">
+          You control the game! Ask your own questions aloud (from a worksheet or lesson), or paste questions into the game below. When a student answers correctly, let them pick a number to reveal points or a special animal event for their team.
+        </p>
+      </div>
+      <div class="special-item-compact-list">
+        <div class="special-item-compact">
+          <div class="special-row"><span class="emoji-big">🌪️</span> <b>Tornado</b> <select id="tornadoCount"><option>0</option><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option></select></div>
+          <div class="special-desc">Steal the other team's points</div>
+        </div>
+        <div class="special-item-compact">
+          <div class="special-row"><span class="emoji-big">🦁🦁</span> <b>Double Lion</b> <select id="doubleCount"><option>0</option><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option></select></div>
+          <div class="special-desc">Double your points</div>
+        </div>
+        <div class="special-item-compact">
+          <div class="special-row"><span class="emoji-big">🦨</span> <b>Skunk</b> <select id="loseCount"><option>0</option><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option></select></div>
+          <div class="special-desc">Lose all your points</div>
+        </div>
+        <div class="special-item-compact">
+          <div class="special-row"><span class="emoji-big">🦘🦘</span> <b>Kangaroo Swap</b> <select id="swapCount"><option>0</option><option selected>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+          <div class="special-desc">Swap points with the other team</div>
+        </div>
+      </div>
+    </div>
+    <button id="startGameBtnBottom" class="purple-btn">Start Game</button>
   </div>
 
   <!-- GAME SCREEN -->
