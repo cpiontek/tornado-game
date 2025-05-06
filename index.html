@@ -647,7 +647,7 @@
       }
     }
     .slightly-wider-questions-block {
-      max-width: 270px;
+      max-width: 340px;
       width: 100%;
       margin-top: 1.2rem;
       margin-bottom: 0;
@@ -733,7 +733,7 @@
         <div class="how-to-play">
           <p class="how-title">How to Play:</p>
           <p class="how-body">
-            You control the game! Ask your own questions aloud (from a worksheet or lesson), or paste questions into the game below. When a player answers correctly, let them pick a number to reveal points or a special animal event for their team.
+            Ask your own questions aloud (from a worksheet or lesson), or paste questions into the game below. When a player answers correctly, let them pick a number to reveal points or a special event for their team.
           </p>
         </div>
         <div class="special-item-compact-list">
@@ -750,7 +750,7 @@
             <div class="special-desc">Lose all your points</div>
           </div>
           <div class="special-item-compact">
-            <div class="special-row"><span class="emoji-big">🦘🦘</span> <b>Kangaroo Swap</b> <select id="swapCount"><option>0</option><option selected>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+            <div class="special-row"><span class="emoji-big">🦘</span> <b>Kangaroo Hop Swap</b> <select id="swapCount"><option>0</option><option selected>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
             <div class="special-desc">Swap points with the other team</div>
           </div>
         </div>
@@ -776,11 +776,11 @@
             Questions &amp; Answers:<br/>
             <small>Enter questions (and optional answers). One per line, or use a blank line between question and answer.</small>
             <textarea id="questionsInput"
-              placeholder="What is the capital of France?
-Paris
+              placeholder="What city is home to Fenway Park?
+Boston
 
-Which planet is known as the Red Planet?
-Mars"></textarea>
+Which band wrote the song 'Hey Jude'?
+The Beatles"></textarea>
           </label>
           <div class="inline-radio">
             <span>Order:</span>
@@ -940,6 +940,7 @@ Mars"></textarea>
       let doubleCount = parseInt(document.getElementById('doubleCount').value);
       let loseCount = parseInt(document.getElementById('loseCount').value);
       let swapCount = parseInt(document.getElementById('swapCount').value);
+      // Fully reset game state and grid
       initGame(tornadoCount, doubleCount, loseCount, swapCount);
       buildGrid(total);
       showQuestion();
@@ -955,11 +956,8 @@ Mars"></textarea>
       updateScores(); turn='A'; updateTurn();
       gridEl.innerHTML='';
       document.getElementById('questionAnswerRow').style.display = 'none';
-      // Reset special item selectors to their current values
-      document.getElementById('tornadoCount').value = document.getElementById('tornadoCount').value;
-      document.getElementById('doubleCount').value = document.getElementById('doubleCount').value;
-      document.getElementById('loseCount').value = document.getElementById('loseCount').value;
-      document.getElementById('swapCount').value = document.getElementById('swapCount').value;
+      // No need to reassign selector values; UI is already reset
+      showQuestion();
     };
 
     function initGame(tornadoCount=2, doubleCount=2, loseCount=2, swapCount=1){
@@ -1044,8 +1042,6 @@ Mars"></textarea>
         annB.textContent=`${names.B} got ${out}`; annA.textContent='';
       }
       btn.textContent=out; btn.disabled=true;
-      setTimeout(()=>btn.classList.remove('flip'), 600);
-      // Confetti for big points
       if(r.type==='points' && r.value>=800){ confettiBurst(btn); playCorrect(); }
       updateScores();
       const done=document.querySelectorAll('#grid button:disabled').length;
