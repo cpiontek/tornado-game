@@ -709,7 +709,7 @@
             <div class="special-desc">Lose all your points</div>
           </div>
           <div class="special-item-compact">
-            <div class="special-row"><span class="emoji-big">🦘🦘</span> <b>Kangaroo Swap</b> <select id="swapCount"><option>0</option><option selected>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+            <div class="special-row"><span class="emoji-big">��</span> <b>Kangaroo Hop Swap</b> <select id="swapCount"><option>0</option><option selected>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
             <div class="special-desc">Swap points with the other team</div>
           </div>
         </div>
@@ -891,10 +891,17 @@ Mars"></textarea>
       updateTurn();
       showQuestion();
     };
-    resetBtn.onclick = initGame;
+    resetBtn.onclick = () => { initGame(); buildGrid(total); showQuestion(); document.getElementById('questionAnswerRow').style.display = 'none'; };
     document.getElementById('homeBtn').onclick = () => {
       gameScreen.classList.add('hidden');
       setupScreen.classList.remove('hidden');
+      // Reset everything to initial state
+      scores={A:0,B:0}; picks={A:0,B:0};
+      annA.textContent=''; annB.textContent='';
+      nameAEl.textContent=names.A; nameBEl.textContent=names.B;
+      updateScores(); turn='A'; updateTurn();
+      gridEl.innerHTML='';
+      document.getElementById('questionAnswerRow').style.display = 'none';
     };
 
     function initGame(tornadoCount=2, doubleCount=2, loseCount=2, swapCount=1){
@@ -963,9 +970,9 @@ Mars"></textarea>
         let temp = scores['A'];
         scores['A'] = scores['B'];
         scores['B'] = temp;
-        out='🦘🦘';
+        out='🦘';
         styleSpecial(btn,me);
-        showSpecialPopup('🦘🦘','Kangaroo Swap! Teams bounce and swap points!');
+        showSpecialPopup('🦘','Kangaroo Hop Swap! Teams bounce and swap points!');
         animateKangarooSwap();
       } else {
         scores[me]*=2; out='🦁🦁'; 
