@@ -776,7 +776,11 @@
             Questions &amp; Answers:<br/>
             <small>Enter questions (and optional answers). One per line, or use a blank line between question and answer.</small>
             <textarea id="questionsInput"
-              placeholder="What city is home to Fenway Park?\nBoston\n\nWhich band wrote the song 'Hey Jude'?\nThe Beatles"></textarea>
+              placeholder="What city is home to Fenway Park?
+Boston
+
+Which band wrote the song 'Hey Jude'?
+The Beatles"></textarea>
           </label>
           <div class="inline-radio">
             <span>Order:</span>
@@ -936,6 +940,7 @@
       let doubleCount = parseInt(document.getElementById('doubleCount').value);
       let loseCount = parseInt(document.getElementById('loseCount').value);
       let swapCount = parseInt(document.getElementById('swapCount').value);
+      // Fully reset game state and grid
       initGame(tornadoCount, doubleCount, loseCount, swapCount);
       buildGrid(total);
       showQuestion();
@@ -951,11 +956,8 @@
       updateScores(); turn='A'; updateTurn();
       gridEl.innerHTML='';
       document.getElementById('questionAnswerRow').style.display = 'none';
-      // Reset special item selectors to their current values
-      document.getElementById('tornadoCount').value = document.getElementById('tornadoCount').value;
-      document.getElementById('doubleCount').value = document.getElementById('doubleCount').value;
-      document.getElementById('loseCount').value = document.getElementById('loseCount').value;
-      document.getElementById('swapCount').value = document.getElementById('swapCount').value;
+      // No need to reassign selector values; UI is already reset
+      showQuestion();
     };
 
     function initGame(tornadoCount=2, doubleCount=2, loseCount=2, swapCount=1){
