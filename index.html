@@ -504,14 +504,14 @@
       width: 100%;
     }
     .bubble-left, .bubble-right {
-      max-width: 40vw;
-      min-width: 260px;
+      max-width: 28vw;
+      min-width: 180px;
       background: #fff;
       color: #222;
       border-radius: 18px;
-      padding: 1.1rem 1.5rem 1.1rem 1.5rem;
+      padding: 0.7rem 1rem 0.7rem 1rem;
       box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-      font-size: 1.5rem;
+      font-size: 1.1rem;
       font-weight: 700;
       margin-bottom: 0.2rem;
       margin-top: 0.2rem;
@@ -521,7 +521,7 @@
       display: flex;
       flex-direction: column;
       align-items: flex-start;
-      min-height: 60px;
+      min-height: 40px;
     }
     .bubble-left {
       margin-left: 2vw;
@@ -733,7 +733,7 @@
         <div class="how-to-play">
           <p class="how-title">How to Play:</p>
           <p class="how-body">
-            You control the game! Ask your own questions aloud (from a worksheet or lesson), or paste questions into the game below. When a player answers correctly, let them pick a number to reveal points or a special animal event for their team.
+            Ask your own questions aloud (from a worksheet or lesson), or paste questions into the game below. When a player answers correctly, let them pick a number to reveal points or a special event for their team.
           </p>
         </div>
         <div class="special-item-compact-list">
@@ -1029,8 +1029,6 @@ Mars"></textarea>
         annB.textContent=`${names.B} got ${out}`; annA.textContent='';
       }
       btn.textContent=out; btn.disabled=true;
-      btn.classList.add('flip');
-      setTimeout(()=>btn.classList.remove('flip'), 600);
       if(r.type==='points' && r.value>=800){ confettiBurst(btn); playCorrect(); }
       updateScores();
       const done=document.querySelectorAll('#grid button:disabled').length;
@@ -1160,7 +1158,7 @@ Mars"></textarea>
       confetti.style.top=targetBtn.offsetTop+targetBtn.offsetHeight/2+'px';
       confetti.style.pointerEvents='none';
       confetti.style.zIndex=10000;
-      confetti.innerHTML = Array.from({length:24}).map(()=>`<span style="display:inline-block;font-size:1.5em;transform:rotate(${Math.random()*360}deg);color:hsl(${Math.random()*360},90%,60%);">🎉</span>`).join('');
+      confetti.innerHTML = Array.from({length:7}).map(()=>`<span style="display:inline-block;font-size:3em;transform:rotate(${Math.random()*360}deg);color:hsl(${Math.random()*360},90%,60%);">🎉</span>`).join('');
       document.body.appendChild(confetti);
       setTimeout(()=>confetti.remove(),900);
     }
