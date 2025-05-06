@@ -469,6 +469,26 @@
       margin-top: 0.1rem;
       margin-bottom: 0.2rem;
     }
+    .questions-block {
+      margin: 1.2rem auto 0 auto;
+      max-width: 480px;
+      background: rgba(255,255,255,0.85);
+      border-radius: 10px;
+      padding: 1rem 1.2rem 0.5rem 1.2rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    #questionsInput {
+      width: 100%;
+      padding: 8px;
+      margin-top: 4px;
+      height: 120px;
+      font-family: inherit;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+      margin-bottom: 0.5rem;
+    }
   </style>
 </head>
 <body>
@@ -518,6 +538,23 @@
           <div class="special-row"><span class="emoji-big">🦘🦘</span> <b>Kangaroo Swap</b> <select id="swapCount"><option>0</option><option selected>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
           <div class="special-desc">Swap points with the other team</div>
         </div>
+      </div>
+    </div>
+    <div class="questions-block">
+      <label>
+        Questions / Q&amp;A Blocks:<br/>
+        <small>(Either one question per line, or blocks separated by a blank line: question then answer.)</small>
+        <textarea id="questionsInput"
+          placeholder="What is the capital of France?
+Paris
+
+Which planet is known as the Red Planet?
+Mars"></textarea>
+      </label>
+      <div class="inline-radio">
+        <span>Order:</span>
+        <label><input type="radio" name="order" value="inorder" checked> In order</label>
+        <label><input type="radio" name="order" value="random"> Random</label>
       </div>
     </div>
     <button id="startGameBtnBottom" class="purple-btn">Start Game</button>
