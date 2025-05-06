@@ -776,11 +776,7 @@
             Questions &amp; Answers:<br/>
             <small>Enter questions (and optional answers). One per line, or use a blank line between question and answer.</small>
             <textarea id="questionsInput"
-              placeholder="What is the capital of France?
-Paris
-
-Which planet is known as the Red Planet?
-Mars"></textarea>
+              placeholder="What city is home to Fenway Park?\nBoston\n\nWhich band wrote the song 'Hey Jude'?\nThe Beatles"></textarea>
           </label>
           <div class="inline-radio">
             <span>Order:</span>
@@ -934,7 +930,17 @@ Mars"></textarea>
       updateTurn();
       showQuestion();
     };
-    resetBtn.onclick = () => { initGame(); buildGrid(total); showQuestion(); document.getElementById('questionAnswerRow').style.display = 'none'; };
+    resetBtn.onclick = () => {
+      // Get current special item counts
+      let tornadoCount = parseInt(document.getElementById('tornadoCount').value);
+      let doubleCount = parseInt(document.getElementById('doubleCount').value);
+      let loseCount = parseInt(document.getElementById('loseCount').value);
+      let swapCount = parseInt(document.getElementById('swapCount').value);
+      initGame(tornadoCount, doubleCount, loseCount, swapCount);
+      buildGrid(total);
+      showQuestion();
+      document.getElementById('questionAnswerRow').style.display = 'none';
+    };
     document.getElementById('homeBtn').onclick = () => {
       gameScreen.classList.add('hidden');
       setupScreen.classList.remove('hidden');
@@ -945,6 +951,11 @@ Mars"></textarea>
       updateScores(); turn='A'; updateTurn();
       gridEl.innerHTML='';
       document.getElementById('questionAnswerRow').style.display = 'none';
+      // Reset special item selectors to their current values
+      document.getElementById('tornadoCount').value = document.getElementById('tornadoCount').value;
+      document.getElementById('doubleCount').value = document.getElementById('doubleCount').value;
+      document.getElementById('loseCount').value = document.getElementById('loseCount').value;
+      document.getElementById('swapCount').value = document.getElementById('swapCount').value;
     };
 
     function initGame(tornadoCount=2, doubleCount=2, loseCount=2, swapCount=1){
@@ -956,8 +967,7 @@ Mars"></textarea>
     }
 
     function buildRewards(n, tornadoCount=2, doubleCount=2, loseCount=2, swapCount=1){
-      const minSpec=n>=24?3:2;
-      // Calculate how many points left after special items
+      // Always include the exact number of each special item
       let specialTotal = tornadoCount + doubleCount + loseCount + swapCount;
       let ptsCount = n - specialTotal;
       if (ptsCount < 0) ptsCount = 0;
@@ -967,6 +977,7 @@ Mars"></textarea>
       for(let i=0;i<tornadoCount;i++) rewards.push({type:'steal'});
       for(let i=0;i<doubleCount;i++) rewards.push({type:'double'});
       for(let i=0;i<swapCount;i++) rewards.push({type:'swap'});
+      // Shuffle rewards to randomize placement
       for(let i=rewards.length-1;i>0;i--){
         const j=Math.floor(Math.random()*(i+1));
         [rewards[i],rewards[j]]=[rewards[j],rewards[i]];
