@@ -917,23 +917,8 @@ The Beatles"></textarea>
       answerEl.textContent = questions[qIndex]?.answer||'';
       answerEl.style.color = turn==='A'?'var(--teamA)':'var(--teamB)';
       answerEl.style.textAlign = turn==='A'?'left':'right';
-      document.getElementById('correctIncorrectButtons').classList.remove('hidden');
     };
 
-    document.getElementById('correctBtn').onclick = () => {
-      playCorrect();
-      document.getElementById('selectNumberText').classList.remove('hidden');
-      document.getElementById('correctIncorrectButtons').classList.add('hidden');
-    };
-
-    document.getElementById('incorrectBtn').onclick = () => {
-      playIncorrect();
-      turn = turn==='A'?'B':'A';
-      document.getElementById('correctIncorrectButtons').classList.add('hidden');
-      document.getElementById('selectNumberText').classList.add('hidden');
-      updateTurn();
-      showQuestion();
-    };
     resetBtn.onclick = () => {
       // Get current special item counts
       let tornadoCount = parseInt(document.getElementById('tornadoCount').value);
